@@ -1,8 +1,6 @@
 A simple Terraria clone made using C++ and the SFML graphics library
 
-
-![image](https://github.com/user-attachments/assets/83b66060-5034-41d7-8d59-9b2d1a164436)
-
+![image](https://github.com/user-attachments/assets/dc183b7a-be93-4a05-acef-0fd7561f8624)
 
 **Current features**:-
 
