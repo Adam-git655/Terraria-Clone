@@ -89,10 +89,12 @@ void Player::update(float dt, ChunksManager& chunksManager)
 	if (movement_keys[sf::Keyboard::A])
 	{
 		velocity.x -= speed * dt;
+		sprite.setScale(-1, 1);
 	}
 	if (movement_keys[sf::Keyboard::D])
 	{
 		velocity.x += speed * dt;
+		sprite.setScale(1, 1);
 	}
 
 	//Cap velocity 
