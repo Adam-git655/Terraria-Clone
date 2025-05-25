@@ -88,7 +88,6 @@ target_link_libraries("${CMAKE_PROJECT_NAME}"
 	sfml-graphics 
 	sfml-window 
 	sfml-system 
-	sfml-audio 
 	sfml-network
 	imgui
 	ImGui-SFML::ImGui-SFML
