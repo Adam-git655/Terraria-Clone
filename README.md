@@ -6,7 +6,7 @@ A simple Terraria clone made using C++ and the SFML graphics library
 
 1)Install CMake
 
-2)Run the following commands in PowerShell/terminal
+2)Run the following commands in PowerShell/terminal in the folder where CMakeLists.txt is located
 
 ```
 mkdir build
