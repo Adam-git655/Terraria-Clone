@@ -31,7 +31,12 @@ endif()
 project(mygame)
 
 
-
+# Disable SFML modules before adding SFML
+set(SFML_BUILD_AUDIO OFF CACHE BOOL "Disable SFML Audio" FORCE)
+set(SFML_BUILD_NETWORK ON CACHE BOOL "Enable SFML Network" FORCE)
+set(SFML_BUILD_GRAPHICS ON CACHE BOOL "Enable SFML Graphics" FORCE)
+set(SFML_BUILD_WINDOW ON CACHE BOOL "Enable SFML Window" FORCE)
+set(SFML_BUILD_SYSTEM ON CACHE BOOL "Enable SFML System" FORCE)
 
 #Add SFML, and here you would add other libraries if needed!
 add_subdirectory(thirdparty/SFML-2.6.1)
