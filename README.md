@@ -1,20 +1,19 @@
+## Overview
 A simple Terraria clone made using C++ and the SFML graphics library
 
 ![image](https://github.com/user-attachments/assets/dc183b7a-be93-4a05-acef-0fd7561f8624)
 
-**Steps To Build**:-
-
-1)Install CMake
-
-2)Run the following commands in PowerShell/terminal in the folder where CMakeLists.txt is located
-
+## Steps To Build
+1. Install CMake
+2. Run the following commands in PowerShell/terminal in the folder where CMakeLists.txt is located
 ```
 mkdir build
 cd build
 cmake ../
 ```
 
-**Current features**:-
+## Features
+### Current Features
 
 1: Sprite rendering and player movement
 
@@ -27,7 +26,7 @@ cmake ../
 5: Can choose between 3 block types (Grass, dirt, and stone)
 
 
-**Features to add**:-
+### Features to add
 
 1: Cave generation with different block types and minerals
 
@@ -38,7 +37,7 @@ cmake ../
 4: Player animations
 
 
-**Controls**:-
+## Controls
 
 1: WASD to move
 
