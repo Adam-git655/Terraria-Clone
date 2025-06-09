@@ -1,7 +1,7 @@
 ## Overview
 A simple Terraria clone made using C++ and the SFML graphics library
 
-![image](https://github.com/user-attachments/assets/dc183b7a-be93-4a05-acef-0fd7561f8624)
+![image](https://github.com/user-attachments/assets/ed727b40-f80d-4758-82fc-ea8c1ef97dbb)
 
 ## Steps To Build
 1. Install CMake
@@ -20,18 +20,19 @@ cmake ../
 - Functioning player collisions with the tiled environment
 - Ability to place and destroy blocks
 - Can choose between 3 block types (Grass, dirt, and stone)
+- GUI Hotbar to keep track of blocks
   
 ### Features to add
 
+- AI Enemies
+- Combat System
 - Cave generation with different block types and minerals
 - Multiple biomes
-- GUI system to keep track of blocks
 - Player animations
-
-
+  
 ## Controls
 
-- WASD to move
+- W to Jump, A and D to move left and right
 - Right-click to place blocks, left-click to destroy blocks
 - 1, 2, 3 number keys to switch block type
 
