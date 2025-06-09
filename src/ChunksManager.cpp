@@ -70,6 +70,17 @@ void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType)
 	chunkTiles[localX][tileY].setSolid(true);
 }
 
+sf::Texture& ChunksManager::getTexture(const std::string& textureName)
+{
+	if (textureName == "Grass")
+		return grassTex;
+	else if (textureName == "Dirt")
+		return dirtTex;
+	else if (textureName == "Stone")
+		return stoneTex;
+	std::cout << "ERROR\n";
+}
+
 void ChunksManager::UpdateAndRenderChunks(Player& player, sf::RenderWindow& window)
 {
 	sf::Sprite tileSprite;

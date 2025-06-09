@@ -24,6 +24,8 @@ public:
 	void DestroyTile(sf::Vector2f pos);
 	void PlaceTile(sf::Vector2f pos, Tile::TileType blockType);
 
+	sf::Texture& getTexture(const std::string& textureName);
+
 	void UpdateAndRenderChunks(Player& player, sf::RenderWindow& window); //Render chunks according to player position
 	void playerCollision(Player& player);
 

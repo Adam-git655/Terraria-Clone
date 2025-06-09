@@ -3,6 +3,10 @@
 #include "ChunksManager.h"
 #include "PerlinNoise.h"
 
+#include "imgui.h"
+#include "imgui-SFML.h"
+#include <array>
+
 int main()
 {
     const unsigned int windowWidth = 1920;
@@ -10,6 +14,10 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "BAD TERRARIA CLONE");    
     window.setFramerateLimit(60);
+
+    ImGui::SFML::Init(window);
+    ImGuiIO& io = ImGui::GetIO();
+
     Player player(Vec2(200.0f, 400.0f));
 
 
@@ -19,14 +27,17 @@ int main()
     
     
     ChunksManager chunksManager(std::time(nullptr));
-
+    
     sf::Clock clock;
     double lastTime = clock.getElapsedTime().asSeconds();
     double deltaTime;
 
+    std::array<Tile::TileType, 3> hotbar = {Tile::TileType::Grass, Tile::TileType::Dirt, Tile::TileType::Stone};
+    int selectedIndex = 0;
     bool isMining = false;
     bool isPlacing = false;
 
+    sf::Clock deltaClock;
     while (window.isOpen())
     {
         double currentTime = clock.getElapsedTime().asSeconds();
@@ -37,16 +48,17 @@ int main()
 
         sf::Event event;
         while (window.pollEvent(event)) {
+            ImGui::SFML::ProcessEvent(event);
             if (event.type == sf::Event::KeyPressed)
             {
                 player.set_movement_key(event.key.code, true);
 
                 if (event.key.code == sf::Keyboard::Num1)
-                    player.setBlockTypeInHand(Tile::TileType::Grass);
+                    selectedIndex = 0;
                 if (event.key.code == sf::Keyboard::Num2)
-                    player.setBlockTypeInHand(Tile::TileType::Dirt);
+                    selectedIndex = 1;
                 if (event.key.code == sf::Keyboard::Num3)
-                    player.setBlockTypeInHand(Tile::TileType::Stone);
+                    selectedIndex = 2;
             }
 
             if (event.type == sf::Event::KeyReleased)
@@ -54,34 +66,37 @@ int main()
                 player.set_movement_key(event.key.code, false);
             }
 
-            if (event.type == sf::Event::MouseButtonPressed)
+            if (!io.WantCaptureMouse)
             {
-                if (event.mouseButton.button == sf::Mouse::Left)
+                if (event.type == sf::Event::MouseButtonPressed)
                 {
-                    isMining = true;
-                    const sf::Vector2i point = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
-                    sf::Vector2f pointWorldCoords = window.mapPixelToCoords(point, camera);
-                    chunksManager.DestroyTile(pointWorldCoords);
-                }
-                else if (event.mouseButton.button == sf::Mouse::Right)
-                {
-                    isPlacing = true;
-                    const sf::Vector2i point = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
-                    sf::Vector2f pointWorldCoords = window.mapPixelToCoords(point, camera);
-                    chunksManager.PlaceTile(pointWorldCoords, player.getBlockTypeInHand());
-                }
-                
-            }
+                    if (event.mouseButton.button == sf::Mouse::Left)
+                    {
+                        isMining = true;
+                        const sf::Vector2i point = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
+                        sf::Vector2f pointWorldCoords = window.mapPixelToCoords(point, camera);
+                        chunksManager.DestroyTile(pointWorldCoords);
+                    }
+                    else if (event.mouseButton.button == sf::Mouse::Right)
+                    {
+                        isPlacing = true;
+                        const sf::Vector2i point = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
+                        sf::Vector2f pointWorldCoords = window.mapPixelToCoords(point, camera);
+                        chunksManager.PlaceTile(pointWorldCoords, player.getBlockTypeInHand());
+                    }
 
-            if (event.type == sf::Event::MouseButtonReleased)
-            {
-                if (event.mouseButton.button == sf::Mouse::Left)
-                {
-                    isMining = false;   
                 }
-                else if (event.mouseButton.button == sf::Mouse::Right)
+
+                if (event.type == sf::Event::MouseButtonReleased)
                 {
-                    isPlacing = false;
+                    if (event.mouseButton.button == sf::Mouse::Left)
+                    {
+                        isMining = false;
+                    }
+                    else if (event.mouseButton.button == sf::Mouse::Right)
+                    {
+                        isPlacing = false;
+                    }
                 }
             }
 
@@ -109,6 +124,56 @@ int main()
                 window.close();
         }
 
+        ImGui::SFML::Update(window, deltaClock.restart());
+
+        ImGui::Begin("Hotbar", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+        for (int i = 0; i < 3; i++)
+        {
+            if (i == selectedIndex)
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+            else
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+
+            sf::Texture* tex = nullptr;
+
+            const char* label = "";
+            switch (hotbar[i])
+            {
+            case Tile::TileType::Grass:
+                label = "Grass";
+                tex = &chunksManager.getTexture("Grass");
+                break;
+            case Tile::TileType::Dirt:
+                label = "Dirt";
+                tex = &chunksManager.getTexture("Dirt");
+                break;
+            case Tile::TileType::Stone:
+                label = "Stone";
+                tex = &chunksManager.getTexture("Stone");
+                break;
+            default:
+                break;
+            }
+
+            if (tex)
+            {
+                std::string buttonId = "##btn" + std::to_string(i);
+                if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(50, 50)))
+                {
+                    selectedIndex = i;
+                }
+            }
+
+            player.setBlockTypeInHand(hotbar[selectedIndex]);
+
+            ImGui::PopStyleColor();
+
+            if (i < 2)
+                ImGui::SameLine();
+
+        }
+        ImGui::End();
+
 
         player.update(static_cast<float>(deltaTime), chunksManager);
 
@@ -116,8 +181,11 @@ int main()
         window.setView(camera);
         chunksManager.UpdateAndRenderChunks(player, window);
         window.draw(player.getSprite());
+
+        ImGui::SFML::Render(window);
         window.display();
     }
     
+    ImGui::SFML::Shutdown();
     return 0;
 }
