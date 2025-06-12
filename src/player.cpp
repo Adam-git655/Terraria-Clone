@@ -2,7 +2,7 @@
 #include "ChunksManager.h"
 
 Player::Player(Vec2 p)
-	:position(p)
+	:Entity(p)
 {
 	if (!tex.loadFromFile(RESOURCES_PATH "player.png"))
 	{
@@ -12,46 +12,10 @@ Player::Player(Vec2 p)
 	sprite.setTexture(tex);
 	sprite.setOrigin(sprite.getLocalBounds().getSize().x / 2, sprite.getLocalBounds().getSize().y / 2);
 	sprite.setPosition(position.x, position.y);
-}
 
-const sf::Sprite& Player::getSprite()
-{
-	return sprite;
-}
-
-Vec2 Player::getPrevPos() const
-{
-	return prevPos;
-}
-
-Vec2 Player::getVelocity() const
-{
-	return velocity;
-}
-
-void Player::setVelocity(Vec2 v)
-{
-	velocity = v;
-}
-
-void Player::setPosition(Vec2 p)
-{
-	sprite.setPosition(p.x, p.y);
-}
-
-void Player::move(const Vec2& offset)
-{
-	sprite.move(offset.x, offset.y);
-}
-
-bool Player::getIsOnGround() const
-{
-	return IsOnGround;
-}
-
-void Player::setIsOnGround(bool b)
-{
-	IsOnGround = b;
+	speed = 200.0f;
+	max_speed = 300.0f;
+	jumpStrength = 6.0f;
 }
 
 Tile::TileType Player::getBlockTypeInHand() const
@@ -69,10 +33,21 @@ void Player::set_movement_key(int code, bool b)
 	movement_keys[code] = b;
 }
 
+void Player::takeDamage(float damage)
+{
+	health -= damage;
+	std::cout << health << "\n";
+}
+
 void Player::update(float dt, ChunksManager& chunksManager)
 {
-
 	prevPos = position;
+
+	if (health <= 0)
+	{
+		position = Vec2(0.0f, 0.0f);
+		health = 100;
+	}
 
 	//Add gravity
 	if (!IsOnGround)
@@ -108,8 +83,7 @@ void Player::update(float dt, ChunksManager& chunksManager)
 	//Add velocity to position
 	position += velocity;
 	sprite.setPosition(position.x, position.y);
-	chunksManager.playerCollision(*this); //check for collisions with tiles
+	chunksManager.collisionsWithTerrain(*this); //check for collisions with tiles
 
 	position = Vec2(sprite.getPosition().x, sprite.getPosition().y);
-	
 }

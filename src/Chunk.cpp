@@ -1,7 +1,8 @@
 #include "Chunk.h"
+#include "zombie.h"
 
-Chunk::Chunk(int chunkX, int seed)
-	:chunkX(chunkX), seed(seed)
+Chunk::Chunk(int chunkX, int seed, ChunksManager* mgr)
+	:chunkX(chunkX), seed(seed), chunksManager(mgr)
 {
 	chunkTiles.resize(CHUNK_WIDTH, std::vector<Tile>(CHUNK_HEIGHT, { Tile::TileType::Air, false }));
 	generateTerrain();
@@ -13,6 +14,8 @@ void Chunk::generateTerrain()
 
     float frequency = 0.01f;
     float amplitude = 0.5f;
+
+    std::vector<int> surfaceHeights(CHUNK_WIDTH);
 
     for (int x = 0; x < CHUNK_WIDTH; x++)
     {
@@ -37,6 +40,7 @@ void Chunk::generateTerrain()
         terrainHeight = (terrainHeight + 1.0f) * 0.5f * CHUNK_HEIGHT;
 
         int intTerrainHeight = static_cast<int>(terrainHeight + 0.5f);
+        surfaceHeights[x] = intTerrainHeight;
 
         for (int y = 0; y < CHUNK_HEIGHT; y++)
         {
@@ -59,6 +63,34 @@ void Chunk::generateTerrain()
         }
     }
 
+    randomZombieSpawn(surfaceHeights);
+}
+
+void Chunk::randomZombieSpawn(std::vector<int>& surfaceHeights)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> chanceDist(0.0f, 1.0f);
+    std::uniform_int_distribution<int> xDist(0, CHUNK_WIDTH - 1);
+    std::uniform_int_distribution<int> nZombies(1, 3);
+
+    float zombieSpawnChance = 0.15f;
+    for (int i = 0; i < nZombies(gen); i++)
+    {
+        if (chanceDist(gen) < zombieSpawnChance)
+        {
+            int spawnXInChunk = xDist(gen);
+            int spawnWorldX = chunkX * CHUNK_WIDTH + spawnXInChunk;
+            int spawnY = surfaceHeights[spawnXInChunk] - 1;
+            
+            float sfmlX = (spawnWorldX + 0.5f) * Chunk::TILESIZE;
+            float sfmlY = (spawnY + 0.5f) * Chunk::TILESIZE;
+            if (chunksManager)
+            {         
+                chunksManager->spawnZombie(sfmlX, sfmlY);
+            }
+        }
+    }
 }
 
 Tile Chunk::getTile(int x, int y) const
@@ -91,35 +123,35 @@ std::vector<std::vector<Tile>>& Chunk::getChunkTiles()
     return chunkTiles;
 }
 
-void Chunk::playerCollisions(Player& player)
+void Chunk::collisionsWithTerrain(Entity& entity)
 {
     //get bounds of player in global x positions
-    sf::FloatRect playerBounds = player.getSprite().getGlobalBounds();
-    Vec2 playerPrevPos = player.getPrevPos();
+    sf::FloatRect entityBounds = entity.getSprite().getGlobalBounds();
+    Vec2 entityPrevPos = entity.getPrevPos();
 
     // Make the collision bounds smaller of the player
     int offsetX = 10;
-    playerBounds.left += offsetX;
-    playerBounds.width -= offsetX * 2;
+    entityBounds.left += offsetX;
+    entityBounds.width -= offsetX * 2;
 
     // Caluclate Chunk's world X range
     int chunkWorldStartX = chunkX * CHUNK_WIDTH * TILESIZE;
     int chunkWorldEndX = chunkWorldStartX + CHUNK_WIDTH * TILESIZE;
 
     //Exit if the player is not inside the chunks worldX range
-    if (playerBounds.left + playerBounds.width < chunkWorldStartX || playerBounds.left > chunkWorldEndX)
+    if (entityBounds.left + entityBounds.width < chunkWorldStartX || entityBounds.left > chunkWorldEndX)
         return;
 
     //calculate the player worldX bounds respective to the chunksStartWorldX
-    int distPlayerStartX = playerBounds.left - chunkWorldStartX;
-    int distPlayerEndX = (playerBounds.left + playerBounds.width) - chunkWorldStartX;
+    int distEntityStartX = entityBounds.left - chunkWorldStartX;
+    int distEntityEndX = (entityBounds.left + entityBounds.width) - chunkWorldStartX;
 
     //convert these into local tile indices (0-15)
-    int startLocalX = std::max(0, static_cast<int>(distPlayerStartX / TILESIZE));
-    int endLocalX = std::min(CHUNK_WIDTH - 1, static_cast<int>(distPlayerEndX / TILESIZE));
+    int startLocalX = std::max(0, static_cast<int>(distEntityStartX / TILESIZE));
+    int endLocalX = std::min(CHUNK_WIDTH - 1, static_cast<int>(distEntityEndX / TILESIZE));
     //No need to convert y respective to chunks
-    int startY = std::max(0, static_cast<int>(playerBounds.top / TILESIZE));
-    int endY = std::min(CHUNK_HEIGHT - 1, static_cast<int>((playerBounds.top + playerBounds.height) / TILESIZE));
+    int startY = std::max(0, static_cast<int>(entityBounds.top / TILESIZE));
+    int endY = std::min(CHUNK_HEIGHT - 1, static_cast<int>((entityBounds.top + entityBounds.height) / TILESIZE));
 
     if (startLocalX > endLocalX || startY > endY)
         return;
@@ -134,40 +166,40 @@ void Chunk::playerCollisions(Player& player)
             if (tile.isSolid()) {
                 sf::FloatRect tileBounds = tile.getBounds();
 
-                if (playerBounds.intersects(tileBounds)) {
+                if (entityBounds.intersects(tileBounds)) {
 
-                    bool collisionFromLeft = playerPrevPos.x + playerBounds.width / 2 <= tileBounds.left;
-                    bool collisionFromRight = playerPrevPos.x - playerBounds.width / 2 >= tileBounds.left + tileBounds.width;
-                    bool collisionFromBottom = playerPrevPos.y - playerBounds.height / 2 >= tileBounds.top + tileBounds.height;
-                    bool collisionFromTop = playerPrevPos.y + playerBounds.height / 2 <= tileBounds.top;
+                    bool collisionFromLeft = entityPrevPos.x + entityBounds.width / 2 <= tileBounds.left;
+                    bool collisionFromRight = entityPrevPos.x - entityBounds.width / 2 >= tileBounds.left + tileBounds.width;
+                    bool collisionFromBottom = entityPrevPos.y - entityBounds.height / 2 >= tileBounds.top + tileBounds.height;
+                    bool collisionFromTop = entityPrevPos.y + entityBounds.height / 2 <= tileBounds.top;
 
                     if (collisionFromLeft)
                     {
-                        player.setPosition(Vec2(tileBounds.left - playerBounds.width / 2, player.getSprite().getPosition().y));
-                        player.setVelocity(Vec2(0.0f, player.getVelocity().y)); // Stop rightward velocity
+                        entity.setPosition(Vec2(tileBounds.left - entityBounds.width / 2, entity.getPosition().y));
+                        entity.setVelocity(Vec2(0.0f, entity.getVelocity().y)); // Stop rightward velocity
                     }
 
                     else if (collisionFromRight)
                     {
-                        player.setPosition(Vec2(tileBounds.left + tileBounds.width + playerBounds.width / 2, player.getSprite().getPosition().y));
-                        player.setVelocity(Vec2(0.0f, player.getVelocity().y)); // Stop leftwards velocity
+                        entity.setPosition(Vec2(tileBounds.left + tileBounds.width + entityBounds.width / 2, entity.getPosition().y));
+                        entity.setVelocity(Vec2(0.0f, entity.getVelocity().y)); // Stop leftwards velocity
                     }
 
                     else if (collisionFromBottom)
                     {
-                        player.setPosition(Vec2(player.getSprite().getPosition().x, tileBounds.top + tileBounds.height + playerBounds.height / 2));
-                        player.setVelocity(Vec2(player.getVelocity().x, 0.0f)); //Stop upwards vel
-                    }  
-                    
+                        entity.setPosition(Vec2(entity.getPosition().x, tileBounds.top + tileBounds.height + entityBounds.height / 2));
+                        entity.setVelocity(Vec2(entity.getVelocity().x, 0.0f)); //Stop upwards vel
+                    }
+
                     else if (collisionFromTop)
                     {
                         isGrounded = true;
-                        player.setPosition(Vec2(player.getSprite().getPosition().x, tileBounds.top - playerBounds.height / 2));
-                        player.setVelocity(Vec2(player.getVelocity().x, 0.0f)); //Stop downwards vel
+                        entity.setPosition(Vec2(entity.getPosition().x, tileBounds.top - entityBounds.height / 2));
+                        entity.setVelocity(Vec2(entity.getVelocity().x, 0.0f)); //Stop downwards vel
                     }
                 }
             }
         }
     }
-    player.setIsOnGround(isGrounded);
+    entity.setIsOnGround(isGrounded);
 }

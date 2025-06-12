@@ -21,7 +21,7 @@ Chunk& ChunksManager::getChunk(int chunkX)
 {
 	if (chunks.find(chunkX) == chunks.end())
 	{
-		chunks[chunkX] = std::make_unique<Chunk>(chunkX, seed);
+		chunks[chunkX] = std::make_unique<Chunk>(chunkX, seed, this);
 	}
 	return *chunks[chunkX];
 }
@@ -81,7 +81,7 @@ sf::Texture& ChunksManager::getTexture(const std::string& textureName)
 	std::cout << "ERROR\n";
 }
 
-void ChunksManager::UpdateAndRenderChunks(Player& player, sf::RenderWindow& window)
+void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWindow& window)
 {
 	sf::Sprite tileSprite;
 
@@ -91,7 +91,6 @@ void ChunksManager::UpdateAndRenderChunks(Player& player, sf::RenderWindow& wind
 	{
 		int currentChunkX = chunkX + dx;
 		Chunk& chunk = getChunk(currentChunkX);
-
 
 		//Rendering the tiles
 		for (int x = 0; x < Chunk::CHUNK_WIDTH; ++x)
@@ -126,18 +125,31 @@ void ChunksManager::UpdateAndRenderChunks(Player& player, sf::RenderWindow& wind
 
 				tileSprite.setPosition(worldTileX * Chunk::TILESIZE, y * Chunk::TILESIZE);
 
-				window.draw(tileSprite);				
+				window.draw(tileSprite);		
 			}
+		}
+	}
+
+	for (const auto& zombie : zombies)
+	{
+		if (zombie)
+		{
+			zombie->update(dt, player, *this);
+			window.draw(zombie->getSprite());
 		}
 	}
 }
 
-void ChunksManager::playerCollision(Player& player)
+void ChunksManager::spawnZombie(float spawnX, float spawnY)
+{
+	zombies.push_back(std::make_unique<Zombie>(Vec2(spawnX, spawnY)));
+}
+
+void ChunksManager::collisionsWithTerrain(Entity& entity)
 {
 	for (auto& pair : chunks)
 	{
 		Chunk& chunk = *(pair.second);
-		chunk.playerCollisions(player);
+		chunk.collisionsWithTerrain(entity);
 	}
-
 }

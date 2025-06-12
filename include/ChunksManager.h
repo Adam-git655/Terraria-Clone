@@ -1,12 +1,14 @@
 #pragma once
 #include "Chunk.h"
 #include "player.h"
+#include "zombie.h"
 #include <unordered_map>
 
 class ChunksManager
 {
 private:
 	std::unordered_map<int, std::unique_ptr<Chunk>> chunks;
+	std::vector<std::unique_ptr<Zombie>> zombies;
 	int seed;
 	int renderDistance = 3;
 	
@@ -26,8 +28,9 @@ public:
 
 	sf::Texture& getTexture(const std::string& textureName);
 
-	void UpdateAndRenderChunks(Player& player, sf::RenderWindow& window); //Render chunks according to player position
-	void playerCollision(Player& player);
+	void UpdateAndRenderChunks(float dt, Player& player, sf::RenderWindow& window); //Render chunks according to player position
+	void collisionsWithTerrain(Entity& entity);
 
+	void spawnZombie(float spawnX, float spawnY);
 };
 

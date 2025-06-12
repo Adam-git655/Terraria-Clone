@@ -1,5 +1,6 @@
 #include "SFML/Graphics.hpp"
 #include "player.h"
+#include "zombie.h"
 #include "ChunksManager.h"
 #include "PerlinNoise.h"
 
@@ -18,14 +19,12 @@ int main()
     ImGui::SFML::Init(window);
     ImGuiIO& io = ImGui::GetIO();
 
-    Player player(Vec2(200.0f, 400.0f));
-
+    Player player(Vec2(0.0f, 0.0f));
 
     sf::View camera;
     camera.setSize(1280.0f, 720.0f);
     camera.setCenter(player.getSprite().getPosition());
-    
-    
+        
     ChunksManager chunksManager(std::time(nullptr));
     
     sf::Clock clock;
@@ -179,9 +178,8 @@ int main()
 
         window.clear(sf::Color(0, 191, 255));
         window.setView(camera);
-        chunksManager.UpdateAndRenderChunks(player, window);
+        chunksManager.UpdateAndRenderChunks(static_cast<float>(deltaTime), player, window);
         window.draw(player.getSprite());
-
         ImGui::SFML::Render(window);
         window.display();
     }

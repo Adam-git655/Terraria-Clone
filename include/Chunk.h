@@ -1,8 +1,12 @@
 #pragma once
 #include "tile.h"
 #include "PerlinNoise.h"
-#include "Player.h"
+#include "Entity.h"
+#include "random"
 #include <vector>
+
+class Zombie;
+class ChunksManager;
 
 class Chunk
 {
@@ -11,12 +15,16 @@ private:
 	std::vector<std::vector<Tile>> chunkTiles;
 	int seed;
 
+	void randomZombieSpawn(std::vector<int>& surfaceHeights);
+
+	ChunksManager* chunksManager = nullptr;
+
 public:
 	static const int TILESIZE = 32;
 	static const int CHUNK_WIDTH = 16;
 	static const int CHUNK_HEIGHT = 256;
 
-	Chunk(int chunkX, int seed);
+	Chunk(int chunkX, int seed, ChunksManager* mgr);
 
 	void generateTerrain();
 	void setTile(int localX, int localY, Tile::TileType type, bool solid);
@@ -24,6 +32,6 @@ public:
 
 	std::vector<std::vector<Tile>>& getChunkTiles();
 
-	void playerCollisions(Player& player);
+	void collisionsWithTerrain(Entity& entity);
 };
 

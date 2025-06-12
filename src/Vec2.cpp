@@ -66,11 +66,15 @@ void Vec2::operator /= (const float& val)
 	y /= val;
 }
 
-float Vec2::dist(const Vec2& rhs) const
+float Vec2::distSquared(const Vec2& rhs) const
 {
 	Vec2 distvec = Vec2(rhs.x - x, rhs.y - y);
+	return ((distvec.x * distvec.x) + (distvec.y * distvec.y));
+}
 
-	return (sqrtf((distvec.x * distvec.x) + (distvec.y * distvec.y)));
+float Vec2::dist(const Vec2& rhs) const
+{
+	return (sqrtf(distSquared(rhs)));
 }
 
 float Vec2::length() const
