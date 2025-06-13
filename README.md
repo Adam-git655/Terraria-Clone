@@ -18,13 +18,13 @@ cmake ../
 - Sprite rendering and player movement
 - Infinite world generation using a chunk system based on Perlin noise.
 - Functioning player collisions with the tiled environment
+- AI Zombies
 - Ability to place and destroy blocks
 - Can choose between 3 block types (Grass, dirt, and stone)
 - GUI Hotbar to keep track of blocks
   
 ### Features to add
 
-- AI Enemies
 - Combat System
 - Cave generation with different block types and minerals
 - Multiple biomes
