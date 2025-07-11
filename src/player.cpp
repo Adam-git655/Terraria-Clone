@@ -8,6 +8,10 @@ Player::Player(Vec2 p)
 	{
 		std::cout << "ERROR LOADING PLAYER TEX\n";
 	}
+	if (!shortSwordTex.loadFromFile(RESOURCES_PATH "ShortSword.png"))
+	{
+		std::cout << "ERROR LOADING WEAPON TEX\n";
+	}
 
 	sprite.setTexture(tex);
 	sprite.setOrigin(sprite.getLocalBounds().getSize().x / 2, sprite.getLocalBounds().getSize().y / 2);
@@ -21,6 +25,13 @@ Player::Player(Vec2 p)
 Tile::TileType Player::getBlockTypeInHand() const
 {
 	return blockTypeInHand;
+}
+
+const sf::Texture& Player::getWeaponTexture(std::string& weaponName) const
+{
+	if (weaponName == "ShortSword")
+		return shortSwordTex;
+	std::cout << "ERROR\n";
 }
 
 void Player::setBlockTypeInHand(Tile::TileType type)

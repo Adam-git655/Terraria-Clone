@@ -30,6 +30,7 @@ public:
 	void setPosition(Vec2 p);
 
 	sf::FloatRect getBounds() const;
+	static std::string tileTypeToString(Tile::TileType type);
 
 private:
 	sf::Sprite tileSprite;

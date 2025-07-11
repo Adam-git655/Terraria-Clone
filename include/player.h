@@ -12,6 +12,8 @@ class Player : public Entity
 private:
 	sf::Texture tex;
 
+	sf::Texture shortSwordTex;
+
 	Tile::TileType blockTypeInHand = Tile::TileType::Stone;
 	
 	bool movement_keys[sf::Keyboard::KeyCount] = { false };
@@ -22,6 +24,8 @@ public:
 	Player(Vec2 p = Vec2(400.0f, 400.0f));
 
 	Tile::TileType getBlockTypeInHand() const;
+
+	const sf::Texture& getWeaponTexture(std::string& weaponName) const;
 
 	void setBlockTypeInHand(Tile::TileType type);
 

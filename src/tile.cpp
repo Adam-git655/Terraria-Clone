@@ -51,3 +51,20 @@ sf::FloatRect Tile::getBounds() const
 {
 	return sf::FloatRect(tileSprite.getPosition().x, tileSprite.getPosition().y, tileSize, tileSize);
 }
+
+std::string Tile::tileTypeToString(Tile::TileType type)
+{
+	switch (type)
+	{
+	case Tile::TileType::Air:
+		return "Air";
+	case Tile::TileType::Grass:
+		return "Grass";
+	case Tile::TileType::Dirt:
+		return "Dirt";
+	case Tile::TileType::Stone:
+		return "Stone";
+	default:
+		break;
+	}
+}

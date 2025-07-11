@@ -4,6 +4,10 @@
 #include "ChunksManager.h"
 #include "PerlinNoise.h"
 
+#include "Item.h"
+#include "TileItem.h"
+#include "WeaponItem.h"
+
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include <array>
@@ -31,7 +35,11 @@ int main()
     double lastTime = clock.getElapsedTime().asSeconds();
     double deltaTime;
 
-    std::array<Tile::TileType, 3> hotbar = {Tile::TileType::Grass, Tile::TileType::Dirt, Tile::TileType::Stone};
+    std::vector<std::unique_ptr<Item>> hotbar;
+    hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Grass));
+    hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Dirt));
+    hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Stone));
+    hotbar.push_back(std::make_unique<WeaponItem>("ShortSword", 2));
     int selectedIndex = 0;
     bool isMining = false;
     bool isPlacing = false;
@@ -58,6 +66,8 @@ int main()
                     selectedIndex = 1;
                 if (event.key.code == sf::Keyboard::Num3)
                     selectedIndex = 2;
+                if (event.key.code == sf::Keyboard::Num4)
+                    selectedIndex = 3;
             }
 
             if (event.type == sf::Event::KeyReleased)
@@ -69,6 +79,7 @@ int main()
             {
                 if (event.type == sf::Event::MouseButtonPressed)
                 {
+                    Item* currentItem = hotbar[selectedIndex].get();
                     if (event.mouseButton.button == sf::Mouse::Left)
                     {
                         isMining = true;
@@ -76,7 +87,7 @@ int main()
                         sf::Vector2f pointWorldCoords = window.mapPixelToCoords(point, camera);
                         chunksManager.DestroyTile(pointWorldCoords);
                     }
-                    else if (event.mouseButton.button == sf::Mouse::Right)
+                    else if (event.mouseButton.button == sf::Mouse::Right && currentItem->getItemType() == Item::ItemType::Tile)
                     {
                         isPlacing = true;
                         const sf::Vector2i point = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
@@ -123,56 +134,65 @@ int main()
                 window.close();
         }
 
+#pragma region HotbarSystem
         ImGui::SFML::Update(window, deltaClock.restart());
 
         ImGui::Begin("Hotbar", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < hotbar.size(); i++)
         {
             if (i == selectedIndex)
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
             else
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
 
-            sf::Texture* tex = nullptr;
+            Item* item = hotbar[i].get();
+            if (!item)
+                continue;
 
-            const char* label = "";
-            switch (hotbar[i])
+            const sf::Texture* tex = nullptr;
+
+            if (item->getItemType() == Item::ItemType::Tile)
             {
-            case Tile::TileType::Grass:
-                label = "Grass";
-                tex = &chunksManager.getTexture("Grass");
-                break;
-            case Tile::TileType::Dirt:
-                label = "Dirt";
-                tex = &chunksManager.getTexture("Dirt");
-                break;
-            case Tile::TileType::Stone:
-                label = "Stone";
-                tex = &chunksManager.getTexture("Stone");
-                break;
-            default:
-                break;
+                tex = &chunksManager.getTexture(item->getItemName());
+            }
+
+            else if (item->getItemType() == Item::ItemType::Weapon)
+            {
+                tex = &player.getWeaponTexture(item->getItemName());
             }
 
             if (tex)
             {
                 std::string buttonId = "##btn" + std::to_string(i);
-                if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(50, 50)))
+                if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(50, 50), ImVec2(0,0), ImVec2(1,1), -1, ImVec4(0.3f, 0.6f, 1.0f, 1.0f)))
                 {
                     selectedIndex = i;
                 }
             }
 
-            player.setBlockTypeInHand(hotbar[selectedIndex]);
+            Item* selectedItem = hotbar[selectedIndex].get();
+            if (selectedItem->getItemType() == Item::ItemType::Tile)
+            {
+                auto* tileItem = dynamic_cast<TileItem*>(selectedItem);
+                if (tileItem)
+                    player.setBlockTypeInHand(tileItem->getTileType());
+            }
+            else if (selectedItem->getItemType() == Item::ItemType::Weapon)
+            {
+                //TBA
+            }
 
             ImGui::PopStyleColor();
 
-            if (i < 2)
+            if (i < hotbar.size() - 1)
                 ImGui::SameLine();
 
         }
         ImGui::End();
 
+
+
+#pragma endregion
 
         player.update(static_cast<float>(deltaTime), chunksManager);
 

@@ -70,7 +70,7 @@ void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType)
 	chunkTiles[localX][tileY].setSolid(true);
 }
 
-sf::Texture& ChunksManager::getTexture(const std::string& textureName)
+const sf::Texture& ChunksManager::getTexture(const std::string& textureName) const
 {
 	if (textureName == "Grass")
 		return grassTex;
