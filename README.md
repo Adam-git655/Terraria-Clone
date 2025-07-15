@@ -35,6 +35,6 @@ cmake ../
 
 - W to Jump, A and D to move left and right
 - Right-click to place blocks, left-click to destroy blocks
-- 1, 2, 3 number keys to switch block type
+- Number keys to choose items in hotbar
 
 
