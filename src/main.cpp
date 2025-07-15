@@ -3,6 +3,7 @@
 #include "zombie.h"
 #include "ChunksManager.h"
 #include "PerlinNoise.h"
+#include "ShortSword.h"
 
 #include "Item.h"
 #include "TileItem.h"
@@ -39,7 +40,7 @@ int main()
     hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Grass));
     hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Dirt));
     hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Stone));
-    hotbar.push_back(std::make_unique<WeaponItem>("ShortSword", 2));
+    hotbar.push_back(std::make_unique<WeaponItem>("ShortSword"));
     int selectedIndex = 0;
     bool isMining = false;
     bool isPlacing = false;
@@ -53,6 +54,7 @@ int main()
 
         camera.setCenter(player.getSprite().getPosition());
 
+#pragma region InputHandling
         sf::Event event;
         while (window.pollEvent(event)) {
             ImGui::SFML::ProcessEvent(event);
@@ -82,10 +84,18 @@ int main()
                     Item* currentItem = hotbar[selectedIndex].get();
                     if (event.mouseButton.button == sf::Mouse::Left)
                     {
-                        isMining = true;
                         const sf::Vector2i point = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
                         sf::Vector2f pointWorldCoords = window.mapPixelToCoords(point, camera);
-                        chunksManager.DestroyTile(pointWorldCoords);
+
+                        if (currentItem->getItemType() == Item::ItemType::Weapon)
+                        {
+                            player.handleWeaponAttack(Vec2(pointWorldCoords.x, pointWorldCoords.y));
+                        }
+                        else
+                        {
+                            isMining = true;
+                            chunksManager.DestroyTile(pointWorldCoords);
+                        }
                     }
                     else if (event.mouseButton.button == sf::Mouse::Right && currentItem->getItemType() == Item::ItemType::Tile)
                     {
@@ -134,6 +144,8 @@ int main()
                 window.close();
         }
 
+#pragma endregion
+
 #pragma region HotbarSystem
         ImGui::SFML::Update(window, deltaClock.restart());
 
@@ -176,10 +188,16 @@ int main()
                 auto* tileItem = dynamic_cast<TileItem*>(selectedItem);
                 if (tileItem)
                     player.setBlockTypeInHand(tileItem->getTileType());
+
+                player.unequipWeapon();
             }
             else if (selectedItem->getItemType() == Item::ItemType::Weapon)
             {
-                //TBA
+                if (selectedItem->getItemName() == "ShortSword")
+                {
+                    if (!player.hasWeaponEquipped())
+                        player.equipWeapon(std::make_unique<ShortSword>(5.0f, 0.5f));
+                }
             }
 
             ImGui::PopStyleColor();

@@ -98,3 +98,27 @@ void Player::update(float dt, ChunksManager& chunksManager)
 
 	position = Vec2(sprite.getPosition().x, sprite.getPosition().y);
 }
+
+void Player::equipWeapon(std::unique_ptr<Weapon> weaponToEquip)
+{
+	weapon = std::move(weaponToEquip);
+}
+
+void Player::unequipWeapon()
+{
+	weapon.reset();
+}
+
+bool Player::hasWeaponEquipped() const
+{
+	if (weapon != nullptr)
+		return true;
+	else
+		return false;
+}
+
+void Player::handleWeaponAttack(Vec2 targetPos)
+{
+	if (weapon)
+		weapon->attack(targetPos);
+}

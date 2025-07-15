@@ -4,12 +4,9 @@
 class WeaponItem : public Item
 {
 public:
-	WeaponItem(const std::string& name, int damage)
-		:Item(Item::ItemType::Weapon, name), damage(damage)
+	WeaponItem(const std::string& name)
+		:Item(Item::ItemType::Weapon, name)
 	{
 
 	}
-
-private:
-	int damage;
 };
