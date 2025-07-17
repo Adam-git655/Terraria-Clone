@@ -21,11 +21,12 @@ cmake ../
 - AI Zombies
 - Ability to place and destroy blocks
 - Can choose between 3 block types (Grass, dirt, and stone)
-- GUI Hotbar to keep track of blocks
+- Inventory/Hotbar system to keep track of items
   
 ### Features to add
 
 - Combat System
+- Smarter Zombie AI using A* pathfinding
 - Cave generation with different block types and minerals
 - Multiple biomes
 - Player animations
@@ -34,6 +35,6 @@ cmake ../
 
 - W to Jump, A and D to move left and right
 - Right-click to place blocks, left-click to destroy blocks
-- 1, 2, 3 number keys to switch block type
+- Number keys to choose items in hotbar
 
 
