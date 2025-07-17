@@ -6,5 +6,5 @@ class ShortSword : public Weapon
 public:
 	ShortSword(float damage, float attackCooldown);
 
-	void attack(Vec2 targetPos) override;
+	void attack(sf::Vector2f targetPos, ChunksManager& chunksManager) override;
 };

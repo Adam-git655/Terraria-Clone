@@ -1,5 +1,6 @@
 #include "player.h"
 #include "ChunksManager.h"
+#include "Weapon.h"
 
 Player::Player(Vec2 p)
 	:Entity(p)
@@ -17,6 +18,7 @@ Player::Player(Vec2 p)
 	sprite.setOrigin(sprite.getLocalBounds().getSize().x / 2, sprite.getLocalBounds().getSize().y / 2);
 	sprite.setPosition(position.x, position.y);
 
+	health = 100.0f;
 	speed = 200.0f;
 	max_speed = 300.0f;
 	jumpStrength = 6.0f;
@@ -47,7 +49,7 @@ void Player::set_movement_key(int code, bool b)
 void Player::takeDamage(float damage)
 {
 	health -= damage;
-	std::cout << health << "\n";
+	//std::cout << health << "\n";
 }
 
 void Player::update(float dt, ChunksManager& chunksManager)
@@ -117,8 +119,8 @@ bool Player::hasWeaponEquipped() const
 		return false;
 }
 
-void Player::handleWeaponAttack(Vec2 targetPos)
+void Player::handleWeaponAttack(sf::Vector2f targetPos, ChunksManager& chunksManager)
 {
 	if (weapon)
-		weapon->attack(targetPos);
+		weapon->attack(targetPos, chunksManager);
 }

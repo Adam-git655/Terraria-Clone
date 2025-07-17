@@ -6,11 +6,21 @@ ShortSword::ShortSword(float damage, float attackCooldown)
 
 }
 
-void ShortSword::attack(Vec2 targetPos)
+void ShortSword::attack(sf::Vector2f targetPos, ChunksManager& chunksManager)
 {
 	if (attackClock.getElapsedTime().asSeconds() >= attackCooldown)
 	{
-		std::cout << "Attacked\n";
+		for (const auto& zombie : chunksManager.getAllZombies())
+		{
+			if (zombie)
+			{
+				if (zombie->getSpriteBounds().contains(targetPos))
+				{
+					zombie->takeDamage(damage);
+				}
+			}
+		}
+
 		attackClock.restart();
 	}
 }

@@ -28,6 +28,9 @@ public:
 
 	const sf::Texture& getTexture(const std::string& textureName) const;
 
+	const std::vector<std::unique_ptr<Zombie>>& getAllZombies() const;
+	std::vector<std::unique_ptr<Zombie>>& ChunksManager::getAllZombies();
+
 	void UpdateAndRenderChunks(float dt, Player& player, sf::RenderWindow& window); //Render chunks according to player position
 	void collisionsWithTerrain(Entity& entity);
 

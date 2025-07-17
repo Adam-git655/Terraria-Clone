@@ -12,6 +12,8 @@ public:
 	Zombie(Vec2 p = Vec2(0.0f, 0.0f));
 
 	void update(float dt, Player& player, ChunksManager& chunksManager);
+	void takeDamage(float damage);
+	bool isAlive() const;
 
 private:
 
@@ -19,6 +21,8 @@ private:
 
 	float visionRange;
 	bool canSeePlayer(const Vec2& playerPos) const;
+
+	bool alive = true;
 
 	sf::Clock attackClock;
 	float attackRange;

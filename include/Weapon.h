@@ -1,7 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Vec2.h"
 #include "iostream"
+#include "ChunksManager.h"
 
 class Weapon
 {
@@ -11,7 +11,7 @@ public:
 	{
 	};
 
-	virtual void attack(Vec2 targetPos) = 0;
+	virtual void attack(sf::Vector2f targetPos, ChunksManager& chunksManager) = 0;
 	virtual ~Weapon() = default;
 
 protected:

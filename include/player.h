@@ -3,9 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "tile.h"
-#include "Weapon.h"
 #include "Entity.h"
 
+class Weapon;
 class ChunksManager;
 
 class Player : public Entity
@@ -18,8 +18,6 @@ private:
 	Tile::TileType blockTypeInHand = Tile::TileType::Stone;
 	
 	bool movement_keys[sf::Keyboard::KeyCount] = { false };
-
-	float health = 100.0f;
 
 	std::unique_ptr<Weapon> weapon;
 
@@ -41,5 +39,5 @@ public:
 	void equipWeapon(std::unique_ptr<Weapon> weaponToEquip);
 	void unequipWeapon();
 	bool hasWeaponEquipped() const;
-	void handleWeaponAttack(Vec2 targetPos);
+	void handleWeaponAttack(sf::Vector2f targetPos, ChunksManager& chunksManager);
 };

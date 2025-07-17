@@ -89,7 +89,7 @@ int main()
 
                         if (currentItem->getItemType() == Item::ItemType::Weapon)
                         {
-                            player.handleWeaponAttack(Vec2(pointWorldCoords.x, pointWorldCoords.y));
+                            player.handleWeaponAttack(pointWorldCoords, chunksManager);
                         }
                         else
                         {
@@ -196,7 +196,7 @@ int main()
                 if (selectedItem->getItemName() == "ShortSword")
                 {
                     if (!player.hasWeaponEquipped())
-                        player.equipWeapon(std::make_unique<ShortSword>(5.0f, 0.5f));
+                        player.equipWeapon(std::make_unique<ShortSword>(10.0f, 0.5f));
                 }
             }
 

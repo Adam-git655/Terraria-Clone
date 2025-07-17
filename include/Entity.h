@@ -11,6 +11,8 @@ public:
 
 	const sf::Sprite& getSprite() const;
 
+	sf::FloatRect getSpriteBounds() const;
+
 	Vec2 getVelocity() const;
 	void setVelocity(Vec2 v);
 
@@ -25,6 +27,7 @@ public:
 protected:
 	sf::Sprite sprite;
 
+	float health;
 	float speed = 200.0f;
 	float max_speed = 300.0f;
 	float jumpStrength = 6.0f;

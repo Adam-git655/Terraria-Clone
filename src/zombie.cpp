@@ -12,7 +12,8 @@ Zombie::Zombie(Vec2 p)
 	sprite.setScale(0.2f, 0.2f);
 	sprite.setOrigin(sprite.getLocalBounds().getSize().x / 2, sprite.getLocalBounds().getSize().y / 2);
 	sprite.setPosition(position.x, position.y);
-
+	
+	health = 30.0f;
 	speed = 180.0f;
 	max_speed = 280.0f;
 	jumpStrength = 5.5f;
@@ -23,8 +24,24 @@ Zombie::Zombie(Vec2 p)
 	attackCooldown = 2.0f;
 }
 
+void Zombie::takeDamage(float damage)
+{
+	health -= damage;
+	std::cout << "Zombie Health: " <<  health << "\n";
+}
+
+bool Zombie::isAlive() const
+{
+	return alive;
+}
+
 void Zombie::update(float dt, Player& player, ChunksManager& chunksManager)
 {
+	if (health <= 0)
+	{
+		alive = false;
+	}
+
 	Vec2 playerPos = player.getPosition();
 
 	if (canSeePlayer(playerPos))

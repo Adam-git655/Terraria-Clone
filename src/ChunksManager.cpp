@@ -81,6 +81,16 @@ const sf::Texture& ChunksManager::getTexture(const std::string& textureName) con
 	std::cout << "ERROR\n";
 }
 
+const std::vector<std::unique_ptr<Zombie>>& ChunksManager::getAllZombies() const
+{
+	return zombies;
+}
+
+std::vector<std::unique_ptr<Zombie>>& ChunksManager::getAllZombies()
+{
+	return zombies;
+}
+
 void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWindow& window)
 {
 	sf::Sprite tileSprite;
@@ -138,6 +148,11 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 			window.draw(zombie->getSprite());
 		}
 	}
+
+	zombies.erase(std::remove_if(zombies.begin(), zombies.end(),
+		[](const std::unique_ptr<Zombie>& zombie)
+		{ return !zombie->isAlive(); }),
+		zombies.end());
 }
 
 void ChunksManager::spawnZombie(float spawnX, float spawnY)

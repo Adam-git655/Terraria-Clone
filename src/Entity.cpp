@@ -11,6 +11,11 @@ const sf::Sprite& Entity::getSprite() const
 	return sprite;
 }
 
+sf::FloatRect Entity::getSpriteBounds() const
+{
+	return sprite.getGlobalBounds();
+}
+
 Vec2 Entity::getPrevPos() const
 {
 	return prevPos;
