@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+#include <cstdint>
 
 class Vec2
 {
@@ -28,3 +30,21 @@ public:
     float length() const;
     Vec2 normalize() const;
 };
+
+
+template<>
+struct std::hash<Vec2> {
+    size_t operator()(const Vec2& v) const noexcept {
+        // Safe method to hash floats
+        auto hash_combine = [](size_t seed, float value) {
+            std::hash<float> hasher;
+            return seed ^ (hasher(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+            };
+
+        size_t seed = 0;
+        seed = hash_combine(seed, v.x);
+        seed = hash_combine(seed, v.y);
+        return seed;
+    }
+};
+
