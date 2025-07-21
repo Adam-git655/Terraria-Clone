@@ -89,3 +89,63 @@ Vec2 Vec2::normalize() const
 	return Vec2(x / len, y / len);
 }
 
+
+IVec2::IVec2(int xin, int yin)
+	:x(xin), y(yin)
+{
+
+}
+
+bool IVec2::operator == (const IVec2& rhs) const
+{
+	return (x == rhs.x && y == rhs.y);
+}
+
+bool IVec2::operator != (const IVec2& rhs) const
+{
+	return (x != rhs.x || y != rhs.y);
+}
+
+IVec2 IVec2::operator + (const IVec2& rhs) const
+{
+	return IVec2(x + rhs.x, y + rhs.y);
+}
+
+IVec2 IVec2::operator - (const IVec2& rhs) const
+{
+	return IVec2(x - rhs.x, y - rhs.y);
+}
+
+IVec2 IVec2::operator * (const int& val) const
+{
+	return IVec2(x * val, y * val);
+}
+
+IVec2 IVec2::operator / (const int& val) const
+{
+	return IVec2(x / val, y / val);
+}
+
+void IVec2::operator += (const IVec2& rhs)
+{
+	x += rhs.x;
+	y += rhs.y;
+}
+
+void IVec2::operator -= (const IVec2& rhs)
+{
+	x -= rhs.x;
+	y -= rhs.y;
+}
+
+void IVec2::operator *= (const int& val)
+{
+	x *= val;
+	y *= val;
+}
+
+void IVec2::operator /= (const int& val)
+{
+	x /= val;
+	y /= val;
+}

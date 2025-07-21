@@ -31,20 +31,42 @@ public:
     Vec2 normalize() const;
 };
 
+class IVec2
+{
+public:
+    int x = 0;
+    int y = 0;
 
-template<>
-struct std::hash<Vec2> {
-    size_t operator()(const Vec2& v) const noexcept {
-        // Safe method to hash floats
-        auto hash_combine = [](size_t seed, float value) {
-            std::hash<float> hasher;
-            return seed ^ (hasher(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
-            };
+    IVec2() = default;
+    IVec2(int xin, int yin);
 
-        size_t seed = 0;
-        seed = hash_combine(seed, v.x);
-        seed = hash_combine(seed, v.y);
-        return seed;
-    }
+    bool operator == (const IVec2& rhs) const;
+    bool operator != (const IVec2& rhs) const;
+
+    IVec2 operator + (const IVec2& rhs) const;
+    IVec2 operator - (const IVec2& rhs) const;
+    IVec2 operator / (const int& val) const;
+    IVec2 operator * (const int& val) const;
+
+    void operator += (const IVec2& rhs);
+    void operator -= (const IVec2& rhs);
+    void operator *= (const int& val);
+    void operator /= (const int& val);
 };
+
+
+namespace std {
+    template <>
+    struct hash<IVec2> {
+        size_t operator()(const IVec2& v) const noexcept {
+            size_t seed = 0;
+            auto hash_combine = [](size_t seed, int value) {
+                return seed ^ (std::hash<int>()(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+                };
+            seed = hash_combine(seed, v.x);
+            seed = hash_combine(seed, v.y);
+            return seed;
+        }
+    };
+}
 

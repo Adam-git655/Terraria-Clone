@@ -144,14 +144,7 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 	{
 		if (zombie)
 		{
-			zombie->update(dt, player, *this);
-
-			int zombieGlobalTileX = static_cast<int>(std::floor(zombie->getPosition().x / Chunk::TILESIZE));
-			int zombieGlobalTileY = static_cast<int>(std::floor(zombie->getPosition().y / Chunk::TILESIZE));
-			int playerGlobalTileX = static_cast<int>(std::floor(player.getPosition().x / Chunk::TILESIZE));
-			int playerGlobalTileY = static_cast<int>(std::floor(player.getPosition().y / Chunk::TILESIZE));
-			std::vector<Vec2> paths = zombie->solveAStar(zombieGlobalTileX, zombieGlobalTileY, playerGlobalTileX, playerGlobalTileY, 4, *this);
-
+			zombie->update(dt, player, *this, window);
 			window.draw(zombie->getSprite());
 		}
 	}

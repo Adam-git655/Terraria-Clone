@@ -4,6 +4,7 @@
 #include <iostream>
 #include <queue>
 #include <unordered_set>
+#include <cassert>
 #include "Entity.h"
 #include "ChunksManager.h"
 
@@ -13,7 +14,7 @@ struct Node
 	float localGoal;
 	int x;
 	int y;
-	Vec2 parent;
+	IVec2 parent;
 };
 
 class Zombie : public Entity
@@ -22,11 +23,11 @@ public:
 
 	Zombie(Vec2 p = Vec2(0.0f, 0.0f));
 
-	void update(float dt, Player& player, ChunksManager& chunksManager);
+	void update(float dt, Player& player, ChunksManager& chunksManager, sf::RenderWindow& window);
 	void takeDamage(float damage);
 	bool isAlive() const;
 
-	std::vector<Vec2> solveAStar(int startX, int startY, int goalX, int goalY, int maxJumpHeight, ChunksManager& chunksManager);
+	std::vector<IVec2> solveAStar(int startX, int startY, int goalX, int goalY, int maxJumpHeight, ChunksManager& chunksManager);
 
 private:
 
@@ -44,17 +45,17 @@ private:
 	bool canAttackPlayer(const Vec2& playerPos) const;
 	void attackPlayer(Player& player) const;
 
-	float distance(Vec2 start, Vec2 end)
+	float distance(int startX, int startY, int endX, int endY)
 	{
-		return std::abs(start.x - end.x) + std::abs(start.y - end.y);
+		return std::abs(startX - endX) + std::abs(startY - endY);
 	}
 
-	float heuristic(Vec2 start, Vec2 end)
+	float heuristic(int startX, int startY, int endX, int endY)
 	{
-		return std::abs(start.x - end.x) * 2 + std::abs(start.y - end.y);
+		return std::abs(startX - endX) + std::abs(startY - endY);
 	}
 
-	std::vector<Vec2> getNeighbours(int x, int y, int maxJumpHeight, ChunksManager& chunksManager);
+	std::vector<IVec2> getNeighbours(int x, int y, int maxJumpHeight, ChunksManager& chunksManager);
 
 	struct CompareNode
 	{

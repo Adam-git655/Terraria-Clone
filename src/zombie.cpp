@@ -35,7 +35,7 @@ bool Zombie::isAlive() const
 	return alive;
 }
 
-void Zombie::update(float dt, Player& player, ChunksManager& chunksManager)
+void Zombie::update(float dt, Player& player, ChunksManager& chunksManager, sf::RenderWindow& window)
 {
 	if (health <= 0)
 	{
@@ -62,6 +62,22 @@ void Zombie::update(float dt, Player& player, ChunksManager& chunksManager)
 
 	if (canSeePlayer(playerPos))
 	{
+		int zombieGlobalTileX = static_cast<int>(std::floor(position.x / Chunk::TILESIZE));
+		int zombieGlobalTileY = static_cast<int>(std::floor(position.y / Chunk::TILESIZE));
+		int playerGlobalTileX = static_cast<int>(std::floor(playerPos.x / Chunk::TILESIZE));
+		int playerGlobalTileY = static_cast<int>(std::floor(playerPos.y / Chunk::TILESIZE));
+		std::vector<IVec2> paths = solveAStar(zombieGlobalTileX, zombieGlobalTileY, playerGlobalTileX, playerGlobalTileY, 4, chunksManager);
+		
+		sf::VertexArray lines(sf::LineStrip, paths.size());
+		
+		for (size_t i = 0; i < paths.size(); ++i)
+		{
+			lines[i].position = sf::Vector2f(paths[i].x * Chunk::TILESIZE, paths[i].y * Chunk::TILESIZE);
+			lines[i].color = sf::Color::Yellow;
+		}
+
+		window.draw(lines);
+
 		if (playerPos.x > position.x)
 		{
 			velocity.x += speed * dt;
@@ -117,9 +133,9 @@ bool Zombie::canAttackPlayer(const Vec2& playerPos) const
 	return squaredDistanceToPlayer <= (attackRange * attackRange);
 }
 
-std::vector<Vec2> Zombie::getNeighbours(int x, int y, int maxJumpHeight, ChunksManager& chunksManager)
+std::vector<IVec2> Zombie::getNeighbours(int x, int y, int maxJumpHeight, ChunksManager& chunksManager)
 {
-	std::vector<Vec2> neighboursPos;
+	std::vector<IVec2> neighboursPos;
 
 	auto floorDiv = [](int a, int b) { return (a >= 0) ? a / b : ((a + 1) / b) - 1; };
 
@@ -136,7 +152,7 @@ std::vector<Vec2> Zombie::getNeighbours(int x, int y, int maxJumpHeight, ChunksM
 
 	if (!chunksManager.getChunk(newChunkX).getChunkTiles()[newLocalX][y].isSolid())
 	{
-		neighboursPos.push_back(Vec2(left, y));
+		neighboursPos.push_back(IVec2(left, y));
 	}
 
 	newChunkX = floorDiv(right, Chunk::CHUNK_WIDTH);
@@ -144,7 +160,7 @@ std::vector<Vec2> Zombie::getNeighbours(int x, int y, int maxJumpHeight, ChunksM
 
 	if (!chunksManager.getChunk(newChunkX).getChunkTiles()[newLocalX][y].isSolid())
 	{
-		neighboursPos.push_back(Vec2(right, y));
+		neighboursPos.push_back(IVec2(right, y));
 	}
 
 	if (isGrounded)
@@ -160,7 +176,7 @@ std::vector<Vec2> Zombie::getNeighbours(int x, int y, int maxJumpHeight, ChunksM
 			}
 
 			if (!currentChunkTiles[currentLocalX][up].isSolid())
-				neighboursPos.push_back(Vec2(x, up));
+				neighboursPos.push_back(IVec2(x, up));
 			else 
 				break;
 
@@ -170,81 +186,106 @@ std::vector<Vec2> Zombie::getNeighbours(int x, int y, int maxJumpHeight, ChunksM
 	{
 		if (y + 1 < Chunk::CHUNK_HEIGHT)
 		{
-			neighboursPos.push_back(Vec2(x, y + 1));
+			neighboursPos.push_back(IVec2(x, y + 1));
 		}
 	}
 	
 	return neighboursPos;
 }
 
-std::vector<Vec2> Zombie::solveAStar(int startX, int startY, int goalX, int goalY, int maxJumpHeight, ChunksManager& chunksManager)
+std::vector<IVec2> Zombie::solveAStar(int startX, int startY, int goalX, int goalY, int maxJumpHeight, ChunksManager& chunksManager)
 {
 	std::priority_queue<Node*, std::vector<Node*>, CompareNode> openList; //make a queue which puts shorter global values at front
-	std::unordered_map<Vec2, std::unique_ptr<Node>> nodes;
-	std::unordered_set<Vec2> alreadyVisited;
+	std::unordered_map<IVec2, std::unique_ptr<Node>> nodes;
+	std::unordered_set<IVec2> alreadyVisited;
 
-	Vec2 startPos = Vec2(startX, startY);
-	Vec2 goalPos = Vec2(goalX, goalY);
+	IVec2 startPos = IVec2(startX, startY);
+	IVec2 goalPos = IVec2(goalX, goalY);
 
-	nodes[startPos] = std::make_unique<Node>();
-	Node* startNode = nodes[startPos].get();
+	auto startNode = std::make_unique<Node>();
 	startNode->x = startX;
 	startNode->y = startY;
-	startNode->globalGoal = heuristic(Vec2(startNode->x, startNode->y), Vec2(goalX, goalY));
+	startNode->globalGoal = heuristic(startNode->x, startNode->y, goalX, goalY);
 	startNode->localGoal = 0;
-	startNode->parent = Vec2(-1, -1);
+	startNode->parent = IVec2(-1, -1);
 
-	openList.push(startNode);
+	nodes[startPos] = std::move(startNode);
+	Node* startNodePtr = nodes[startPos].get();
+
+	openList.push(startNodePtr);
 
 	while (!openList.empty())
 	{
 		Node* current = openList.top();
 		openList.pop();
-		Vec2 currentPos = Vec2(current->x, current->y);
+
+		IVec2 currentPos = IVec2(current->x, current->y);
 
 		if (alreadyVisited.find(currentPos) != alreadyVisited.end())
 			continue;
 
 		if (currentPos == goalPos)
 		{
-			std::vector<Vec2> path;
+			std::vector<IVec2> path;
 			while (currentPos != startPos)
 			{
 				path.push_back(currentPos);
-				current = nodes[current->parent].get();
+				auto it = nodes.find(current->parent);
+				if (it == nodes.end())
+				{
+					std::cout << "ERR\n";
+					break;
+				}
+				current = it->second.get();
+				currentPos = IVec2(current->x, current->y);
 			}
 			std::reverse(path.begin(), path.end());
 			return path;
 		}
 
-		alreadyVisited.insert(Vec2(current->x, current->y));
+		
+		assert(current != nullptr);
+		alreadyVisited.insert(IVec2(current->x, current->y));
 
 
-		for (Vec2 neighbourPos : getNeighbours(current->x, current->y, maxJumpHeight, chunksManager))
+		for (IVec2 neighbourPos : getNeighbours(current->x, current->y, maxJumpHeight, chunksManager))
 		{
 			if (alreadyVisited.find(neighbourPos) != alreadyVisited.end())
 				continue;
 
 			if (neighbourPos != startPos && nodes.find(neighbourPos) == nodes.end())
 			{
-				nodes[neighbourPos] = std::make_unique<Node>();
-				Node* nodeNeighbour = nodes[neighbourPos].get();
+				auto nodeNeighbour = std::make_unique<Node>();
 				nodeNeighbour->localGoal = INFINITY;
 				nodeNeighbour->globalGoal = INFINITY;
 				nodeNeighbour->x = neighbourPos.x;
 				nodeNeighbour->y = neighbourPos.y;
+
+				nodes[neighbourPos] = std::move(nodeNeighbour);
 			}
 
 			Node* nodeNeighbour = nodes[neighbourPos].get();
-			int possiblyLowerGoal = current->localGoal + distance(currentPos, neighbourPos);
+			int possiblyLowerGoal = current->localGoal + distance(currentPos.x, currentPos.y, neighbourPos.x, neighbourPos.y);
 
 			if (possiblyLowerGoal < nodeNeighbour->localGoal)
 			{
 				nodeNeighbour->localGoal = possiblyLowerGoal;
 
-				nodeNeighbour->globalGoal = nodeNeighbour->localGoal + heuristic(neighbourPos, goalPos);
+				nodeNeighbour->globalGoal = nodeNeighbour->localGoal + heuristic(neighbourPos.x, neighbourPos.y, goalPos.x, goalPos.y);
 				
 				nodeNeighbour->parent = currentPos;
+
+				assert(nodes.find(currentPos) != nodes.end() && "Parent node was not in the node map!");
+				if (nodes.find(currentPos) == nodes.end())
+				{
+					auto copy = std::make_unique<Node>();
+					copy->x = current->x;
+					copy->y = current->y;
+					copy->globalGoal = current->globalGoal;
+					copy->localGoal = current->localGoal;
+					copy->parent = current->parent;
+					nodes[currentPos] = std::move(copy);
+				}
 
 				openList.push(nodeNeighbour);
 			}
