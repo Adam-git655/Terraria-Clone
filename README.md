@@ -27,8 +27,10 @@ cmake ../
 ### Features to add
 
 - Cave generation with different block types and minerals
+- Tree generation with randomized shapes and sizes
+- Player, Zombie animations
 - Multiple biomes
-- Player animations
+- Audio system
   
 ## Controls
 
