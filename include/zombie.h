@@ -2,20 +2,9 @@
 #include "Vec2.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <queue>
-#include <unordered_set>
-#include <cassert>
 #include "Entity.h"
 #include "ChunksManager.h"
-
-struct Node
-{
-	float globalGoal;
-	float localGoal;
-	int x;
-	int y;
-	IVec2 parent;
-};
+#include "ZombieAI.h"
 
 class Zombie : public Entity
 {
@@ -27,11 +16,14 @@ public:
 	void takeDamage(float damage);
 	bool isAlive() const;
 
-	std::vector<IVec2> solveAStar(int startX, int startY, int goalX, int goalY, int maxJumpHeight, ChunksManager& chunksManager);
+	void followPath(const IVec2& currentTile, const IVec2& nextTile, float dt);
 
 private:
+	ZombieAI ai;
 
 	sf::Texture tex;
+
+	bool isJumping = false;
 
 	float visionRange;
 	bool canSeePlayer(const Vec2& playerPos) const;
@@ -44,25 +36,4 @@ private:
 	float damageAmount;
 	bool canAttackPlayer(const Vec2& playerPos) const;
 	void attackPlayer(Player& player) const;
-
-	float distance(int startX, int startY, int endX, int endY)
-	{
-		return std::abs(startX - endX) + std::abs(startY - endY);
-	}
-
-	float heuristic(int startX, int startY, int endX, int endY)
-	{
-		return std::abs(startX - endX) + std::abs(startY - endY);
-	}
-
-	std::vector<IVec2> getNeighbours(int x, int y, int maxJumpHeight, ChunksManager& chunksManager);
-
-	struct CompareNode
-	{
-		bool operator()(Node* a, Node* b)
-		{
-			return a->globalGoal > b->globalGoal;
-		}
-	};
-
 };
