@@ -22,7 +22,7 @@ private:
 public:
 	static const int TILESIZE = 32;
 	static const int CHUNK_WIDTH = 16;
-	static const int CHUNK_HEIGHT = 256;
+	static const int CHUNK_HEIGHT = 512;
 
 	Chunk(int chunkX, int seed, ChunksManager* mgr);
 

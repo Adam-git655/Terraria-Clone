@@ -12,8 +12,8 @@ void Chunk::generateTerrain()
 {
     Perlin p(seed);
 
-    float frequency = 0.01f;
-    float amplitude = 0.5f;
+    float frequency = 0.0035f;
+    float amplitude = 0.7f;
 
     std::vector<int> surfaceHeights(CHUNK_WIDTH);
 
@@ -44,6 +44,29 @@ void Chunk::generateTerrain()
 
         for (int y = 0; y < CHUNK_HEIGHT; y++)
         {
+            float val = 0.0f;
+            float totalAmp = 0.0f;
+            freq = 0.05f;
+            amp = 1.0f;
+
+            for (int i = 0; i < 6; i++)
+            {
+                val += p.perlin2D(worldX * freq, y * freq) * amp;
+                totalAmp += amp;
+
+                freq *= 2.0f;
+                amp *= 0.5f;
+            }
+
+            val /= totalAmp;
+
+            val = (val + 1.0f) * 0.5f;
+
+
+            val = (val - 0.5f) * 5.0 + 0.5f;
+            val = std::clamp(val, 0.0f, 1.0f);
+
+
             if (y < intTerrainHeight)
             {
                 setTile(x, y, Tile::TileType::Air, false);
@@ -56,9 +79,19 @@ void Chunk::generateTerrain()
             {
                 setTile(x, y, Tile::TileType::Dirt, true);
             }
+            else if (y >= intTerrainHeight + 5 && y < intTerrainHeight + 15)
+            {
+                if (val > 0.4f && val < 0.5f)
+                    setTile(x, y, Tile::TileType::Air, false);
+                else
+                    setTile(x, y, Tile::TileType::Stone, true);
+            }
             else
             {
-                setTile(x, y, Tile::TileType::Stone, true);
+                if (val > 0.3f && val < 0.7f)
+                    setTile(x, y, Tile::TileType::Air, false);
+                else
+                    setTile(x, y, Tile::TileType::Stone, true);
             }
         }
     }
