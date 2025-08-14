@@ -79,14 +79,18 @@ void Chunk::generateTerrain()
             {
                 setTile(x, y, Tile::TileType::Dirt, true);
             }
-            else if (y >= intTerrainHeight + 5 && y < intTerrainHeight + 15)
+            else if (y >= intTerrainHeight + 5 && y < intTerrainHeight + 40)
+            {
+                setTile(x, y, Tile::TileType::Stone, true);
+            }
+            else if (y >= intTerrainHeight + 40 && y < intTerrainHeight + 50)
             {
                 if (val > 0.4f && val < 0.5f)
                     setTile(x, y, Tile::TileType::Air, false);
                 else
                     setTile(x, y, Tile::TileType::Stone, true);
             }
-            else
+            else if (y > intTerrainHeight + 50)
             {
                 if (val > 0.3f && val < 0.7f)
                     setTile(x, y, Tile::TileType::Air, false);
@@ -96,7 +100,27 @@ void Chunk::generateTerrain()
         }
     }
 
+    generateCaveEntrance(surfaceHeights);
     randomZombieSpawn(surfaceHeights);
+}
+
+void Chunk::generateCaveEntrance(std::vector<int>& surfaceHeights)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> chanceDist(0.0f, 1.0f);
+
+    float caveEntranceChance = 0.3f;
+
+    if (chanceDist(gen) < caveEntranceChance)
+    {
+        std::uniform_int_distribution<int> xDist(0, Chunk::CHUNK_WIDTH - 1);
+        
+        int xInChunk = xDist(gen);
+
+        int caveStartWorldX = chunkX * CHUNK_WIDTH + xInChunk;
+        chunksManager->generateCaveEntrances(caveStartWorldX, surfaceHeights[xInChunk]);
+    }
 }
 
 void Chunk::randomZombieSpawn(std::vector<int>& surfaceHeights)

@@ -34,6 +34,8 @@ public:
 	void UpdateAndRenderChunks(float dt, Player& player, sf::RenderWindow& window); //Render chunks according to player position
 	void collisionsWithTerrain(Entity& entity);
 
+	void generateCaveEntrances(int startX, int startY);
+
 	void spawnZombie(float spawnX, float spawnY);
 };
 

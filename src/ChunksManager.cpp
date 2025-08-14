@@ -155,6 +155,51 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 		zombies.end());
 }
 
+void ChunksManager::generateCaveEntrances(int startX, int startY)
+{
+	auto floorDiv = [](int a, int b) { return (a >= 0) ? a / b : ((a + 1) / b) - 1; };
+
+	int x = startX;
+	int y = startY;
+	float dirX = ((rand() % 3) - 1) * 0.4f;
+	float dirY = 1;
+
+	for (int step = 0; step < 40; step++)
+	{
+		int radius = (rand() % (6 - 2 + 1)) + 2;
+
+		int carveOffsetX = (step < 10) ? ((rand() % 5) - 2) : ((rand() % 3) - 1);
+		int centerX = x + carveOffsetX;
+
+		for (int oy = -radius; oy <= radius; oy++)
+		{	
+			for (int ox = -radius; ox <= radius; ox++)
+			{
+				if (ox * ox + oy * oy <= radius * radius)
+				{
+					int chunkX = floorDiv(centerX + ox, Chunk::CHUNK_WIDTH);
+					int localX = (centerX + ox) - chunkX * Chunk::CHUNK_WIDTH;
+					getChunk(chunkX).setTile(localX, y + oy, Tile::TileType::Air, false);
+				}
+			}
+		}
+
+		dirX += ((rand() % 3) - 1) * 0.4f;
+		dirY += ((rand() % 3) - 1) * 0.05f;
+		if (dirY < 0.2f)
+			dirY = 0.2f;
+
+		x += (int)round(dirX);
+		y += (int)round(dirY);
+
+		int chunkX = floorDiv(x, Chunk::CHUNK_WIDTH);
+		int localX = x - chunkX * Chunk::CHUNK_WIDTH;
+
+		if (y < 50)
+			break;
+	}
+}
+
 void ChunksManager::spawnZombie(float spawnX, float spawnY)
 {
 	zombies.push_back(std::make_unique<Zombie>(Vec2(spawnX, spawnY)));

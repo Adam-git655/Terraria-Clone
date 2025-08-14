@@ -54,7 +54,7 @@ std::vector<IVec2> ZombieAI::solveAStar(int startX, int startY, int goalX, int g
 	std::unordered_map<IVec2, std::unique_ptr<Node>> nodes;
 	std::unordered_set<IVec2> alreadyVisited;
 
-	int maxNodesToSearch = 280;
+	int maxNodesToSearch = 250;
 	int nodesSearched = 0;
 
 	IVec2 startPos = IVec2(startX, startY);
