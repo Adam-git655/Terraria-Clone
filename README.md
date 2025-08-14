@@ -16,7 +16,9 @@ cmake ../
 ### Current Features
 
 - Sprite rendering and player movement
-- Infinite world generation using a chunk system based on Perlin noise.
+- Infinite world generation using a chunk system
+- Terrain generation using 1D perlin noise
+- Cave generation using 2D perlin noise and drunkard's walk
 - Player collisions with the tiled environment
 - Smart Zombie AI using A* pathfinding
 - Basic Combat System
@@ -26,7 +28,7 @@ cmake ../
   
 ### Features to add
 
-- Cave generation with different block types and minerals
+- Different block types and minerals
 - Tree generation with randomized shapes and sizes
 - Player, Zombie animations
 - Multiple biomes
@@ -35,7 +37,7 @@ cmake ../
 ## Controls
 
 - W to Jump, A and D to move left and right
-- Right-click to place blocks, left-click to destroy blocks
+- Right-click to place blocks, left-click to destroy blocks/attack with sword
 - Number keys to choose items in the hotbar
 
 
