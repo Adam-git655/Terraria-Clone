@@ -1,7 +1,7 @@
 ## Overview
 A simple Terraria clone made using C++ and the SFML graphics library
 
-![image](https://github.com/user-attachments/assets/ed727b40-f80d-4758-82fc-ea8c1ef97dbb)
+<img width="1907" height="964" alt="image" src="https://github.com/user-attachments/assets/78329c5f-c156-4f18-8600-02871e70ea3e" />
 
 ## Steps To Build
 1. Install CMake
