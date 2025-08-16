@@ -161,7 +161,7 @@ void ChunksManager::generateCaveEntrances(int startX, int startY)
 
 	int x = startX;
 	int y = startY;
-	float dirX = ((rand() % 3) - 1) * 0.8f;
+	float dirX = ((rand() % 3) - 1) * 0.6f;
 	float dirY = 1;
 
 	for (int step = 0; step < 40; step++)
@@ -184,12 +184,13 @@ void ChunksManager::generateCaveEntrances(int startX, int startY)
 			}
 		}
 
-		float earlyVariance = (step < 8) ? 0.7f : 0.4f;
-		dirX += ((rand() % 3) - 1) * earlyVariance;
+		dirX += ((rand() % 3) - 1) * 0.65f;
 
 		dirY += ((rand() % 3) - 1) * 0.05f;
 		if (dirY < 0.2f)
 			dirY = 0.2f;
+
+		std::cout << dirX << " " <<  dirY << "\n";
 
 		x += (int)round(dirX);
 		y += (int)round(dirY);
