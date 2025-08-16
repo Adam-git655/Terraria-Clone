@@ -106,7 +106,17 @@ void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile, float d
 
 	if (delta.x != 0 && !isJumping)
 	{
-		velocity.x += speed * delta.x * dt;
+		if (abs(delta.x) <= 1)
+			velocity.x += speed * delta.x * dt;
+		else
+		{
+			if (IsOnGround)
+			{
+				isJumping = true;
+				velocity.y = -jumpStrength;
+				IsOnGround = false;
+			}
+		}
 
 		if (delta.x >= 0)
 			sprite.setScale(-0.2f, 0.2f);

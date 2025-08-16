@@ -18,13 +18,13 @@ void ZombieAI::update(Vec2& playerPos, ChunksManager& chunksManager, sf::RenderW
 	currentPathIndex = 1;
 
 	//sf::VertexArray lines(sf::LineStrip, path.size());
-
+	
 	//for (size_t i = 0; i < path.size(); ++i)
 	//{
 	//	lines[i].position = sf::Vector2f(path[i].x * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f, path[i].y * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f);
 	//	lines[i].color = sf::Color::Yellow;
 	//}
-
+	
 	//window.draw(lines);
 
 
@@ -207,7 +207,7 @@ std::vector<IVec2> ZombieAI::getNeighbours(int x, int y, int maxJumpHeight, Chun
 		//JUMP'S LEFT AND RIGHT NEIGHBOURS
 		for (int dir = -1; dir <= 1; dir += 2)
 		{
-			for (int j = 1; j <= 2; ++j)
+			for (int j = 1; j <= 4; ++j)
 			{
 				int newX = x + (j * dir);
 
