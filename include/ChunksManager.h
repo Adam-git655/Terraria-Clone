@@ -16,12 +16,13 @@ private:
 	sf::Texture dirtTex;
 	sf::Texture stoneTex;
 
+	Chunk& getChunk(int chunkX);
 	int getChunkXFromWorldX(float worldX);
 
 public:
 	ChunksManager(int seed);
-
-	Chunk& getChunk(int chunkX);
+	
+	Chunk* getChunkIfExists(int chunkX);
 
 	void DestroyTile(sf::Vector2f pos);
 	void PlaceTile(sf::Vector2f pos, Tile::TileType blockType);

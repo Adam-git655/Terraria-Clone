@@ -26,6 +26,15 @@ Chunk& ChunksManager::getChunk(int chunkX)
 	return *chunks[chunkX];
 }
 
+Chunk* ChunksManager::getChunkIfExists(int chunkX)
+{
+	if (chunks.find(chunkX) == chunks.end())
+	{
+		return nullptr;
+	}
+	return chunks.find(chunkX)->second.get();
+}
+
 int ChunksManager::getChunkXFromWorldX(float worldX)
 {
 	int tileX = static_cast<int>(std::floor(worldX / Chunk::TILESIZE));
@@ -161,7 +170,7 @@ void ChunksManager::generateCaveEntrances(int startX, int startY)
 
 	int x = startX;
 	int y = startY;
-	float dirX = ((rand() % 3) - 1) * 0.6f;
+	float dirX = ((rand() % 3) - 1) * 0.4f;
 	float dirY = 1;
 
 	for (int step = 0; step < 40; step++)
@@ -189,8 +198,6 @@ void ChunksManager::generateCaveEntrances(int startX, int startY)
 		dirY += ((rand() % 3) - 1) * 0.05f;
 		if (dirY < 0.2f)
 			dirY = 0.2f;
-
-		std::cout << dirX << " " <<  dirY << "\n";
 
 		x += (int)round(dirX);
 		y += (int)round(dirY);

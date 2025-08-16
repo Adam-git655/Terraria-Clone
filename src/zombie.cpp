@@ -16,10 +16,10 @@ Zombie::Zombie(Vec2 p)
 	health = 30.0f;
 	speed = 180.0f;
 	max_speed = 280.0f;
-	jumpStrength = 6.1f;
+	jumpStrength = 9.2f;
 
-	visionRange = 600.0f;
-	attackRange = 100.0f;
+	visionRange = 1200.0f;
+	attackRange = 50.0f;
 	damageAmount = 5.0f;
 	attackCooldown = 2.0f;
 }

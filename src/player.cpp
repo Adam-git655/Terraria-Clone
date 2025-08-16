@@ -21,7 +21,7 @@ Player::Player(Vec2 p)
 	health = 100.0f;
 	speed = 200.0f;
 	max_speed = 300.0f;
-	jumpStrength = 6.1f;
+	jumpStrength = 9.2f;
 }
 
 Tile::TileType Player::getBlockTypeInHand() const

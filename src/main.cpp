@@ -27,7 +27,7 @@ int main()
     Player player(Vec2(0.0f, 0.0f));
 
     sf::View camera;
-    camera.setSize(1280.0f, 720.0f);
+    camera.setSize(1920.0f, 1080.0f);
     camera.setCenter(player.getSprite().getPosition());
         
     ChunksManager chunksManager(std::time(nullptr));

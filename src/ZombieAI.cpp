@@ -14,7 +14,7 @@ void ZombieAI::update(Vec2& playerPos, ChunksManager& chunksManager, sf::RenderW
 	int playerGlobalTileX = static_cast<int>(std::floor(playerPos.x / Chunk::TILESIZE));
 	int playerGlobalTileY = static_cast<int>(std::floor(playerPos.y / Chunk::TILESIZE));
 
-	path = solveAStar(zombieGlobalTileX, zombieGlobalTileY, playerGlobalTileX, playerGlobalTileY, 3, chunksManager);
+	path = solveAStar(zombieGlobalTileX, zombieGlobalTileY, playerGlobalTileX, playerGlobalTileY, 5, chunksManager);
 	currentPathIndex = 1;
 
 	//sf::VertexArray lines(sf::LineStrip, path.size());
@@ -54,7 +54,7 @@ std::vector<IVec2> ZombieAI::solveAStar(int startX, int startY, int goalX, int g
 	std::unordered_map<IVec2, std::unique_ptr<Node>> nodes;
 	std::unordered_set<IVec2> alreadyVisited;
 
-	int maxNodesToSearch = 250;
+	int maxNodesToSearch = 400;
 	int nodesSearched = 0;
 
 	IVec2 startPos = IVec2(startX, startY);
@@ -256,7 +256,11 @@ bool ZombieAI::isFree(int x, int y, ChunksManager& chunksManager)
 	int chunkX = floorDiv(x, Chunk::CHUNK_WIDTH);
 	int localX = x - chunkX * Chunk::CHUNK_WIDTH;
 
-	return !chunksManager.getChunk(chunkX).getChunkTiles()[localX][y].isSolid();
+	Chunk* chunk = chunksManager.getChunkIfExists(chunkX);
+	if (chunk)
+		return !chunk->getChunkTiles()[localX][y].isSolid();
+	else
+		return false;
 }
 
 bool ZombieAI::isTileBelowGround(int x, int y, ChunksManager& chunksManager)

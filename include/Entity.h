@@ -37,5 +37,5 @@ protected:
 	Vec2 velocity = { 0.0f, 0.0f };
 	bool IsOnGround = false;
 
-	const float gravity = 9.8f;
+	const float gravity = 13.5f;
 };
