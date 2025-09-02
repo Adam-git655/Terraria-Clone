@@ -9,15 +9,21 @@ class ChunksManager
 private:
 	std::unordered_map<int, std::unique_ptr<Chunk>> chunks;
 	std::vector<std::unique_ptr<Zombie>> zombies;
+	std::vector<IVec2> treePositions;
 	int seed;
 	int renderDistance = 3;
 	
 	sf::Texture grassTex;
 	sf::Texture dirtTex;
 	sf::Texture stoneTex;
+	sf::Texture woodTex;
+	sf::Texture leafTex;
 
 	Chunk& getChunk(int chunkX);
 	int getChunkXFromWorldX(float worldX);
+
+	void processTreeQueue();
+	bool generateTree(const IVec2 pos);
 
 public:
 	ChunksManager(int seed);
@@ -38,5 +44,7 @@ public:
 	void generateCaveEntrances(int startX, int startY);
 
 	void spawnZombie(float spawnX, float spawnY);
+
+	void QueueTreePosForGeneration(int x, int y);
 };
 

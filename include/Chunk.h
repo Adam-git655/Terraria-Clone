@@ -17,6 +17,7 @@ private:
 
 	void randomZombieSpawn(std::vector<int>& surfaceHeights);
 	void generateCaveEntrance(std::vector<int>& surfaceHeights);
+	void generateTrees(std::vector<int>& surfaceHeights);
 
 	ChunksManager* chunksManager = nullptr;
 

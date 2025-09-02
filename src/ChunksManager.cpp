@@ -15,6 +15,14 @@ ChunksManager::ChunksManager(int seed)
 	{
 		std::cout << "ERROR LOADING STONE TEXTURE";
 	}
+	if (!woodTex.loadFromFile(RESOURCES_PATH "wood.png"))
+	{
+		std::cout << "ERROR LOADING WOOD TEXTURE";
+	}
+	if (!leafTex.loadFromFile(RESOURCES_PATH "leaf.png"))
+	{
+		std::cout << "ERROR LOADING LEAF TEXTURE";
+	}
 }
 
 Chunk& ChunksManager::getChunk(int chunkX)
@@ -87,6 +95,11 @@ const sf::Texture& ChunksManager::getTexture(const std::string& textureName) con
 		return dirtTex;
 	else if (textureName == "Stone")
 		return stoneTex;
+	else if (textureName == "Wood")
+		return woodTex;
+	else if (textureName == "Leaf")
+		return leafTex;
+	else if (textureName == "")
 	std::cout << "ERROR\n";
 }
 
@@ -136,6 +149,14 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 					tileSprite.setTexture(stoneTex);
 					break;
 
+				case Tile::TileType::Wood:
+					tileSprite.setTexture(woodTex);
+					break;
+
+				case Tile::TileType::Leaf:
+					tileSprite.setTexture(leafTex);
+					break;
+
 				default:
 					continue;
 				}
@@ -148,6 +169,8 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 			}
 		}
 	}
+
+	processTreeQueue();
 
 	for (const auto& zombie : zombies)
 	{
@@ -208,6 +231,84 @@ void ChunksManager::generateCaveEntrances(int startX, int startY)
 		if (y < 50)
 			break;
 	}
+}
+
+void ChunksManager::QueueTreePosForGeneration(int x, int y)
+{
+	treePositions.push_back(IVec2(x, y));
+}
+
+void ChunksManager::processTreeQueue()
+{
+	auto it = treePositions.begin();
+	while (it != treePositions.end())
+	{
+		if (generateTree(*it))
+		{
+			it = treePositions.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+bool ChunksManager::generateTree(const IVec2 pos)
+{
+	auto floorDiv = [](int a, int b) { return (a >= 0) ? a / b : ((a + 1) / b) - 1; };
+
+	//Generate random height for tree
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<int> heightDist(4, 12);
+
+	int height = heightDist(gen);
+
+	//Check if chunk exists for tree
+	int chunkX = floorDiv(pos.x, Chunk::CHUNK_WIDTH);
+	int localX = pos.x - chunkX * Chunk::CHUNK_WIDTH;
+
+	Chunk* chunk = getChunkIfExists(chunkX);
+	if (!chunk) return false;
+
+	//Check if tile below is grass or not
+	if (chunk->getTile(localX, pos.y + 1).getType() != Tile::TileType::Grass) return true;
+
+	//Generate the trunk
+	for (int i = 0; i < height; i++)
+	{
+		chunk->setTile(localX, pos.y - i, Tile::TileType::Wood, false);
+	}
+
+	//random canopy settings for tree
+	std::uniform_int_distribution<int> canopyRadiusDist(2, 3);
+	std::uniform_int_distribution<int> canopyShapeDist(1, 2);
+	int canopyRadius = canopyRadiusDist(gen);
+	int canopyShape = canopyShapeDist(gen);
+
+	//Generate the canopy (diamond / circle shaped)
+	for (int dx = -canopyRadius; dx <= canopyRadius; dx++)
+	{
+		for (int dy = -canopyRadius; dy <= canopyRadius; dy++)
+		{
+			bool shapeCondition = canopyShape == 1 ? abs(dx) + abs(dy) <= canopyRadius : dx * dx + dy * dy <= canopyRadius * canopyRadius;
+
+			if (shapeCondition)
+			{
+				int chunkX = floorDiv(pos.x + dx, Chunk::CHUNK_WIDTH);
+				int localX = (pos.x + dx) - chunkX * Chunk::CHUNK_WIDTH;
+
+				Chunk* chunk = getChunkIfExists(chunkX);
+				if (!chunk) return false;
+
+				if (chunk->getTile(localX, pos.y - height + dy).getType() == Tile::TileType::Air)
+					chunk->setTile(localX, pos.y - height + dy, Tile::TileType::Leaf, false);
+			}
+		}
+	}
+
+	return true;
 }
 
 void ChunksManager::spawnZombie(float spawnX, float spawnY)

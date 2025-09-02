@@ -11,7 +11,9 @@ public:
 		Air,
 		Grass,
 		Dirt,
-		Stone
+		Stone,
+		Wood,
+		Leaf
 	};
 
 

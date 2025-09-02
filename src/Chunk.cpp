@@ -101,6 +101,7 @@ void Chunk::generateTerrain()
     }
 
     generateCaveEntrance(surfaceHeights);
+    generateTrees(surfaceHeights);
     randomZombieSpawn(surfaceHeights);
 }
 
@@ -109,17 +110,40 @@ void Chunk::generateCaveEntrance(std::vector<int>& surfaceHeights)
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> chanceDist(0.0f, 1.0f);
+    std::uniform_int_distribution<int> xDist(0, Chunk::CHUNK_WIDTH - 1);
 
     float caveEntranceChance = 0.3f;
 
     if (chanceDist(gen) < caveEntranceChance)
-    {
-        std::uniform_int_distribution<int> xDist(0, Chunk::CHUNK_WIDTH - 1);
-        
+    {        
         int xInChunk = xDist(gen);
 
         int caveStartWorldX = chunkX * CHUNK_WIDTH + xInChunk;
         chunksManager->generateCaveEntrances(caveStartWorldX, surfaceHeights[xInChunk]);
+    }
+}
+
+void Chunk::generateTrees(std::vector<int>& surfaceHeights)
+{
+    std::random_device rd;
+    std::mt19937 gen((rd()));
+    std::uniform_real_distribution<float> chanceDist(0.0f, 1.0f);
+    std::uniform_int_distribution<int> xDist(0, CHUNK_WIDTH - 1);
+    std::uniform_int_distribution<int> nTrees(1, 3);
+
+    float treeSpawnChance = 0.6f;
+    for (int i = 0; i < nTrees(gen); i++)
+    {
+        if (chanceDist(gen) < treeSpawnChance)
+        {
+            int treeXInChunk = xDist(gen);
+
+            int treeWorldX = chunkX * CHUNK_WIDTH + treeXInChunk;
+            int spawnY = surfaceHeights[treeXInChunk] - 1;
+
+            if (chunksManager)
+                chunksManager->QueueTreePosForGeneration(treeWorldX, spawnY);
+        }
     }
 }
 
