@@ -21,6 +21,7 @@ cmake ../
 - Infinite world generation using a chunk system
 - Terrain generation using 1D perlin noise
 - Cave generation using 2D perlin noise and drunkard's walk
+- Tree generation with randomized shapes and sizes
 - Player collisions with the tiled environment
 - Smart Zombie AI using A* pathfinding
 - Basic Combat System
@@ -30,9 +31,9 @@ cmake ../
   
 ### Features to add
 
-- Different block types and minerals
-- Tree generation with randomized shapes and sizes
+- Multithreading to improve performance
 - Player, Zombie animations
+- Different block types and minerals
 - Multiple biomes
 - Audio system
   
