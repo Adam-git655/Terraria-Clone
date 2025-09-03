@@ -19,6 +19,7 @@ cmake ../
 ### Current Features
 
 - Sprite rendering and player movement
+- Player and zombie animations
 - Infinite world generation using a chunk system
 - Terrain generation using 1D perlin noise
 - Cave generation using 2D perlin noise and drunkard's walk
@@ -32,8 +33,7 @@ cmake ../
   
 ### Features to add
 
-- Multithreading to improve performance
-- Player, Zombie animations
+- Basic Multiplayer system
 - Different block types and minerals
 - Multiple biomes
 - Audio system
