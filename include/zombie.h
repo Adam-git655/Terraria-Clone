@@ -23,6 +23,7 @@ private:
 
 	sf::Texture tex;
 	sf::IntRect rectSourceSprite = { 0, 0, 157, 213 };
+	bool walkSpriteSheetGoRight = true;
 	sf::Clock zombieWalkClock;
 
 	bool isJumping = false;

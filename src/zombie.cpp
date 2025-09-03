@@ -69,11 +69,20 @@ void Zombie::update(float dt, Player& player, ChunksManager& chunksManager, sf::
 
 	if (velocity.x != 0)
 	{
-		if (zombieWalkClock.getElapsedTime().asSeconds() >= 0.2f)
+		if (zombieWalkClock.getElapsedTime().asSeconds() >= 0.06f)
 		{
-			if (rectSourceSprite.left == 314)
-				rectSourceSprite.left = 0;
-			rectSourceSprite.left += 157;
+			if (walkSpriteSheetGoRight)
+			{
+				rectSourceSprite.left += 157;
+				if (rectSourceSprite.left >= 314)
+					walkSpriteSheetGoRight = false;				
+			}
+			else
+			{
+				rectSourceSprite.left -= 157;
+				if (rectSourceSprite.left <= 0)
+					walkSpriteSheetGoRight = true;
+			}
 			zombieWalkClock.restart();
 		}
 	}
