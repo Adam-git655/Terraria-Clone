@@ -204,6 +204,11 @@ std::vector<std::vector<Tile>>& Chunk::getChunkTiles()
     return chunkTiles;
 }
 
+int Chunk::getChunkX() const
+{
+    return chunkX;
+}
+
 void Chunk::collisionsWithTerrain(Entity& entity)
 {
     //get bounds of player in global x positions
@@ -236,9 +241,6 @@ void Chunk::collisionsWithTerrain(Entity& entity)
 
     if (startLocalX > endLocalX || startY > endY)
         return;
-
-
-    bool isGrounded = false;
 
     // Check tiles in local coordinates
     for (int localX = startLocalX; localX <= endLocalX; ++localX) {
@@ -274,7 +276,6 @@ void Chunk::collisionsWithTerrain(Entity& entity)
 
                     else if (collisionFromTop)
                     {
-                        isGrounded = true;
                         entity.setPosition(Vec2(entity.getPosition().x, tileBounds.top - entityBounds.height / 2));
                         entity.setVelocity(Vec2(entity.getVelocity().x, 0.0f)); //Stop downwards vel
                     }
@@ -282,5 +283,4 @@ void Chunk::collisionsWithTerrain(Entity& entity)
             }
         }
     }
-    entity.setIsOnGround(isGrounded);
 }

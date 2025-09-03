@@ -22,6 +22,8 @@ private:
 	ZombieAI ai;
 
 	sf::Texture tex;
+	sf::IntRect rectSourceSprite = { 0, 0, 157, 213 };
+	sf::Clock zombieWalkClock;
 
 	bool isJumping = false;
 

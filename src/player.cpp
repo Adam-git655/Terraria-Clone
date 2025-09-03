@@ -5,7 +5,7 @@
 Player::Player(Vec2 p)
 	:Entity(p)
 {
-	if (!tex.loadFromFile(RESOURCES_PATH "player.png"))
+	if (!tex.loadFromFile(RESOURCES_PATH "playerSheet.png"))
 	{
 		std::cout << "ERROR LOADING PLAYER TEX\n";
 	}
@@ -15,6 +15,8 @@ Player::Player(Vec2 p)
 	}
 
 	sprite.setTexture(tex);
+	sprite.setTextureRect(rectSourceSprite);
+	sprite.setScale(2, 2);
 	sprite.setOrigin(sprite.getLocalBounds().getSize().x / 2, sprite.getLocalBounds().getSize().y / 2);
 	sprite.setPosition(position.x, position.y);
 
@@ -69,20 +71,51 @@ void Player::update(float dt, ChunksManager& chunksManager)
 	velocity.x = 0.0f;
 
 	//Input
-	if ((movement_keys[sf::Keyboard::W] || movement_keys[sf::Keyboard::Space]) && IsOnGround)
+	if ((movement_keys[sf::Keyboard::W] || movement_keys[sf::Keyboard::Space]) && !isJumping)
 	{
 		velocity.y = -jumpStrength;
 		IsOnGround = false;
+		isJumping = true;
 	}
 	if (movement_keys[sf::Keyboard::A])
 	{
 		velocity.x -= speed * dt;
-		sprite.setScale(-1, 1);
+		sprite.setScale(2, 2);
 	}
 	if (movement_keys[sf::Keyboard::D])
 	{
 		velocity.x += speed * dt;
-		sprite.setScale(1, 1);
+		sprite.setScale(-2, 2);
+	}
+	
+	if (IsOnGround)
+		isJumping = false;
+
+	//Animations
+	if (std::abs(velocity.y) < 0.45f && !isJumping)
+	{
+		if (velocity.x != 0)
+		{
+			if (rectSourceSprite.left < 120)
+				rectSourceSprite.left = 120;
+
+			if (walkAnimClock.getElapsedTime().asSeconds() > 0.035f)
+			{
+				if (rectSourceSprite.left == 360)
+					rectSourceSprite.left = 120;
+				else
+					rectSourceSprite.left += 20;
+				walkAnimClock.restart();
+			}
+		}
+		else
+		{
+			rectSourceSprite = { 0, 0, 20, 26 };
+		}
+	}
+	else
+	{
+		rectSourceSprite = { 100, 0, 20, 26 };
 	}
 
 	//Cap velocity 
@@ -96,6 +129,7 @@ void Player::update(float dt, ChunksManager& chunksManager)
 	//Add velocity to position
 	position += velocity;
 	sprite.setPosition(position.x, position.y);
+	sprite.setTextureRect(rectSourceSprite);
 	chunksManager.collisionsWithTerrain(*this); //check for collisions with tiles
 
 	position = Vec2(sprite.getPosition().x, sprite.getPosition().y);

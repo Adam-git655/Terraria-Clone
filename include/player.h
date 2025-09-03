@@ -12,12 +12,15 @@ class Player : public Entity
 {
 private:
 	sf::Texture tex;
+	sf::IntRect rectSourceSprite = { 0, 0, 20, 26 };
+	sf::Clock walkAnimClock;
 
 	sf::Texture shortSwordTex;
 
 	Tile::TileType blockTypeInHand = Tile::TileType::Stone;
 	
 	bool movement_keys[sf::Keyboard::KeyCount] = { false };
+	bool isJumping = false;
 
 	std::unique_ptr<Weapon> weapon;
 

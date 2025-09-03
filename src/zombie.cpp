@@ -3,13 +3,14 @@
 Zombie::Zombie(Vec2 p)
 	:Entity(p), ai(*this)
 {
-	if (!tex.loadFromFile(RESOURCES_PATH "zombie.png"))
+	if (!tex.loadFromFile(RESOURCES_PATH "zombieSheet.png"))
 	{
 		std::cout << "ERROR LOADING ZOMBIE TEX\n";
 	}
 
 	sprite.setTexture(tex);
-	sprite.setScale(0.2f, 0.2f);
+	sprite.setTextureRect(rectSourceSprite);
+	sprite.setScale(0.25f, 0.25f);
 	sprite.setOrigin(sprite.getLocalBounds().getSize().x / 2, sprite.getLocalBounds().getSize().y / 2);
 	sprite.setPosition(position.x, position.y);
 	
@@ -66,6 +67,21 @@ void Zombie::update(float dt, Player& player, ChunksManager& chunksManager, sf::
 	if (velocity.y > max_speed)
 		velocity.y = max_speed;
 
+	if (velocity.x != 0)
+	{
+		if (zombieWalkClock.getElapsedTime().asSeconds() >= 0.2f)
+		{
+			if (rectSourceSprite.left == 314)
+				rectSourceSprite.left = 0;
+			rectSourceSprite.left += 157;
+			zombieWalkClock.restart();
+		}
+	}
+	else
+	{
+		rectSourceSprite = { 0, 0, 157, 213 };
+	}
+
 	if (canAttackPlayer(playerPos))
 	{
 		if (attackClock.getElapsedTime().asSeconds() >= attackCooldown)
@@ -78,6 +94,7 @@ void Zombie::update(float dt, Player& player, ChunksManager& chunksManager, sf::
 	//add velocity to current position
 	position += velocity;
 	sprite.setPosition(position.x, position.y);
+	sprite.setTextureRect(rectSourceSprite);
 	chunksManager.collisionsWithTerrain(*this);
 
 	position = Vec2(sprite.getPosition().x, sprite.getPosition().y);
@@ -110,7 +127,7 @@ void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile, float d
 			velocity.x += speed * delta.x * dt;
 		else
 		{
-			if (IsOnGround)
+			if (!isJumping)
 			{
 				isJumping = true;
 				velocity.y = -jumpStrength;
@@ -119,9 +136,9 @@ void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile, float d
 		}
 
 		if (delta.x >= 0)
-			sprite.setScale(-0.2f, 0.2f);
+			sprite.setScale(-0.25f, 0.25f);
 		else
-			sprite.setScale(0.2f, 0.2f);
+			sprite.setScale(0.25f, 0.25f);
 	}
 
 	if (delta.y > 0 && !isJumping)

@@ -31,6 +31,7 @@ public:
 	void generateTerrain();
 	void setTile(int localX, int localY, Tile::TileType type, bool solid);
 	Tile getTile(int localX, int localY) const;
+	int getChunkX() const;
 
 	std::vector<std::vector<Tile>>& getChunkTiles();
 
