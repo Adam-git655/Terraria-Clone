@@ -45,8 +45,43 @@ void Zombie::update(float dt, Player& player, ChunksManager& chunksManager, sf::
 
 	Vec2 playerPos = player.getPosition();
 
+	//DUM POSITION FOLLOW
+	//if (!IsOnGround)
+	//	velocity.y += gravity * dt;
+
+	//velocity.x = 0.0f;
+
+	//if (canSeePlayer(playerPos))
+	//{
+	//	if (playerPos.x >= position.x)
+	//	{
+	//		velocity.x += speed * dt;
+	//		sprite.setScale(-0.25f, 0.25f);
+	//	}
+	//	else
+	//	{
+	//		velocity.x -= speed * dt;
+	//		sprite.setScale(0.25f, 0.25f);
+	//	}
+
+	//	if (prevPos == position)
+	//	{
+	//		velocity.y = -jumpStrength;
+	//	}
+
+	//	//cap speed
+	//	if (velocity.x > max_speed)
+	//		velocity.x = max_speed;
+	//	if (velocity.x < -max_speed)
+	//		velocity.x = -max_speed;
+	//}
+
+	//if (velocity.y > max_speed)
+	//	velocity.y = max_speed;
+
 	prevPos = position;
 
+	//SMORT A* PATH FOLLOW
 	if (!IsOnGround)
 		velocity.y += gravity * dt;
 
@@ -54,7 +89,6 @@ void Zombie::update(float dt, Player& player, ChunksManager& chunksManager, sf::
 
 	if (canSeePlayer(playerPos))
 	{		
-		//SMORT A* PATH FOLLOW
 		ai.update(playerPos, chunksManager, window, dt);
 
 		//cap speed
