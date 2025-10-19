@@ -70,12 +70,21 @@ void Player::update(float dt, ChunksManager& chunksManager)
 
 	velocity.x = 0.0f;
 
+	if (velocity.y > 0.5f)
+	{
+		IsFalling = true;
+	}
+	else
+	{
+		IsFalling = false;
+	}
+	
 	//Input
-	if ((movement_keys[sf::Keyboard::W] || movement_keys[sf::Keyboard::Space]) && !isJumping)
+	if ((movement_keys[sf::Keyboard::W] || movement_keys[sf::Keyboard::Space]) && !IsJumping && !IsFalling)
 	{
 		velocity.y = -jumpStrength;
 		IsOnGround = false;
-		isJumping = true;
+		IsJumping = true;
 	}
 	if (movement_keys[sf::Keyboard::A])
 	{
@@ -89,10 +98,10 @@ void Player::update(float dt, ChunksManager& chunksManager)
 	}
 	
 	if (IsOnGround)
-		isJumping = false;
+		IsJumping = false;
 
 	//Animations
-	if (std::abs(velocity.y) < 0.45f && !isJumping)
+	if (!IsFalling && !IsJumping)
 	{
 		if (velocity.x != 0)
 		{

@@ -20,7 +20,6 @@ private:
 	Tile::TileType blockTypeInHand = Tile::TileType::Stone;
 	
 	bool movement_keys[sf::Keyboard::KeyCount] = { false };
-	bool isJumping = false;
 
 	std::unique_ptr<Weapon> weapon;
 

@@ -36,6 +36,8 @@ protected:
 	Vec2 prevPos = { 0.0f, 0.0f };
 	Vec2 velocity = { 0.0f, 0.0f };
 	bool IsOnGround = false;
+	bool IsFalling = false;
+	bool IsJumping = false;
 
 	const float gravity = 13.5f;
 };

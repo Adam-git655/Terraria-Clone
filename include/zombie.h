@@ -26,8 +26,6 @@ private:
 	bool walkSpriteSheetGoRight = true;
 	sf::Clock zombieWalkClock;
 
-	bool isJumping = false;
-
 	float visionRange;
 	bool canSeePlayer(const Vec2& playerPos) const;
 

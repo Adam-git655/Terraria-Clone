@@ -101,6 +101,15 @@ void Zombie::update(float dt, Player& player, ChunksManager& chunksManager, sf::
 	if (velocity.y > max_speed)
 		velocity.y = max_speed;
 
+	if (velocity.y > 0.5f)
+	{
+		IsFalling = true;
+	}
+	else
+	{
+		IsFalling = false;
+	}
+
 	if (velocity.x != 0)
 	{
 		if (zombieWalkClock.getElapsedTime().asSeconds() >= 0.06f)
@@ -164,15 +173,15 @@ void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile, float d
 {
 	IVec2 delta = nextTile - currentTile;
 
-	if (delta.x != 0 && !isJumping)
+	if (delta.x != 0 && !IsJumping)
 	{
 		if (abs(delta.x) <= 1)
 			velocity.x += speed * delta.x * dt;
 		else
 		{
-			if (!isJumping)
+			if (!IsJumping && !IsFalling)
 			{
-				isJumping = true;
+				IsJumping = true;
 				velocity.y = -jumpStrength;
 				IsOnGround = false;
 			}
@@ -184,7 +193,7 @@ void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile, float d
 			sprite.setScale(0.25f, 0.25f);
 	}
 
-	if (delta.y > 0 && !isJumping)
+	if (delta.y > 0 && !IsJumping)
 	{
 		if (sprite.getScale().x < 0)
 			velocity.x += speed * dt;
@@ -196,13 +205,13 @@ void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile, float d
 	{
 		if (IsOnGround)
 		{
-			isJumping = true;
+			IsJumping = true;
 			velocity.y = -jumpStrength;
 			IsOnGround = false;
 		}
 	}
 
-	if (isJumping)
+	if (IsJumping)
 	{
 		if (sprite.getScale().x < 0)
 			velocity.x += 100 * dt;
@@ -210,7 +219,7 @@ void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile, float d
 			velocity.x -= 100 * dt;
 
 		if (IsOnGround)
-			isJumping = false;
+			IsJumping = false;
 	}
 }
 
