@@ -1,9 +1,8 @@
 #include "tile.h"
 
 Tile::Tile(TileType t, bool s)
-	:type(t), Solid(false)
+	:type(t), Solid(s), lightColor(sf::Color::White)
 {
-
 }
 
 Tile::TileType Tile::getType() const
@@ -23,7 +22,6 @@ bool Tile::isSolid() const
 
 void Tile::setSolid(bool s)
 {
-
 	Solid = s;
 }
 
@@ -35,6 +33,16 @@ void Tile::setTileSprite(sf::Texture tex)
 sf::Sprite Tile::getSprite() const
 {
 	return tileSprite;
+}
+
+void Tile::setLightColor(sf::Color color)
+{
+	lightColor = color;
+}
+
+sf::Color Tile::getLightColor() const
+{
+	return lightColor;
 }
 
 Vec2 Tile::getPosition() const
@@ -62,6 +70,8 @@ std::string Tile::tileTypeToString(Tile::TileType type)
 		return "Grass";
 	case Tile::TileType::Dirt:
 		return "Dirt";
+	case Tile::TileType::CaveAir:
+		return "CaveAir";
 	case Tile::TileType::Stone:
 		return "Stone";
 	case Tile::TileType::Wood:

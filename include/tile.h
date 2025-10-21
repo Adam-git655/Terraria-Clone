@@ -1,5 +1,6 @@
 #pragma once
 #include "Vec2.h"
+#include "iostream"
 #include "SFML/Graphics.hpp"
 
 class Tile
@@ -11,6 +12,7 @@ public:
 		Air,
 		Grass,
 		Dirt,
+		CaveAir,
 		Stone,
 		Wood,
 		Leaf
@@ -28,6 +30,9 @@ public:
 	void setTileSprite(sf::Texture tex);
 	sf::Sprite getSprite() const;
 
+	void setLightColor(sf::Color color);
+	sf::Color getLightColor() const;
+
 	Vec2 getPosition() const;
 	void setPosition(Vec2 p);
 
@@ -41,4 +46,5 @@ private:
 	TileType type;
 	bool Solid;
 
+	sf::Color lightColor;
 };

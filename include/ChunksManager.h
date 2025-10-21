@@ -2,6 +2,7 @@
 #include "Chunk.h"
 #include "player.h"
 #include "zombie.h"
+#include "LightingSystem.h"
 #include <unordered_map>
 
 class ChunksManager
@@ -10,11 +11,13 @@ private:
 	std::unordered_map<int, std::unique_ptr<Chunk>> chunks;
 	std::vector<std::unique_ptr<Zombie>> zombies;
 	std::vector<IVec2> treePositions;
+	LightingSystem lighting;
 	int seed;
 	int renderDistance = 3;
 	
 	sf::Texture grassTex;
 	sf::Texture dirtTex;
+	sf::Texture caveSkyTex;
 	sf::Texture stoneTex;
 	sf::Texture woodTex;
 	sf::Texture leafTex;
@@ -44,6 +47,8 @@ public:
 	void generateCaveEntrances(int startX, int startY);
 
 	void spawnZombie(float spawnX, float spawnY);
+
+	void UpdateLighting(Chunk& chunk);
 
 	void QueueTreePosForGeneration(int x, int y);
 };

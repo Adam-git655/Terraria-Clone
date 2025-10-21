@@ -11,6 +11,10 @@ ChunksManager::ChunksManager(int seed)
 	{
 		std::cout << "ERROR LOADING DIRT TEXTURE";
 	}
+	if (!caveSkyTex.loadFromFile(RESOURCES_PATH "sky.png"))
+	{
+		std::cout << "ERROR LOADING CAVE SKY TEXTURE";
+	}
 	if (!stoneTex.loadFromFile(RESOURCES_PATH "stone.png"))
 	{
 		std::cout << "ERROR LOADING STONE TEXTURE";
@@ -65,10 +69,15 @@ void ChunksManager::DestroyTile(sf::Vector2f pos)
 	int localX = tileX - chunkX * Chunk::CHUNK_WIDTH;
 
 	Chunk& chunk = getChunk(chunkX);
-	auto& chunkTiles = chunk.getChunkTiles();
+	Tile& tile = chunk.getTile(localX, tileY);
 
-	chunkTiles[localX][tileY].setType(Tile::TileType::Air);
-	chunkTiles[localX][tileY].setSolid(false);
+	if (tileY >= chunk.getSurfaceHeights()[localX])
+		tile.setType(Tile::TileType::CaveAir);
+	else
+		tile.setType(Tile::TileType::Air);
+	
+	tile.setSolid(false);
+	UpdateLighting(chunk);
 }
 
 void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType)
@@ -81,10 +90,11 @@ void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType)
 	int localX = tileX - chunkX * Chunk::CHUNK_WIDTH;
 
 	Chunk& chunk = getChunk(chunkX);
-	auto& chunkTiles = chunk.getChunkTiles();
+	Tile& tile = chunk.getTile(localX, tileY);
 
-	chunkTiles[localX][tileY].setType(blockType);
-	chunkTiles[localX][tileY].setSolid(true);
+	tile.setType(blockType);
+	tile.setSolid(true);
+	UpdateLighting(chunk);
 }
 
 const sf::Texture& ChunksManager::getTexture(const std::string& textureName) const
@@ -93,6 +103,8 @@ const sf::Texture& ChunksManager::getTexture(const std::string& textureName) con
 		return grassTex;
 	else if (textureName == "Dirt")
 		return dirtTex;
+	else if (textureName == "CaveAir")
+		return caveSkyTex;
 	else if (textureName == "Stone")
 		return stoneTex;
 	else if (textureName == "Wood")
@@ -115,8 +127,6 @@ std::vector<std::unique_ptr<Zombie>>& ChunksManager::getAllZombies()
 
 void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWindow& window)
 {
-	sf::Sprite tileSprite;
-
 	int chunkX = getChunkXFromWorldX(player.getSprite().getPosition().x);
 
 	for (int dx = -renderDistance; dx <= renderDistance; ++dx)
@@ -129,12 +139,14 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 		{
 			for (int y = 0; y < Chunk::CHUNK_HEIGHT; ++y)
 			{
-				Tile tile = chunk.getTile(x, y);
+				Tile& tile = chunk.getTile(x, y);
+
+				sf::Sprite tileSprite;
 
 				switch (tile.getType())
 				{
 				case Tile::TileType::Air:
-					//render nothing in case of air
+					//do nothing
 					continue;
 
 				case Tile::TileType::Grass:
@@ -143,6 +155,10 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 
 				case Tile::TileType::Dirt:
 					tileSprite.setTexture(dirtTex);
+					break;
+
+				case Tile::TileType::CaveAir:
+					tileSprite.setTexture(caveSkyTex);
 					break;
 
 				case Tile::TileType::Stone:
@@ -160,6 +176,8 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 				default:
 					continue;
 				}
+
+				tileSprite.setColor(tile.getLightColor());
 
 				int worldTileX = currentChunkX * Chunk::CHUNK_WIDTH + x;
 
@@ -183,7 +201,7 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 
 	zombies.erase(std::remove_if(zombies.begin(), zombies.end(),
 		[](const std::unique_ptr<Zombie>& zombie)
-		{ return !zombie->isAlive(); }),
+		{ return !zombie->isAlive(); }),  
 		zombies.end());
 }
 
@@ -211,14 +229,23 @@ void ChunksManager::generateCaveEntrances(int startX, int startY)
 				{
 					int chunkX = floorDiv(centerX + ox, Chunk::CHUNK_WIDTH);
 					int localX = (centerX + ox) - chunkX * Chunk::CHUNK_WIDTH;
-					getChunk(chunkX).setTile(localX, y + oy, Tile::TileType::Air, false);
+					int tileY = y + oy;
+
+					Chunk& chunk = getChunk(chunkX);
+					
+					if (tileY >= chunk.getSurfaceHeights()[localX])
+						getChunk(chunkX).setTile(localX, tileY, Tile::TileType::CaveAir, false);
+					else
+						getChunk(chunkX).setTile(localX, tileY, Tile::TileType::Air, false);
+
+					UpdateLighting(chunk);
 				}
 			}
 		}
 
-		dirX += ((rand() % 3) - 1) * 0.65f;
+		dirX += ((rand() % 3) - 1) * 0.2f;
 
-		dirY += ((rand() % 3) - 1) * 0.05f;
+		dirY += ((rand() % 3) - 1) * 0.1f;
 		if (dirY < 0.2f)
 			dirY = 0.2f;
 
@@ -314,6 +341,11 @@ bool ChunksManager::generateTree(const IVec2 pos)
 void ChunksManager::spawnZombie(float spawnX, float spawnY)
 {
 	zombies.push_back(std::make_unique<Zombie>(Vec2(spawnX, spawnY)));
+}
+
+void ChunksManager::UpdateLighting(Chunk& chunk)
+{
+	lighting.UpdateLighting(chunk);
 }
 
 void ChunksManager::collisionsWithTerrain(Entity& entity)

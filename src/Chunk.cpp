@@ -1,10 +1,11 @@
-#include "Chunk.h"
 #include "zombie.h"
+
 
 Chunk::Chunk(int chunkX, int seed, ChunksManager* mgr)
 	:chunkX(chunkX), seed(seed), chunksManager(mgr)
 {
 	chunkTiles.resize(CHUNK_WIDTH, std::vector<Tile>(CHUNK_HEIGHT, { Tile::TileType::Air, false }));
+    surfaceHeights.resize(CHUNK_WIDTH);
 	generateTerrain();
 }
 
@@ -15,11 +16,8 @@ void Chunk::generateTerrain()
     float frequency = 0.0035f;
     float amplitude = 0.7f;
 
-    std::vector<int> surfaceHeights(CHUNK_WIDTH);
-
     for (int x = 0; x < CHUNK_WIDTH; x++)
     {
-
         //convert the chunkTile x's into world x's
         int worldX = chunkX * CHUNK_WIDTH + x;
 
@@ -75,44 +73,46 @@ void Chunk::generateTerrain()
             {
                 setTile(x, y, Tile::TileType::Grass, true);
             }
-            else if (y < intTerrainHeight + 5)
+            else if (y < intTerrainHeight + lengthOfDirtPatch)
             {
                 setTile(x, y, Tile::TileType::Dirt, true);
             }
-            else if (y >= intTerrainHeight + 5 && y < intTerrainHeight + 40)
+            else if (y >= intTerrainHeight + lengthOfDirtPatch && y < intTerrainHeight + lengthOfStonePatch)
             {
                 setTile(x, y, Tile::TileType::Stone, true);
             }
-            else if (y >= intTerrainHeight + 40 && y < intTerrainHeight + 50)
+            //Caves
+            else if (y >= intTerrainHeight + lengthOfStonePatch && y < intTerrainHeight + 50)
             {
                 if (val > 0.4f && val < 0.5f)
-                    setTile(x, y, Tile::TileType::Air, false);
+                    setTile(x, y, Tile::TileType::CaveAir, false);
                 else
                     setTile(x, y, Tile::TileType::Stone, true);
             }
-            else if (y > intTerrainHeight + 50)
+            else if (y >= intTerrainHeight + 50)
             {
                 if (val > 0.3f && val < 0.7f)
-                    setTile(x, y, Tile::TileType::Air, false);
+                    setTile(x, y, Tile::TileType::CaveAir, false);
                 else
                     setTile(x, y, Tile::TileType::Stone, true);
             }
         }
     }
 
-    generateCaveEntrance(surfaceHeights);
-    generateTrees(surfaceHeights);
-    randomZombieSpawn(surfaceHeights);
+    generateCaveEntrance();
+    generateTrees();
+    randomZombieSpawn();
+    updateLighting();
 }
 
-void Chunk::generateCaveEntrance(std::vector<int>& surfaceHeights)
+void Chunk::generateCaveEntrance()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> chanceDist(0.0f, 1.0f);
     std::uniform_int_distribution<int> xDist(0, Chunk::CHUNK_WIDTH - 1);
 
-    float caveEntranceChance = 0.3f;
+    float caveEntranceChance = 0.2f;
 
     if (chanceDist(gen) < caveEntranceChance)
     {        
@@ -123,7 +123,7 @@ void Chunk::generateCaveEntrance(std::vector<int>& surfaceHeights)
     }
 }
 
-void Chunk::generateTrees(std::vector<int>& surfaceHeights)
+void Chunk::generateTrees()
 {
     std::random_device rd;
     std::mt19937 gen((rd()));
@@ -147,7 +147,7 @@ void Chunk::generateTrees(std::vector<int>& surfaceHeights)
     }
 }
 
-void Chunk::randomZombieSpawn(std::vector<int>& surfaceHeights)
+void Chunk::randomZombieSpawn()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -174,7 +174,20 @@ void Chunk::randomZombieSpawn(std::vector<int>& surfaceHeights)
     }
 }
 
-Tile Chunk::getTile(int x, int y) const
+void Chunk::updateLighting()
+{
+    chunksManager->UpdateLighting(*this);
+}
+
+Tile& Chunk::getTile(int x, int y)
+{
+    if (x >= 0 && x < CHUNK_WIDTH && y >= 0 && y < CHUNK_HEIGHT)
+        return chunkTiles[x][y];
+    std::cout << "ERROR: Attemting to get tile out of bounds\n";
+    return Tile();
+}
+
+const Tile& Chunk::getTile(int x, int y) const
 {
     if (x >= 0 && x < CHUNK_WIDTH && y >= 0 && y < CHUNK_HEIGHT)
         return chunkTiles[x][y];
@@ -204,9 +217,24 @@ std::vector<std::vector<Tile>>& Chunk::getChunkTiles()
     return chunkTiles;
 }
 
+std::vector<int>& Chunk::getSurfaceHeights()
+{
+    return surfaceHeights;
+}
+
 int Chunk::getChunkX() const
 {
     return chunkX;
+}
+
+int Chunk::getLengthOfDirtPatch() const
+{
+    return lengthOfDirtPatch;
+}
+
+int Chunk::getLengthOfStonePatch() const
+{
+    return lengthOfStonePatch;
 }
 
 void Chunk::collisionsWithTerrain(Entity& entity)
