@@ -9,6 +9,7 @@ class ChunksManager
 {
 private:
 	std::unordered_map<int, std::unique_ptr<Chunk>> chunks;
+	std::unordered_map<int, Chunk*> renderedChunks;
 	std::vector<std::unique_ptr<Zombie>> zombies;
 	std::vector<IVec2> treePositions;
 	LightingSystem lighting;
@@ -48,7 +49,7 @@ public:
 
 	void spawnZombie(float spawnX, float spawnY);
 
-	void UpdateLighting(Chunk& chunk);
+	void UpdateLighting();
 
 	void QueueTreePosForGeneration(int x, int y);
 };

@@ -22,7 +22,6 @@ private:
 	void randomZombieSpawn();
 	void generateCaveEntrance();
 	void generateTrees();
-	void updateLighting();
 
 	ChunksManager* chunksManager = nullptr;
 

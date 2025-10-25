@@ -1,15 +1,14 @@
 #pragma once
 #include "Chunk.h"
 #include <queue>
+#include <unordered_map>
 #include <SFML/Graphics.hpp>
-
-class Chunk;
 
 class LightingSystem
 {
 private:
-	std::vector<std::vector<sf::Color>> lightMap;
-	std::vector<std::vector<int>> lightLevels;
+	std::unordered_map<int, std::vector<std::vector<sf::Color>>> lightMaps;
+	std::unordered_map<int, std::vector<std::vector<int>>> lightLevelMaps;
 
 	const sf::Color WHITE_LIGHT = sf::Color::White;
 	const sf::Color AMBIENT_LIGHT = sf::Color::Black;
@@ -19,9 +18,10 @@ private:
 public:
 	LightingSystem();
 
-	void UpdateLighting(Chunk& chunk);
+	void UpdateLighting(std::unordered_map<int, Chunk*>& renderedChunks);
 
 private:
-	void PropogateSunlight(Chunk& chunk);
+	void PropogateSunlight(std::unordered_map<int, Chunk*>& renderedChunks);
 	sf::Color InterpolateColor(float t) const;
+
 };

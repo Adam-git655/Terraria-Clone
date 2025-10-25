@@ -102,7 +102,6 @@ void Chunk::generateTerrain()
     generateCaveEntrance();
     generateTrees();
     randomZombieSpawn();
-    updateLighting();
 }
 
 void Chunk::generateCaveEntrance()
@@ -172,11 +171,6 @@ void Chunk::randomZombieSpawn()
             }
         }
     }
-}
-
-void Chunk::updateLighting()
-{
-    chunksManager->UpdateLighting(*this);
 }
 
 Tile& Chunk::getTile(int x, int y)

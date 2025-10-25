@@ -40,11 +40,12 @@ Chunk& ChunksManager::getChunk(int chunkX)
 
 Chunk* ChunksManager::getChunkIfExists(int chunkX)
 {
-	if (chunks.find(chunkX) == chunks.end())
+	auto it = chunks.find(chunkX);
+	if (it == chunks.end())
 	{
 		return nullptr;
 	}
-	return chunks.find(chunkX)->second.get();
+	return it->second.get();
 }
 
 int ChunksManager::getChunkXFromWorldX(float worldX)
@@ -77,7 +78,7 @@ void ChunksManager::DestroyTile(sf::Vector2f pos)
 		tile.setType(Tile::TileType::Air);
 	
 	tile.setSolid(false);
-	UpdateLighting(chunk);
+	UpdateLighting();
 }
 
 void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType)
@@ -94,7 +95,7 @@ void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType)
 
 	tile.setType(blockType);
 	tile.setSolid(true);
-	UpdateLighting(chunk);
+	UpdateLighting();
 }
 
 const sf::Texture& ChunksManager::getTexture(const std::string& textureName) const
@@ -111,8 +112,11 @@ const sf::Texture& ChunksManager::getTexture(const std::string& textureName) con
 		return woodTex;
 	else if (textureName == "Leaf")
 		return leafTex;
-	else if (textureName == "")
-	std::cout << "ERROR\n";
+	else
+	{
+		std::cerr << "ERROR: Unkown texture name provided in getTexture: " << textureName << "\n";
+		return grassTex; //fallback
+	}
 }
 
 const std::vector<std::unique_ptr<Zombie>>& ChunksManager::getAllZombies() const
@@ -127,13 +131,43 @@ std::vector<std::unique_ptr<Zombie>>& ChunksManager::getAllZombies()
 
 void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWindow& window)
 {
-	int chunkX = getChunkXFromWorldX(player.getSprite().getPosition().x);
+	int playerChunkX = getChunkXFromWorldX(player.getSprite().getPosition().x);
+
+	//determine visible chunks based on their chunkX's (around the player)
+	std::unordered_set<int> visibleChunkXs;
+	visibleChunkXs.reserve((renderDistance * 2) + 1);
 
 	for (int dx = -renderDistance; dx <= renderDistance; ++dx)
+		visibleChunkXs.insert(playerChunkX + dx);
+	
+	//remove any chunks which are not in render distance anymore
+	for (auto it = renderedChunks.begin(); it != renderedChunks.end();)
 	{
-		int currentChunkX = chunkX + dx;
-		Chunk& chunk = getChunk(currentChunkX);
+		if (visibleChunkXs.find(it->first) == visibleChunkXs.end())
+			it = renderedChunks.erase(it);
+		else
+			++it;
+	} 
 
+	//add any newly visible chunks
+	for (int chunkX : visibleChunkXs)
+	{
+		if (renderedChunks.find(chunkX) == renderedChunks.end())
+		{
+			renderedChunks[chunkX] = &getChunk(chunkX);
+			UpdateLighting();
+		}
+	}
+
+	//Render the visible chunks
+	for (int dx = -renderDistance; dx <= renderDistance; ++dx)
+	{
+		int currentChunkX = playerChunkX + dx;
+		auto it = renderedChunks.find(currentChunkX);
+		if (it == renderedChunks.end()) continue;
+
+		Chunk& chunk = *it->second;
+		
 		//Rendering the tiles
 		for (int x = 0; x < Chunk::CHUNK_WIDTH; ++x)
 		{
@@ -237,8 +271,6 @@ void ChunksManager::generateCaveEntrances(int startX, int startY)
 						getChunk(chunkX).setTile(localX, tileY, Tile::TileType::CaveAir, false);
 					else
 						getChunk(chunkX).setTile(localX, tileY, Tile::TileType::Air, false);
-
-					UpdateLighting(chunk);
 				}
 			}
 		}
@@ -258,6 +290,8 @@ void ChunksManager::generateCaveEntrances(int startX, int startY)
 		if (y < 50)
 			break;
 	}
+
+	UpdateLighting();
 }
 
 void ChunksManager::QueueTreePosForGeneration(int x, int y)
@@ -343,9 +377,9 @@ void ChunksManager::spawnZombie(float spawnX, float spawnY)
 	zombies.push_back(std::make_unique<Zombie>(Vec2(spawnX, spawnY)));
 }
 
-void ChunksManager::UpdateLighting(Chunk& chunk)
+void ChunksManager::UpdateLighting()
 {
-	lighting.UpdateLighting(chunk);
+	lighting.UpdateLighting(renderedChunks);
 }
 
 void ChunksManager::collisionsWithTerrain(Entity& entity)
