@@ -54,7 +54,7 @@ public:
     void operator /= (const int& val);
 };
 
-
+//Hashing
 namespace std {
     template <>
     struct hash<IVec2> {

@@ -10,19 +10,6 @@ class ChunksManager;
 
 class Player : public Entity
 {
-private:
-	sf::Texture tex;
-	sf::IntRect rectSourceSprite = { 0, 0, 20, 26 };
-	sf::Clock walkAnimClock;
-
-	sf::Texture shortSwordTex;
-
-	Tile::TileType blockTypeInHand = Tile::TileType::Stone;
-	
-	bool movement_keys[sf::Keyboard::KeyCount] = { false };
-
-	std::unique_ptr<Weapon> weapon;
-
 public:
 	Player(Vec2 p = Vec2(400.0f, 400.0f));
 
@@ -42,4 +29,17 @@ public:
 	void unequipWeapon();
 	bool hasWeaponEquipped() const;
 	void handleWeaponAttack(sf::Vector2f targetPos, ChunksManager& chunksManager);
+
+private:
+	sf::Texture tex;
+	sf::IntRect rectSourceSprite = { 0, 0, 20, 26 };
+	sf::Clock walkAnimClock;
+
+	sf::Texture shortSwordTex;
+
+	Tile::TileType blockTypeInHand = Tile::TileType::Stone;
+
+	bool movement_keys[sf::Keyboard::KeyCount] = { false };
+
+	std::unique_ptr<Weapon> weapon;
 };

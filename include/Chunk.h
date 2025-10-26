@@ -10,21 +10,6 @@ class ChunksManager;
 
 class Chunk
 {
-private:
-	int chunkX;
-	std::vector<std::vector<Tile>> chunkTiles;
-	std::vector<int> surfaceHeights;
-	int seed;
-
-	int lengthOfDirtPatch = 5;
-	int lengthOfStonePatch = 40;
-
-	void randomZombieSpawn();
-	void generateCaveEntrance();
-	void generateTrees();
-
-	ChunksManager* chunksManager = nullptr;
-
 public:
 	static const int TILESIZE = 32;
 	static const int CHUNK_WIDTH = 16;
@@ -44,5 +29,20 @@ public:
 	std::vector<int>& getSurfaceHeights();
 
 	void collisionsWithTerrain(Entity& entity);
+
+private:
+	int chunkX;
+	std::vector<std::vector<Tile>> chunkTiles;
+	std::vector<int> surfaceHeights;
+	int seed;
+
+	int lengthOfDirtPatch = 5;
+	int lengthOfStonePatch = 40;
+
+	void randomZombieSpawn();
+	void generateCaveEntrance();
+	void generateTrees();
+
+	ChunksManager* chunksManager = nullptr;
 };
 

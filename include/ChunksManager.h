@@ -7,28 +7,6 @@
 
 class ChunksManager
 {
-private:
-	std::unordered_map<int, std::unique_ptr<Chunk>> chunks;
-	std::unordered_map<int, Chunk*> renderedChunks;
-	std::vector<std::unique_ptr<Zombie>> zombies;
-	std::vector<IVec2> treePositions;
-	LightingSystem lighting;
-	int seed;
-	int renderDistance = 3;
-	
-	sf::Texture grassTex;
-	sf::Texture dirtTex;
-	sf::Texture caveSkyTex;
-	sf::Texture stoneTex;
-	sf::Texture woodTex;
-	sf::Texture leafTex;
-
-	Chunk& getChunk(int chunkX);
-	int getChunkXFromWorldX(float worldX);
-
-	void processTreeQueue();
-	bool generateTree(const IVec2 pos);
-
 public:
 	ChunksManager(int seed);
 	
@@ -52,5 +30,27 @@ public:
 	void UpdateLighting();
 
 	void QueueTreePosForGeneration(int x, int y);
+
+private:
+	std::unordered_map<int, std::unique_ptr<Chunk>> chunks;
+	std::unordered_map<int, Chunk*> renderedChunks;
+	std::vector<std::unique_ptr<Zombie>> zombies;
+	std::vector<IVec2> treePositions;
+	LightingSystem lighting;
+	int seed;
+	int renderDistance = 3;
+
+	sf::Texture grassTex;
+	sf::Texture dirtTex;
+	sf::Texture caveSkyTex;
+	sf::Texture stoneTex;
+	sf::Texture woodTex;
+	sf::Texture leafTex;
+
+	Chunk& getChunk(int chunkX);
+	int getChunkXFromWorldX(float worldX);
+
+	void processTreeQueue();
+	bool generateTree(const IVec2 pos);
 };
 

@@ -5,7 +5,6 @@
 
 class Tile
 {
-
 public:
 	enum class TileType
 	{
