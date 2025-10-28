@@ -139,6 +139,11 @@ void Game::Update()
 
 void Game::RenderHotbar()
 {
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	ImVec2 window_pos = ImVec2(viewport->WorkPos.x + 10, viewport->WorkPos.y + 10);
+	ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
+
 	ImGui::Begin("Hotbar", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 	for (int i = 0; i < hotbar.size(); i++)
 	{
@@ -192,6 +197,31 @@ void Game::RenderHotbar()
 	ImGui::End();
 }
 
+void Game::RenderSettings()
+{
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	ImVec2 window_pos = ImVec2(
+		viewport->WorkPos.x + viewport->WorkSize.x - 10.0f,  // 10 px from right
+		viewport->WorkPos.y + 10.0f                          // 10 px from top
+	);
+	ImVec2 window_pos_pivot = ImVec2(1.0f, 0.0f);  // Pivot: right-top corner
+
+	ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+
+	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+	if (ImGui::Checkbox("Lighting", &isLighting))
+	{
+		if (isLighting)
+			chunksManager.EnableLighting();
+		else
+			chunksManager.DisableLighting();
+	}
+
+	ImGui::End();
+}
+
 void Game::Render()
 {
 	window.clear(sf::Color(0, 191, 255)); //Sky color
@@ -201,6 +231,7 @@ void Game::Render()
 	window.draw(player.getSprite());
 
 	RenderHotbar();
+	RenderSettings();
 
 	ImGui::SFML::Render(window);
 	window.display();

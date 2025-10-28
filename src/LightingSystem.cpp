@@ -4,7 +4,7 @@ LightingSystem::LightingSystem()
 {
 }
 
-void LightingSystem::PropogateSunlight(std::unordered_map<int, Chunk*>& renderedChunks)
+void LightingSystem::PropogateSunlight(const std::unordered_map<int, Chunk*>& renderedChunks)
 {
 	for (const auto& [chunkX, chunkPtr] : renderedChunks)
 	{
@@ -17,11 +17,7 @@ void LightingSystem::PropogateSunlight(std::unordered_map<int, Chunk*>& rendered
 			Chunk::CHUNK_WIDTH, std::vector<int>(Chunk::CHUNK_HEIGHT, 0));
 	}
 
-	struct Node { int worldX, y, level; };
-
-	std::queue<Node> nodesToProcess;
-
-	auto floorDiv = [](int a, int b) { return (a >= 0) ? a / b : ((a + 1) / b) - 1; };
+	std::queue<LightNode> nodesToProcess;
 
 	//Intialize Sky region with max brightness
 	for (const auto& [chunkX, chunkPtr] : renderedChunks)
@@ -49,6 +45,35 @@ void LightingSystem::PropogateSunlight(std::unordered_map<int, Chunk*>& rendered
 		}
 	}
 
+	RunBFS(renderedChunks, nodesToProcess);
+
+	//Turn light levels into real colors
+	for (const auto& [chunkX, chunkPtr] : renderedChunks)
+	{
+		if (!chunkPtr) continue;
+
+		auto itLM = lightMaps.find(chunkX);
+		auto itLL = lightLevelMaps.find(chunkX);
+		if (itLM == lightMaps.end() || itLL == lightLevelMaps.end()) continue;
+
+		auto& lightMap = itLM->second;
+		auto& lightLevelMap = itLL->second;
+
+		for (int x = 0; x < Chunk::CHUNK_WIDTH; ++x)
+		{
+			for (int y = 0; y < Chunk::CHUNK_HEIGHT; ++y)
+			{
+				float t = static_cast<float>(lightLevelMap[x][y]) / 15.0f;
+				lightMap[x][y] = InterpolateColor(t);
+			}
+		}
+	}
+}
+
+void LightingSystem::RunBFS(const std::unordered_map<int, Chunk*>& renderedChunks, std::queue<LightNode> nodesToProcess)
+{
+	auto floorDiv = [](int a, int b) { return (a >= 0) ? a / b : ((a + 1) / b) - 1; };
+
 	//Spread Lighting underground based on BFS Blood Fill algorithm
 	const int dirs[4][2] =
 	{
@@ -57,7 +82,7 @@ void LightingSystem::PropogateSunlight(std::unordered_map<int, Chunk*>& rendered
 
 	while (!nodesToProcess.empty())
 	{
-		Node node = nodesToProcess.front();
+		LightNode node = nodesToProcess.front();
 		nodesToProcess.pop();
 
 		for (auto& dir : dirs)
@@ -69,8 +94,6 @@ void LightingSystem::PropogateSunlight(std::unordered_map<int, Chunk*>& rendered
 
 			int chunkX = floorDiv(newX, Chunk::CHUNK_WIDTH);
 			int localX = newX - chunkX * Chunk::CHUNK_WIDTH;
-
-			if (localX < 0 || localX >= Chunk::CHUNK_WIDTH) continue;
 
 			auto chunkIt = renderedChunks.find(chunkX);
 			if (chunkIt == renderedChunks.end()) continue;
@@ -102,28 +125,6 @@ void LightingSystem::PropogateSunlight(std::unordered_map<int, Chunk*>& rendered
 			}
 		}
 	}
-
-	//Turn light levels into real colors
-	for (const auto& [chunkX, chunkPtr] : renderedChunks)
-	{
-		if (!chunkPtr) continue;
-
-		auto itLM = lightMaps.find(chunkX);
-		auto itLL = lightLevelMaps.find(chunkX);
-		if (itLM == lightMaps.end() || itLL == lightLevelMaps.end()) continue;
-
-		auto& lightMap = itLM->second;
-		auto& lightLevelMap = itLL->second;
-
-		for (int x = 0; x < Chunk::CHUNK_WIDTH; ++x)
-		{
-			for (int y = 0; y < Chunk::CHUNK_HEIGHT; ++y)
-			{
-				float t = static_cast<float>(lightLevelMap[x][y]) / 15.0f;
-				lightMap[x][y] = InterpolateColor(t);
-			}
-		}
-	}
 }
 
 sf::Color LightingSystem::InterpolateColor(float t) const
@@ -145,7 +146,7 @@ sf::Color LightingSystem::InterpolateColor(float t) const
 	}
 }
 
-void LightingSystem::UpdateLighting(std::unordered_map<int, Chunk*>& renderedChunks)
+void LightingSystem::UpdateLighting(const std::unordered_map<int, Chunk*>& renderedChunks)
 {
 	if (renderedChunks.empty()) return;
 
@@ -166,6 +167,135 @@ void LightingSystem::UpdateLighting(std::unordered_map<int, Chunk*>& renderedChu
 			{
 				chunkPtr->getTile(x, y).setLightColor(lightMap[x][y]);
 			}
+		}
+	}
+}
+
+void LightingSystem::UpdateLightingRegion(const std::unordered_map<int, Chunk*>& renderedChunks, int worldX, int worldY)
+{
+	const int RADIUS = 10;
+
+	auto floorDiv = [](int a, int b) { return (a >= 0) ? a / b : ((a + 1) / b) - 1; };
+
+	//set all tiles in region to light level 0
+	for (int dx = -RADIUS; dx <= RADIUS; ++dx)
+	{
+		for (int dy = -RADIUS; dy <= RADIUS; ++dy)
+		{
+			int x = worldX + dx;
+			int y = worldY + dy;
+
+			if (y < 0 || y >= Chunk::CHUNK_HEIGHT) continue;
+
+			int chunkX = floorDiv(x, Chunk::CHUNK_WIDTH);
+			int localX = x - chunkX * Chunk::CHUNK_WIDTH;
+
+			auto chunkIt = renderedChunks.find(chunkX);
+			if (chunkIt == renderedChunks.end()) continue;
+
+			Chunk* chunk = chunkIt->second;
+
+			auto itLL = lightLevelMaps.find(chunkX);
+			if (itLL == lightLevelMaps.end()) continue;
+
+			auto& lightLevelMap = itLL->second;
+
+			lightLevelMap[localX][y] = 0;	
+		}
+	}
+
+	std::queue<LightNode> nodesToProcess;
+
+	//Push the nodes within a radius that are affected by sunlight
+	for (int dx = -RADIUS; dx <= RADIUS; ++dx)
+	{
+		for (int dy = -RADIUS; dy <= RADIUS; ++dy)
+		{
+			int x = worldX + dx;
+			int y = worldY + dy;
+
+			if (y < 0 || y >= Chunk::CHUNK_HEIGHT) continue;
+
+			int chunkX = floorDiv(x, Chunk::CHUNK_WIDTH);
+			int localX = x - chunkX * Chunk::CHUNK_WIDTH;
+
+			auto chunkIt = renderedChunks.find(chunkX);
+			if (chunkIt == renderedChunks.end()) continue;
+
+			Chunk* chunk = chunkIt->second;
+			
+			if (y < chunk->getSurfaceHeights()[localX])
+			{
+				nodesToProcess.push({ x, y, static_cast<int>(MAX_LIGHT_LEVEL)});
+			}
+		}
+	}
+
+	//Push Border tiles just outside the radius that are affected by any light
+	const int BORDER = 1;
+	for (int dx = -RADIUS - BORDER; dx <= RADIUS + BORDER; ++dx)
+	{
+		for (int dy = -RADIUS - BORDER; dy <= RADIUS + BORDER; ++dy)
+		{
+			if (std::abs(dx) <= RADIUS && std::abs(dy) <= RADIUS)
+				continue;
+
+			int x = worldX + dx;
+			int y = worldY + dy;
+
+			if (y < 0 || y >= Chunk::CHUNK_HEIGHT) continue;
+
+			int chunkX = floorDiv(x, Chunk::CHUNK_WIDTH);
+			int localX = x - chunkX * Chunk::CHUNK_WIDTH;
+
+			auto chunkIt = renderedChunks.find(chunkX);
+			if (chunkIt == renderedChunks.end()) continue;
+
+			Chunk* chunk = chunkIt->second;
+
+			auto itLL = lightLevelMaps.find(chunkX);
+			if (itLL == lightLevelMaps.end()) continue;
+			auto& lightLevelMap = itLL->second;
+
+			if (localX < 0 || localX >= (int)lightLevelMap.size()) continue;
+
+			int lightLevel = lightLevelMap[localX][y];
+			if (lightLevel > 0)
+			{
+				nodesToProcess.push({ x, y, lightLevel });
+			}
+		}
+	}
+
+	RunBFS(renderedChunks, nodesToProcess);
+
+	//Apply final colors in affected region
+	for (int dx = -RADIUS; dx <= RADIUS; ++dx)
+	{
+		for (int dy = -RADIUS; dy <= RADIUS; ++dy)
+		{
+			int x = worldX + dx;
+			int y = worldY + dy;
+			if (y < 0 || y >= Chunk::CHUNK_HEIGHT) continue;
+
+			int chunkX = floorDiv(x, Chunk::CHUNK_WIDTH);
+			int localX = x - chunkX * Chunk::CHUNK_WIDTH;
+
+			auto chunkIt = renderedChunks.find(chunkX);
+			if (chunkIt == renderedChunks.end()) continue;
+			Chunk* chunk = chunkIt->second;
+
+			auto itLM = lightMaps.find(chunkX);
+			auto itLL = lightLevelMaps.find(chunkX);
+			if (itLM == lightMaps.end() || itLL == lightLevelMaps.end()) continue;
+
+			auto& lightMap = itLM->second;
+			auto& lightLevelMap = itLL->second;	
+
+			float t = static_cast<float>(lightLevelMap[localX][y]) / 15.0f;
+			lightMap[localX][y] = InterpolateColor(t);
+
+			chunk->getTile(localX, y).setLightColor(lightMap[localX][y]);
 		}
 	}
 }

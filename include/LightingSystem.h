@@ -4,12 +4,15 @@
 #include <unordered_map>
 #include <SFML/Graphics.hpp>
 
+struct LightNode { int worldX, y, level; };
+
 class LightingSystem
 {
 public:
 	LightingSystem();
 
-	void UpdateLighting(std::unordered_map<int, Chunk*>& renderedChunks);
+	void UpdateLighting(const std::unordered_map<int, Chunk*>& renderedChunks);
+	void UpdateLightingRegion(const std::unordered_map<int, Chunk*>& renderedChunks, int worldX, int worldY);
 
 private:
 	std::unordered_map<int, std::vector<std::vector<sf::Color>>> lightMaps;
@@ -20,6 +23,7 @@ private:
 	const float MAX_LIGHT_LEVEL = 15.0f;
 	const int PLAYER_LIGHT_RADIUS = 12;
 
-	void PropogateSunlight(std::unordered_map<int, Chunk*>& renderedChunks);
+	void PropogateSunlight(const std::unordered_map<int, Chunk*>& renderedChunks);
+	void RunBFS(const std::unordered_map<int, Chunk*>& renderedChunks, std::queue<LightNode> nodesToProcess);
 	sf::Color InterpolateColor(float t) const;
 };

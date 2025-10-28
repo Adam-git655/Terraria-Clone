@@ -35,6 +35,8 @@ private:
 	double deltaTime = 0.0;
 	sf::Clock deltaClock;
 
+	bool isLighting = true;
+
 	//Entities
 	Player player;
 	ChunksManager chunksManager;
@@ -53,4 +55,5 @@ private:
 
 	void HandleMouseInput(const sf::Event event, ImGuiIO& io);
 	void RenderHotbar();
+	void RenderSettings();
 };

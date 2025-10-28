@@ -78,7 +78,7 @@ void ChunksManager::DestroyTile(sf::Vector2f pos)
 		tile.setType(Tile::TileType::Air);
 	
 	tile.setSolid(false);
-	UpdateLighting();
+	UpdateLightingForRegion(tileX, tileY);
 }
 
 void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType)
@@ -95,7 +95,7 @@ void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType)
 
 	tile.setType(blockType);
 	tile.setSolid(true);
-	UpdateLighting();
+	UpdateLightingForRegion(tileX, tileY);
 }
 
 const sf::Texture& ChunksManager::getTexture(const std::string& textureName) const
@@ -377,9 +377,37 @@ void ChunksManager::spawnZombie(float spawnX, float spawnY)
 	zombies.push_back(std::make_unique<Zombie>(Vec2(spawnX, spawnY)));
 }
 
+void ChunksManager::DisableLighting()
+{
+	isLighting = false;
+	for (auto& [chunkX, chunk] : renderedChunks)
+	{
+		for (int x = 0; x < Chunk::CHUNK_WIDTH; ++x)
+		{
+			for (int y = 0; y < Chunk::CHUNK_HEIGHT; ++y)
+			{
+				chunk->getTile(x, y).setLightColor(sf::Color::White);
+			}
+		}
+	}
+}
+
+void ChunksManager::EnableLighting()
+{
+	isLighting = true;
+	UpdateLighting();
+}
+
 void ChunksManager::UpdateLighting()
 {
-	lighting.UpdateLighting(renderedChunks);
+	if (isLighting)
+		lighting.UpdateLighting(renderedChunks);
+}
+
+void ChunksManager::UpdateLightingForRegion(int worldX, int worldY)
+{
+	if (isLighting)
+		lighting.UpdateLightingRegion(renderedChunks, worldX, worldY);
 }
 
 void ChunksManager::collisionsWithTerrain(Entity& entity)

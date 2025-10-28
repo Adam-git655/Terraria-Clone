@@ -27,7 +27,10 @@ public:
 
 	void spawnZombie(float spawnX, float spawnY);
 
+	void DisableLighting();
+	void EnableLighting();
 	void UpdateLighting();
+	void UpdateLightingForRegion(int worldX, int worldY);
 
 	void QueueTreePosForGeneration(int x, int y);
 
@@ -39,6 +42,7 @@ private:
 	LightingSystem lighting;
 	int seed;
 	int renderDistance = 3;
+	bool isLighting = true;
 
 	sf::Texture grassTex;
 	sf::Texture dirtTex;
