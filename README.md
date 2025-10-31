@@ -27,13 +27,14 @@ cmake ../
 - Player collisions with the tiled environment
 - Smart Zombie AI using A* pathfinding
 - Basic Combat System
+- Lighting System using BFS Blood-fill algorithm.
 - Ability to place and destroy blocks
 - Can choose between 3 block types (Grass, dirt, and stone)
 - Inventory/Hotbar system to keep track of items
   
 ### Features to add
 
-- Basic Multiplayer system
+- Multithreading
 - Different block types and minerals
 - Multiple biomes
 - Audio system
