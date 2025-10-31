@@ -14,7 +14,8 @@ public:
 		CaveAir,
 		Stone,
 		Wood,
-		Leaf
+		Leaf,
+		Torch
 	};
 
 

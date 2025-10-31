@@ -23,9 +23,10 @@ void Game::Init()
 	ImGui::SFML::Init(window);
 
 	//Initialize hotbar
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Grass));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Dirt));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Stone));
+	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Grass, true));
+	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Dirt, true));
+	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Stone, true));
+	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Torch, false));
 	hotbar.push_back(std::make_unique<WeaponItem>("ShortSword"));
 
 	lastTime = gameClock.getElapsedTime().asSeconds();
@@ -84,6 +85,7 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 		return;
 
 	Item* currentItem = hotbar[selectedIndex].get();
+	auto* tileItem = dynamic_cast<TileItem*>(currentItem);
 
 	if (event.type == sf::Event::MouseButtonPressed)
 	{
@@ -105,7 +107,7 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 			&& currentItem->getItemType() == Item::ItemType::Tile)
 		{
 			isPlacing = true;
-			chunksManager.PlaceTile(pointWorldCoords, player.getBlockTypeInHand());
+			chunksManager.PlaceTile(pointWorldCoords, player.getBlockTypeInHand(), tileItem->getSolid());
 		}
 	}
 
@@ -126,7 +128,7 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 		if (isMining)
 			chunksManager.DestroyTile(pointWorldCoords);
 		if (isPlacing)
-			chunksManager.PlaceTile(pointWorldCoords, player.getBlockTypeInHand());
+			chunksManager.PlaceTile(pointWorldCoords, player.getBlockTypeInHand(), tileItem->getSolid());
 	}
 }
 

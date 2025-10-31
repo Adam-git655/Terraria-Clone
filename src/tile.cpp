@@ -78,6 +78,8 @@ std::string Tile::tileTypeToString(Tile::TileType type)
 		return "Wood";
 	case Tile::TileType::Leaf:
 		return "Leaf";
+	case Tile::TileType::Torch:
+		return "Torch";
 	default:
 		break;
 	}

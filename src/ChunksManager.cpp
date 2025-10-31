@@ -27,6 +27,10 @@ ChunksManager::ChunksManager(int seed)
 	{
 		std::cout << "ERROR LOADING LEAF TEXTURE";
 	}
+	if (!torchTex.loadFromFile(RESOURCES_PATH "torch.png"))
+	{
+		std::cout << "ERROR LOADING TORCH TEXTURE";
+	}
 }
 
 Chunk& ChunksManager::getChunk(int chunkX)
@@ -71,6 +75,7 @@ void ChunksManager::DestroyTile(sf::Vector2f pos)
 
 	Chunk& chunk = getChunk(chunkX);
 	Tile& tile = chunk.getTile(localX, tileY);
+	Tile::TileType typeOfTileRemoved = tile.getType();
 
 	if (tileY >= chunk.getSurfaceHeights()[localX])
 		tile.setType(Tile::TileType::CaveAir);
@@ -78,10 +83,14 @@ void ChunksManager::DestroyTile(sf::Vector2f pos)
 		tile.setType(Tile::TileType::Air);
 	
 	tile.setSolid(false);
+
+	if (typeOfTileRemoved == Tile::TileType::Torch)
+		lighting.RemoveLightSource(tileX, tileY);
+
 	UpdateLightingForRegion(tileX, tileY);
 }
 
-void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType)
+void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType, bool solid)
 {
 	int tileX = static_cast<int>(std::floor(pos.x / Chunk::TILESIZE));
 	int tileY = static_cast<int>(std::floor(pos.y / Chunk::TILESIZE));
@@ -93,8 +102,16 @@ void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType)
 	Chunk& chunk = getChunk(chunkX);
 	Tile& tile = chunk.getTile(localX, tileY);
 
-	tile.setType(blockType);
-	tile.setSolid(true);
+	//cannot place another tile on top of torch tile
+	if (tile.getType() != Tile::TileType::Torch)
+	{
+		tile.setType(blockType);
+		tile.setSolid(solid);
+	}
+
+	if (blockType == Tile::TileType::Torch)
+		lighting.AddLightSource(tileX, tileY, 15, sf::Color(255, 200, 150));
+
 	UpdateLightingForRegion(tileX, tileY);
 }
 
@@ -112,6 +129,8 @@ const sf::Texture& ChunksManager::getTexture(const std::string& textureName) con
 		return woodTex;
 	else if (textureName == "Leaf")
 		return leafTex;
+	else if (textureName == "Torch")
+		return torchTex;
 	else
 	{
 		std::cerr << "ERROR: Unkown texture name provided in getTexture: " << textureName << "\n";
@@ -205,6 +224,10 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 
 				case Tile::TileType::Leaf:
 					tileSprite.setTexture(leafTex);
+					break;
+
+				case Tile::TileType::Torch:
+					tileSprite.setTexture(torchTex);
 					break;
 
 				default:

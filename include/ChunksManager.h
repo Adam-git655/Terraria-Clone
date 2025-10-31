@@ -13,7 +13,7 @@ public:
 	Chunk* getChunkIfExists(int chunkX);
 
 	void DestroyTile(sf::Vector2f pos);
-	void PlaceTile(sf::Vector2f pos, Tile::TileType blockType);
+	void PlaceTile(sf::Vector2f pos, Tile::TileType blockType, bool solid);
 
 	const sf::Texture& getTexture(const std::string& textureName) const;
 
@@ -50,6 +50,7 @@ private:
 	sf::Texture stoneTex;
 	sf::Texture woodTex;
 	sf::Texture leafTex;
+	sf::Texture torchTex;
 
 	Chunk& getChunk(int chunkX);
 	int getChunkXFromWorldX(float worldX);
