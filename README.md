@@ -1,9 +1,10 @@
 ## Overview
 A simple Terraria clone made using C++ and the SFML graphics library
 
-<img width="1905" height="963" alt="image" src="https://github.com/user-attachments/assets/a84dab21-f259-4412-9afd-dcd4aebc4a5b" />
-<img width="1907" height="960" alt="image" src="https://github.com/user-attachments/assets/4648b86a-f65a-4362-913c-179f9850415b" />
-<img width="1908" height="961" alt="image" src="https://github.com/user-attachments/assets/d55955a8-22c9-4a49-825e-b3cb8f6457ae" />
+<img width="1908" height="967" alt="image" src="https://github.com/user-attachments/assets/b68d63c2-904e-405a-9cb3-37bdb80ca014" />
+<img width="1914" height="986" alt="Screenshot 2025-11-01 234522" src="https://github.com/user-attachments/assets/c90130ef-771c-4013-9d3c-7a58d943de78" />
+<img width="1912" height="969" alt="Screenshot 2025-11-01 234647" src="https://github.com/user-attachments/assets/96442dc2-4d00-440a-a550-7233117bb935" />
+<img width="1905" height="967" alt="Screenshot 2025-11-01 234738" src="https://github.com/user-attachments/assets/b9aa0363-a9f1-4994-a86e-5c946db8a147" />
 
 
 ## Steps To Build
