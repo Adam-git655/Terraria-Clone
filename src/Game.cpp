@@ -70,6 +70,8 @@ void Game::ProcessEvents()
 				selectedIndex = 2;
 			if (event.key.code == sf::Keyboard::Num4)
 				selectedIndex = 3;
+			if (event.key.code == sf::Keyboard::Num5)
+				selectedIndex = 4;
 		}
 
 		if (event.type == sf::Event::KeyReleased)
