@@ -44,7 +44,7 @@ void ZombieAI::update(Vec2& playerPos, ChunksManager& chunksManager, sf::RenderW
 			nextTile = path[currentPathIndex];
 		}
 
-		controlledZombie.followPath(currentTile, nextTile, dt);
+		controlledZombie.followPath(currentTile, nextTile);
 	}
 }
 

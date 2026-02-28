@@ -15,9 +15,9 @@ Zombie::Zombie(Vec2 p)
 	sprite.setPosition(position.x, position.y);
 	
 	health = 30.0f;
-	speed = 180.0f;
-	max_speed = 280.0f;
-	jumpStrength = 9.2f;
+	speed = 200.0f;
+	max_speed = 600.0f;
+	jumpStrength = 600.0f;
 
 	visionRange = 1200.0f;
 	attackRange = 50.0f;
@@ -76,8 +76,8 @@ void Zombie::update(float dt, Player& player, ChunksManager& chunksManager, sf::
 	//		velocity.x = -max_speed;
 	//}
 
-	//if (velocity.y > max_speed)
-	//	velocity.y = max_speed;
+	//if (velocity.y > terminalVelocity)
+	//	velocity.y = terminalVelocity;
 
 	prevPos = position;
 
@@ -98,8 +98,8 @@ void Zombie::update(float dt, Player& player, ChunksManager& chunksManager, sf::
 			velocity.x = -max_speed;
 	}
 
-	if (velocity.y > max_speed)
-		velocity.y = max_speed;
+	if (velocity.y > terminalVelocity)
+		velocity.y = terminalVelocity;
 
 	if (velocity.y > 0.5f)
 	{
@@ -144,7 +144,7 @@ void Zombie::update(float dt, Player& player, ChunksManager& chunksManager, sf::
 	}
 
 	//add velocity to current position
-	position += velocity;
+	position += velocity * dt;
 	sprite.setPosition(position.x, position.y);
 	sprite.setTextureRect(rectSourceSprite);
 	chunksManager.collisionsWithTerrain(*this);
@@ -169,14 +169,14 @@ bool Zombie::canAttackPlayer(const Vec2& playerPos) const
 	return squaredDistanceToPlayer <= (attackRange * attackRange);
 }
 
-void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile, float dt)
+void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile)
 {
 	IVec2 delta = nextTile - currentTile;
 
 	if (delta.x != 0 && !IsJumping)
 	{
 		if (abs(delta.x) <= 1)
-			velocity.x += speed * delta.x * dt;
+			velocity.x += speed * delta.x;
 		else
 		{
 			if (!IsJumping && !IsFalling)
@@ -196,9 +196,9 @@ void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile, float d
 	if (delta.y > 0 && !IsJumping)
 	{
 		if (sprite.getScale().x < 0)
-			velocity.x += speed * dt;
+			velocity.x += speed;
 		else
-			velocity.x -= speed * dt;	
+			velocity.x -= speed;
 	}
 
 	if (delta.y < 0)
@@ -214,9 +214,9 @@ void Zombie::followPath(const IVec2& currentTile, const IVec2& nextTile, float d
 	if (IsJumping)
 	{
 		if (sprite.getScale().x < 0)
-			velocity.x += 100 * dt;
+			velocity.x += speed;
 		else
-			velocity.x -= 100 * dt;
+			velocity.x -= speed;
 
 		if (IsOnGround)
 			IsJumping = false;

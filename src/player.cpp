@@ -21,9 +21,9 @@ Player::Player(Vec2 p)
 	sprite.setPosition(position.x, position.y);
 
 	health = 100.0f;
-	speed = 200.0f;
-	max_speed = 300.0f;
-	jumpStrength = 9.2f;
+	speed = 300.0f;
+	max_speed = 700.0f;
+	jumpStrength = 600.0f;
 }
 
 Tile::TileType Player::getBlockTypeInHand() const
@@ -88,12 +88,12 @@ void Player::update(float dt, ChunksManager& chunksManager)
 	}
 	if (movement_keys[sf::Keyboard::A])
 	{
-		velocity.x -= speed * dt;
+		velocity.x -= speed;
 		sprite.setScale(2, 2);
 	}
 	if (movement_keys[sf::Keyboard::D])
 	{
-		velocity.x += speed * dt;
+		velocity.x += speed;
 		sprite.setScale(-2, 2);
 	}
 	
@@ -132,11 +132,11 @@ void Player::update(float dt, ChunksManager& chunksManager)
 		velocity.x = max_speed;
 	if (velocity.x < -max_speed)
 		velocity.x = -max_speed;
-	if (velocity.y > max_speed)
-		velocity.y = max_speed;
+	if (velocity.y > terminalVelocity)
+		velocity.y = terminalVelocity;
 
 	//Add velocity to position
-	position += velocity;
+	position += velocity * dt;
 	sprite.setPosition(position.x, position.y);
 	sprite.setTextureRect(rectSourceSprite);
 	chunksManager.collisionsWithTerrain(*this); //check for collisions with tiles
@@ -151,7 +151,7 @@ void Player::equipWeapon(std::unique_ptr<Weapon> weaponToEquip)
 
 void Player::unequipWeapon()
 {
-	weapon.reset();
+	weapon.reset(); 
 }
 
 bool Player::hasWeaponEquipped() const

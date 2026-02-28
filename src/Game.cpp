@@ -17,7 +17,7 @@ Game::~Game()
 void Game::Init()
 {
 	//Initialize settings
-	window.setFramerateLimit(60);
+	window.setFramerateLimit(0);
 	camera.setSize(1920.0f, 1080.0f);
 	camera.setCenter(player.getSprite().getPosition());
 	ImGui::SFML::Init(window);

@@ -39,5 +39,6 @@ protected:
 	bool IsFalling = false;
 	bool IsJumping = false;
 
-	const float gravity = 13.5f;
+	const float gravity = 1400.0f;
+	const float terminalVelocity = 2000.0f;
 };

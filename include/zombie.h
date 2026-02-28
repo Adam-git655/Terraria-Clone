@@ -16,7 +16,7 @@ public:
 	void takeDamage(float damage);
 	bool isAlive() const;
 
-	void followPath(const IVec2& currentTile, const IVec2& nextTile, float dt);
+	void followPath(const IVec2& currentTile, const IVec2& nextTile);
 
 private:
 	ZombieAI ai;
