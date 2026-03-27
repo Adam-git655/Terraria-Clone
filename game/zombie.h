@@ -1,10 +1,10 @@
 #pragma once
-#include "Vec2.h"
+#include "engine/core/Vec2.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Entity.h"
-#include "ChunksManager.h"
-#include "ZombieAI.h"
+#include "engine/world/ChunksManager.h"
+#include "game/Systems/ZombieAI.h"
 
 class Zombie : public Entity
 {

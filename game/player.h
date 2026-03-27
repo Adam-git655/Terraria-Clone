@@ -1,8 +1,8 @@
 #pragma once
-#include "Vec2.h"
+#include "engine/core/Vec2.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "tile.h"
+#include "engine/world/tile.h"
 #include "Entity.h"
 
 class Weapon;

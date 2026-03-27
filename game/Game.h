@@ -5,8 +5,8 @@
 
 #include "player.h"
 #include "zombie.h"
-#include "ChunksManager.h"
-#include "PerlinNoise.h"
+#include "engine/world/ChunksManager.h"
+#include "engine/world/PerlinNoise.h"
 #include "ShortSword.h"
 #include "Item.h"
 #include "TileItem.h"

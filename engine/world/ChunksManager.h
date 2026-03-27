@@ -2,7 +2,7 @@
 #include "Chunk.h"
 #include "player.h"
 #include "zombie.h"
-#include "LightingSystem.h"
+#include "engine/rendering/LightingSystem.h"
 #include <unordered_map>
 
 class ChunksManager

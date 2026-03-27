@@ -1,5 +1,5 @@
 #pragma once
-#include "Chunk.h"
+#include "engine/world/Chunk.h"
 #include <queue>
 #include <unordered_map>
 #include <vector>

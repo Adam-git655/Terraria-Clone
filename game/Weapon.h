@@ -1,7 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "iostream"
-#include "ChunksManager.h"
+#include "engine/world/ChunksManager.h"
 
 class Weapon
 {

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <math.h>
-#include "Vec2.h"
+#include "engine/core/Vec2.h"
 
 class Perlin
 {

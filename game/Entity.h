@@ -1,5 +1,5 @@
 #pragma once
-#include "Vec2.h"
+#include "engine/core/Vec2.h"
 #include "SFML/Graphics.hpp"
 
 class Entity
@@ -27,7 +27,7 @@ public:
 protected:
 	sf::Sprite sprite;
 
-	float health;
+	float health = 100.0f;
 	float speed = 200.0f;
 	float max_speed = 300.0f;
 	float jumpStrength = 6.0f;
