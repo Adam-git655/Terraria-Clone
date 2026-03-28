@@ -231,13 +231,17 @@ int Chunk::getLengthOfStonePatch() const
     return lengthOfStonePatch;
 }
 
-void Chunk::collisionsWithTerrain(Entity& entity)
+void Chunk::collisionsWithTerrain(EntityManager& mgr, Entt e)
 {
-    //get bounds of player in global x positions
-    sf::FloatRect entityBounds = entity.getSprite().getGlobalBounds();
-    Vec2 entityPrevPos = entity.getPrevPos();
+    auto& collision = mgr.getComponentStorage<CollisionComponent>().get(e);
+    auto& transform = mgr.getComponentStorage<TransformComponent>().get(e);
+    auto& physics = mgr.getComponentStorage<PhysicsComponent>().get(e);
 
-    // Make the collision bounds smaller of the player
+    //get bounds of entity in global x positions
+    sf::FloatRect entityBounds = collision.bounds;
+    Vec2 entityPrevPos = transform.prevPos;
+
+    // Make the collision bounds smaller of the entity
     int offsetX = 10;
     entityBounds.left += offsetX;
     entityBounds.width -= offsetX * 2;
@@ -246,11 +250,11 @@ void Chunk::collisionsWithTerrain(Entity& entity)
     int chunkWorldStartX = chunkX * CHUNK_WIDTH * TILESIZE;
     int chunkWorldEndX = chunkWorldStartX + CHUNK_WIDTH * TILESIZE;
 
-    //Exit if the player is not inside the chunks worldX range
+    //Exit if the entity is not inside the chunks worldX range
     if (entityBounds.left + entityBounds.width < chunkWorldStartX || entityBounds.left > chunkWorldEndX)
         return;
 
-    //calculate the player worldX bounds respective to the chunksStartWorldX
+    //calculate the entity worldX bounds respective to the chunksStartWorldX
     int distEntityStartX = entityBounds.left - chunkWorldStartX;
     int distEntityEndX = (entityBounds.left + entityBounds.width) - chunkWorldStartX;
 
@@ -280,26 +284,26 @@ void Chunk::collisionsWithTerrain(Entity& entity)
 
                     if (collisionFromLeft)
                     {
-                        entity.setPosition(Vec2(tileBounds.left - entityBounds.width / 2, entity.getPosition().y));
-                        entity.setVelocity(Vec2(0.0f, entity.getVelocity().y)); // Stop rightward velocity
+                        transform.position = Vec2(tileBounds.left - entityBounds.width / 2, transform.position.y);
+                        physics.velocity = Vec2(0.0f, physics.velocity.y); // Stop rightward velocity
                     }
 
                     else if (collisionFromRight)
                     {
-                        entity.setPosition(Vec2(tileBounds.left + tileBounds.width + entityBounds.width / 2, entity.getPosition().y));
-                        entity.setVelocity(Vec2(0.0f, entity.getVelocity().y)); // Stop leftwards velocity
+                        transform.position = Vec2(tileBounds.left + tileBounds.width + entityBounds.width / 2, transform.position.y);
+                        physics.velocity = Vec2(0.0f, physics.velocity.y); // Stop leftwards velocity
                     }
 
                     else if (collisionFromBottom)
                     {
-                        entity.setPosition(Vec2(entity.getPosition().x, tileBounds.top + tileBounds.height + entityBounds.height / 2));
-                        entity.setVelocity(Vec2(entity.getVelocity().x, 0.0f)); //Stop upwards vel
+                        transform.position = Vec2(transform.position.x, tileBounds.top + tileBounds.height + entityBounds.height / 2);
+                        physics.velocity = Vec2(physics.velocity.x, 0.0f); //Stop upwards vel
                     }
 
                     else if (collisionFromTop)
                     {
-                        entity.setPosition(Vec2(entity.getPosition().x, tileBounds.top - entityBounds.height / 2));
-                        entity.setVelocity(Vec2(entity.getVelocity().x, 0.0f)); //Stop downwards vel
+                        transform.position = Vec2(transform.position.x, tileBounds.top - entityBounds.height / 2);
+                        physics.velocity = Vec2(physics.velocity.x, 0.0f); //Stop downwards vel
                     }
                 }
             }

@@ -21,7 +21,7 @@ public:
 	std::vector<std::unique_ptr<Zombie>>& ChunksManager::getAllZombies();
 
 	void UpdateAndRenderChunks(float dt, Player& player, sf::RenderWindow& window); //Render chunks according to player position
-	void collisionsWithTerrain(Entity& entity);
+	void collisionsWithTerrain(EntityManager& mgr);
 
 	void generateCaveEntrances(int startX, int startY);
 

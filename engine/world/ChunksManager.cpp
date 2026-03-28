@@ -433,31 +433,41 @@ void ChunksManager::UpdateLightingForRegion(int worldX, int worldY)
 		lighting.UpdateLightingRegion(renderedChunks, worldX, worldY);
 }
 
-void ChunksManager::collisionsWithTerrain(Entity& entity)
+void ChunksManager::collisionsWithTerrain(EntityManager& mgr)
 {
-	for (auto& pair : chunks)
+	auto& collisionStorage = mgr.getComponentStorage<CollisionComponent>();
+	auto& transformStorage = mgr.getComponentStorage<TransformComponent>();
+	auto& physicsStorage = mgr.getComponentStorage<PhysicsComponent>();
+
+	for (auto& [e, collision] : collisionStorage.getAll())
 	{
-		Chunk& chunk = *(pair.second);
+		auto& transform = transformStorage.get(e);
+		auto& physics = physicsStorage.get(e);
 
-		//Set isGrounded flag of entity
-		auto floorDiv = [](int a, int b) { return (a >= 0) ? a / b : ((a + 1) / b) - 1; };
-
-		int tileX = static_cast<int>(std::floor(entity.getPosition().x / Chunk::TILESIZE));
-		int tileBelow = static_cast<int>(std::floor(entity.getPosition().y / Chunk::TILESIZE)) + 1;
-
-		int chunkX = floorDiv(tileX, Chunk::CHUNK_WIDTH);
-		int localX = tileX - chunkX * Chunk::CHUNK_WIDTH;
-
-		if (chunk.getChunkX() == chunkX)
+		for (auto& pair : chunks)
 		{
-			Tile& tile = chunk.getTile(localX, tileBelow);
+			Chunk& chunk = *(pair.second);
 
-			if (tile.isSolid())
-				entity.setIsOnGround(true);
-			else
-				entity.setIsOnGround(false);
+			//Set isGrounded flag of entity
+			auto floorDiv = [](int a, int b) { return (a >= 0) ? a / b : ((a + 1) / b) - 1; };
+
+			int tileX = static_cast<int>(std::floor(transform.position.x / Chunk::TILESIZE));
+			int tileBelow = static_cast<int>(std::floor(transform.position.y / Chunk::TILESIZE)) + 1;
+
+			int chunkX = floorDiv(tileX, Chunk::CHUNK_WIDTH);
+			int localX = tileX - chunkX * Chunk::CHUNK_WIDTH;
+
+			if (chunk.getChunkX() == chunkX)
+			{
+				Tile& tile = chunk.getTile(localX, tileBelow);
+
+				if (tile.isSolid())
+					physics.IsOnGround = true;
+				else
+					physics.IsOnGround = false;
+			}
+
+			chunk.collisionsWithTerrain(mgr, e);
 		}
-
-		chunk.collisionsWithTerrain(entity);
 	}
 }

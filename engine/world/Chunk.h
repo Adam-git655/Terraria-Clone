@@ -1,9 +1,13 @@
 #pragma once
 #include "tile.h"
 #include "PerlinNoise.h"
-#include "Entity.h"
 #include "random"
 #include <vector>
+
+#include "engine/ecs/EntityManager.h"
+#include "game/Components/CollisionComponent.h"
+#include "game/Components/TransformComponent.h"
+#include "game/Components/PhysicsComponent.h"
 
 class Zombie;
 class ChunksManager;
@@ -28,7 +32,7 @@ public:
 	std::vector<std::vector<Tile>>& getChunkTiles();
 	std::vector<int>& getSurfaceHeights();
 
-	void collisionsWithTerrain(Entity& entity);
+	void collisionsWithTerrain(EntityManager& mgr, Entt e);
 
 private:
 	int chunkX;
