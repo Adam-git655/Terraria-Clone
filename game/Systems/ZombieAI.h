@@ -6,14 +6,14 @@
 #include <cassert>
 #include "SFML/Graphics.hpp"
 
-struct Node
-{
-	float globalGoal;
-	float localGoal;
-	int x;
-	int y;
-	IVec2 parent;
-};
+//struct Node
+//{
+//	float globalGoal;
+//	float localGoal;
+//	int x;
+//	int y;
+//	IVec2 parent;
+//};
 
 class Zombie;
 class ChunksManager;

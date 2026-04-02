@@ -7,6 +7,7 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 	auto& transformStorage = mgr.getComponentStorage<TransformComponent>();
 	auto& movementStorage = mgr.getComponentStorage<MovementComponent>();
 	auto& renderStorage = mgr.getComponentStorage<RenderComponent>();
+	auto& aiStorage = mgr.getComponentStorage<AIComponent>();
 
 	//Add Gravity to all entities which have a physics component
 	for (auto& [e, physics] : physicsStorage.getAll())
@@ -22,6 +23,8 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 		else
 			physics.IsFalling = false;
 	}
+
+	Vec2 playerPos = { 0, 0 };
 
 	//Move entities with input component (player)
 	for (auto& [e, input] : inputStorage.getAll())
@@ -60,7 +63,86 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 			physics.velocity.x = -movement.max_speed;
 
 		transform.position += physics.velocity * dt;
+
+		playerPos = transform.position;
 	}
 
-	//TODO:- Add movement of entities with AI component i.e Zombie.
+	//Move entities with AI component (zombies)
+	for (auto& [e, ai] : aiStorage.getAll())
+	{
+		auto& physics = physicsStorage.get(e);
+		auto& transform = transformStorage.get(e);
+		auto& movement = movementStorage.get(e);
+		auto& render = renderStorage.get(e);
+
+		transform.prevPos = transform.position;
+		physics.velocity.x = 0.0f;
+
+		if (ai.canSeePlayer)
+		{
+			zombieFollowPath(physics, movement, render, ai.currentTile, ai.nextTile);
+
+			if (physics.velocity.x > movement.max_speed)
+				physics.velocity.x = movement.max_speed;
+			if (physics.velocity.x < -movement.max_speed)
+				physics.velocity.x = -movement.max_speed;
+		}
+
+		transform.position += physics.velocity * dt;
+	}
 }
+
+void MovementSystem::zombieFollowPath(PhysicsComponent& physics, MovementComponent& movement, RenderComponent& render, const IVec2& currentTile, const IVec2& nextTile)
+{
+	IVec2 delta = nextTile - currentTile;
+
+	if (delta.x != 0 && !movement.IsJumping)
+	{
+		if (abs(delta.x) <= 1)
+			physics.velocity.x += movement.speed * delta.x;
+		else
+		{
+			if (!movement.IsJumping && !physics.IsFalling)
+			{
+				movement.IsJumping = true;
+				physics.velocity.y = -movement.jumpStrength;
+				physics.IsOnGround = false;
+			}
+		}
+
+		if (delta.x >= 0)
+			render.facingRight = true;
+		else
+			render.facingRight = false;
+	}
+
+	if (delta.y > 0 && !movement.IsJumping)
+	{
+		if (render.facingRight)
+			physics.velocity.x += movement.speed;
+		else
+			physics.velocity.x -= movement.speed;
+	}
+
+	if (delta.y < 0)
+	{
+		if (physics.IsOnGround)
+		{
+			movement.IsJumping = true;
+			physics.velocity.y = -movement.jumpStrength;
+			physics.IsOnGround = false;
+		}
+	}
+
+	if (movement.IsJumping)
+	{
+		if (render.facingRight)
+			physics.velocity.x += movement.speed;
+		else
+			physics.velocity.x -= movement.speed;
+
+		if (physics.IsOnGround)
+			movement.IsJumping = false;
+	}
+}
+
