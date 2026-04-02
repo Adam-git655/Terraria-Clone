@@ -13,4 +13,5 @@ public:
 
 private:
 	void init(EntityManager& mgr, Entt e, RenderComponent& render);
+	void advanceAnimation(AnimationComponent& animation);
 };

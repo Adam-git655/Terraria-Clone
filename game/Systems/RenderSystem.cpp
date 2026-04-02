@@ -72,31 +72,59 @@ void RenderSystem::update(EntityManager& mgr)
 
 		if (!physics.IsFalling && !movement.IsJumping)
 		{
-			if (physics.velocity.x != 0)
+			if (std::abs(physics.velocity.x) > 0.1f)
 			{
-				if (animation.rectSourceSprite.left < animation.walkRectLeftFirst)
-					animation.rectSourceSprite.left = animation.walkRectLeftFirst;
-
-				if (animation.animClock.getElapsedTime().asSeconds() > animation.animationTime)
-				{
-					if (animation.rectSourceSprite.left >= animation.walkRectLeftLast)
-						animation.rectSourceSprite.left = animation.walkRectLeftFirst;
-					else
-						animation.rectSourceSprite.left += animation.walkRectLeftMove;
-					animation.animClock.restart();
-				}
+				animation.play("walk");
 			}
 			else
 			{
-				animation.rectSourceSprite = animation.defaultSpriteStand;
+				animation.play("idle");
 			}
 		}
 		else
 		{
-			animation.rectSourceSprite = animation.spriteJump;
+			animation.play("jump");
 		}
 
+		advanceAnimation(animation);
 		render.sprite.setTextureRect(animation.rectSourceSprite);
+	}
+}
+
+void RenderSystem::advanceAnimation(AnimationComponent& animation)
+{
+	auto it = animation.animations.find(animation.currentAnim);
+	if (it == animation.animations.end())
+		return;
+
+	Animation& anim = it->second;
+
+	//wait before advancing to next frame of animation
+	if (animation.animClock.getElapsedTime().asSeconds() < anim.animationTime)
+		return;
+	animation.animClock.restart();
+
+	//advance animation
+	if (!anim.pingPongAnim)
+	{
+		animation.rectSourceSprite.left += anim.rectLeftMove;
+		if (animation.rectSourceSprite.left >= anim.rectLeftLast)
+			animation.rectSourceSprite.left = anim.rectLeftFirst;
+	}
+	else
+	{
+		if (animation.goingRight)
+		{
+			animation.rectSourceSprite.left += anim.rectLeftMove;
+			if (animation.rectSourceSprite.left >= anim.rectLeftLast)
+				animation.goingRight = false;
+		}
+		else
+		{
+			animation.rectSourceSprite.left -= anim.rectLeftMove;
+			if (animation.rectSourceSprite.left <= anim.rectLeftFirst)
+				animation.goingRight = true;
+		}
 	}
 }
 

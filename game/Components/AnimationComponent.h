@@ -1,18 +1,38 @@
 #include "SFML/Graphics.hpp"
 
+struct Animation
+{
+	int rectLeftFirst = 120;
+	int rectLeftLast = 360;
+	int rectLeftMove = 20;
+	int rectTop = 0;
+	int width = 20;
+	int height = 26;
+	float animationTime = 0.035f;
+	bool pingPongAnim = false;
+};
+
 struct AnimationComponent
 {
-	sf::IntRect defaultSpriteStand = { 0, 0, 20, 26 };
-	sf::IntRect spriteJump = { 0, 0, 0, 0 };
-	sf::IntRect rectSourceSprite = { 100, 0, 20, 26 };
-
-	int walkRectLeftFirst = 120;
-	int walkRectLeftLast = 360;
-	int walkRectLeftMove = 20;
-
+	std::unordered_map<std::string, Animation> animations;
+	std::string currentAnim = "idle";
+	sf::IntRect rectSourceSprite;
 	sf::Clock animClock;
-	float animationTime = 0.035f;
+	bool goingRight = true;
 
-	bool pingPongAnim = false;
-	bool walkSpriteSheetGoRight = true;
+	void addAnimation(const std::string& name, Animation anim)
+	{
+		animations[name] = anim;
+	}
+
+	void play(const std::string& name)
+	{
+		if (currentAnim == name)
+			return;
+		currentAnim = name;
+
+		auto& anim = animations[name];
+		rectSourceSprite = { anim.rectLeftFirst, anim.rectTop, anim.width, anim.height };
+		animClock.restart();
+	}
 };

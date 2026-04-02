@@ -61,4 +61,6 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 
 		transform.position += physics.velocity * dt;
 	}
+
+	//TODO:- Add movement of entities with AI component i.e Zombie.
 }
