@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include "engine/core/Vec2.h"
 #include "engine/world/ChunksManager.h"

@@ -1,4 +1,6 @@
+#pragma once
 #include "SFML/Graphics.hpp"
+
 struct RenderComponent
 {
 	bool initialized = false;

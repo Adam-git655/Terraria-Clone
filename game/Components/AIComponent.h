@@ -1,3 +1,5 @@
+#pragma once
+
 struct AIComponent
 {
 	std::vector<IVec2> path;

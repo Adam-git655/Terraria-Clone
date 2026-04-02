@@ -1,3 +1,4 @@
+#pragma once
 #include "engine/ecs/EntityManager.h"
 #include "game/Components/RenderComponent.h"
 #include "game/Components/TransformComponent.h"

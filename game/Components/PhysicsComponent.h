@@ -1,3 +1,4 @@
+#pragma once
 #include "engine/core/Vec2.h"
 
 struct PhysicsComponent

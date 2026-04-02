@@ -1,3 +1,5 @@
+#pragma once
+
 struct MovementComponent
 {
 	float speed = 200.0f;
