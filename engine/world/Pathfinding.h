@@ -1,4 +1,5 @@
 #pragma once
+#include <assert.h>
 #include <vector>
 #include "engine/core/Vec2.h"
 #include "engine/world/ChunksManager.h"

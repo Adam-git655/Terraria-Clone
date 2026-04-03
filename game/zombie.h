@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Entity.h"
 #include "engine/world/ChunksManager.h"
-#include "game/Systems/ZombieAI.h"
+#include "ZombieAI.h"
 
 class Zombie : public Entity
 {

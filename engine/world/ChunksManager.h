@@ -4,6 +4,7 @@
 #include "zombie.h"
 #include "engine/rendering/LightingSystem.h"
 #include <unordered_map>
+#include <unordered_set>
 
 class ChunksManager
 {
