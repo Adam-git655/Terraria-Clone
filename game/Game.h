@@ -3,14 +3,19 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
-#include "player.h"
-#include "zombie.h"
 #include "engine/world/ChunksManager.h"
 #include "engine/world/PerlinNoise.h"
-#include "ShortSword.h"
 #include "Item.h"
 #include "TileItem.h"
 #include "WeaponItem.h"
+
+#include "EntityFactory.h"
+
+#include "Systems/AISystem.h"
+#include "Systems/CombatSystem.h"
+#include "Systems/HealthSystem.h"
+#include "Systems/MovementSystem.h"
+#include "Systems/RenderSystem.h"
 
 #include <vector>
 
@@ -37,12 +42,28 @@ private:
 
 	bool isLighting = true;
 
-	//Entities
-	Player player;
 	ChunksManager chunksManager;
+
+	//Textures
+	sf::Texture playerTex;
+	sf::Texture zombieTex;
+	sf::Texture shortSwordTex;
+
+	//ECS
+	EntityManager entityManager;
+	EntityFactory entityFactory{ entityManager };
+	Entt playerEntity;
+
+	//Systems
+	AISystem aiSystem;
+	CombatSystem combatSystem;
+	HealthSystem healthSystem;
+	MovementSystem movementSystem;
+	RenderSystem renderSystem;
 
 	//Hotbar
 	std::vector<std::unique_ptr<Item>> hotbar;
+	Tile::TileType blockTypeInHand = Tile::TileType::Grass;
 	int selectedIndex = 0;
 	bool isMining = false;
 	bool isPlacing = false;

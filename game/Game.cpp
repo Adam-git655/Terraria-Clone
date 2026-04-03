@@ -2,7 +2,6 @@
 
 Game::Game(unsigned int width, unsigned int height)
 	:windowWidth(width), windowHeight(height),
-	player(Vec2(0.0f, 0.0f)),
 	chunksManager(std::time(nullptr))
 {
 	window.create(sf::VideoMode(windowWidth, windowHeight), "BAD TERRARIA CLONE");
@@ -19,8 +18,24 @@ void Game::Init()
 	//Initialize settings
 	window.setFramerateLimit(0);
 	camera.setSize(1920.0f, 1080.0f);
-	camera.setCenter(player.getSprite().getPosition());
 	ImGui::SFML::Init(window);
+
+	//intialize textures
+	if (!playerTex.loadFromFile(RESOURCES_PATH "playerSheet.png"))
+	{
+		std::cout << "ERROR LOADING PLAYER TEX\n";
+	}
+	if (!zombieTex.loadFromFile(RESOURCES_PATH "playerSheet.png"))
+	{
+		std::cout << "ERROR LOADING ZOMBIE TEX\n";
+	}
+	if (!shortSwordTex.loadFromFile(RESOURCES_PATH "ShortSword.png"))
+	{
+		std::cout << "ERROR LOADING SHORT SWORD TEX\n";
+	}
+
+	//Create player
+	playerEntity = entityFactory.createPlayer({ 0.0f, 0.0f }, playerTex);
 
 	//Initialize hotbar
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Grass, true));
@@ -58,9 +73,11 @@ void Game::ProcessEvents()
 		if (event.type == sf::Event::Closed)
 			window.close();
 
+		auto& input = entityManager.getComponentStorage<InputComponent>().get(playerEntity);
+
 		if (event.type == sf::Event::KeyPressed)
 		{
-			player.set_movement_key(event.key.code, true);
+			input.movement_keys[event.key.code] = true;
 
 			if (event.key.code == sf::Keyboard::Num1)
 				selectedIndex = 0;
@@ -75,7 +92,7 @@ void Game::ProcessEvents()
 		}
 
 		if (event.type == sf::Event::KeyReleased)
-			player.set_movement_key(event.key.code, false);
+			input.movement_keys[event.key.code] = false;
 
 		HandleMouseInput(event, io);
 	}
@@ -97,7 +114,12 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
 			if (currentItem->getItemType() == Item::ItemType::Weapon)
-				player.handleWeaponAttack(pointWorldCoords, chunksManager);
+			{
+				auto& weaponsStorage = entityManager.getComponentStorage<WeaponComponent>();
+
+				if (weaponsStorage.has(playerEntity))
+					weaponsStorage.get(playerEntity).attackRequested = true;
+			}
 			else
 			{
 				isMining = true;
@@ -109,7 +131,7 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 			&& currentItem->getItemType() == Item::ItemType::Tile)
 		{
 			isPlacing = true;
-			chunksManager.PlaceTile(pointWorldCoords, player.getBlockTypeInHand(), tileItem->getSolid());
+			chunksManager.PlaceTile(pointWorldCoords, blockTypeInHand, tileItem->getSolid());
 		}
 	}
 
@@ -130,15 +152,33 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 		if (isMining)
 			chunksManager.DestroyTile(pointWorldCoords);
 		if (isPlacing)
-			chunksManager.PlaceTile(pointWorldCoords, player.getBlockTypeInHand(), tileItem->getSolid());
+			chunksManager.PlaceTile(pointWorldCoords, blockTypeInHand, tileItem->getSolid());
 	}
 }
 
 void Game::Update()
 {
 	ImGui::SFML::Update(window, deltaClock.restart());
-	camera.setCenter(player.getSprite().getPosition());
-	player.update(static_cast<float>(deltaTime), chunksManager);
+	//player.update(static_cast<float>(deltaTime), chunksManager);
+
+	//Update systems
+
+	aiSystem.update(entityManager, chunksManager, playerEntity, deltaTime);
+	movementSystem.update(entityManager, deltaTime);
+	chunksManager.collisionsWithTerrain(entityManager.getComponentStorage<CollisionComponent>(), 
+										entityManager.getComponentStorage<TransformComponent>(),
+										entityManager.getComponentStorage<PhysicsComponent>());
+
+	for (auto& pos : chunksManager.getZombieSpawnPositions())
+		entityFactory.createZombie(pos, zombieTex);
+	chunksManager.getZombieSpawnPositions().clear();
+
+	combatSystem.update(entityManager);
+	healthSystem.update(entityManager);
+	renderSystem.update(entityManager);
+
+	auto& playerTransform = entityManager.getComponentStorage<TransformComponent>().get(playerEntity);
+	camera.setCenter(sf::Vector2f(playerTransform.position.x, playerTransform.position.y));
 }
 
 void Game::RenderHotbar()
@@ -165,7 +205,7 @@ void Game::RenderHotbar()
 		if (item->getItemType() == Item::ItemType::Tile)
 			tex = &chunksManager.getTexture(item->getItemName());
 		else if (item->getItemType() == Item::ItemType::Weapon)
-			tex = &player.getWeaponTexture(item->getItemName());
+			tex = &shortSwordTex;
 
 		if (tex)
 		{
@@ -176,21 +216,6 @@ void Game::RenderHotbar()
 			}
 		}
 
-		Item* selectedItem = hotbar[selectedIndex].get();
-		if (selectedItem->getItemType() == Item::ItemType::Tile)
-		{
-			auto* tileItem = dynamic_cast<TileItem*>(selectedItem);
-			if (tileItem)
-				player.setBlockTypeInHand(tileItem->getTileType());
-
-			player.unequipWeapon();
-		}
-		else if (selectedItem->getItemType() == Item::ItemType::Weapon)
-		{
-			if (selectedItem->getItemName() == "ShortSword" && !player.hasWeaponEquipped())
-				player.equipWeapon(std::make_unique<ShortSword>(10.0f, 0.5f));
-		}
-
 		ImGui::PopStyleColor();
 
 		if (i < hotbar.size() - 1)
@@ -199,6 +224,26 @@ void Game::RenderHotbar()
 	}
 
 	ImGui::End();
+
+	//EQUIP / UNEQUIP TILES/WEAPONS LOGIC
+	Item* selectedItem = hotbar[selectedIndex].get();
+
+	auto& weaponsStorage = entityManager.getComponentStorage<WeaponComponent>();
+
+	if (selectedItem->getItemType() == Item::ItemType::Tile)
+	{
+		auto* tileItem = dynamic_cast<TileItem*>(selectedItem);
+		if (tileItem)
+			blockTypeInHand = tileItem->getTileType();
+
+		if (weaponsStorage.has(playerEntity))
+			entityManager.removeComponent<WeaponComponent>(playerEntity);
+	}
+	else if (selectedItem->getItemType() == Item::ItemType::Weapon)
+	{
+		if (selectedItem->getItemName() == "ShortSword" && !weaponsStorage.has(playerEntity))
+			entityManager.addComponent<WeaponComponent>(playerEntity, { "ShortSword", 10.0f, {}, 0.7f, 100.0f, false });
+	}
 }
 
 void Game::RenderSettings()
@@ -231,8 +276,10 @@ void Game::Render()
 	window.clear(sf::Color(0, 191, 255)); //Sky color
 	window.setView(camera);
 
-	chunksManager.UpdateAndRenderChunks(static_cast<float>(deltaTime), player, window);
-	window.draw(player.getSprite());
+	auto& transform = entityManager.getComponentStorage<TransformComponent>().get(playerEntity);
+
+	chunksManager.UpdateAndRenderChunks(static_cast<float>(deltaTime), transform.position, window);
+	renderSystem.draw(entityManager, window);
 
 	RenderHotbar();
 	RenderSettings();
