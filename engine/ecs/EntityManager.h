@@ -21,6 +21,12 @@ public:
 	}
 
 	template<typename T>
+	void removeComponent(Entt e)
+	{
+		getStorage<T>().remove(e);
+	}
+
+	template<typename T>
 	bool hasComponent(Entt e)
 	{
 		return getStorage<T>().has(e);
@@ -38,10 +44,18 @@ public:
 		return getStorage<T>();
 	}
 
+	void destroy(Entt e)
+	{
+		for (auto& [type, storage] : storages)
+		{
+			storage->remove(e);
+		}
+	}
+
 private:
 	Entt entityID = 0;
 
-	std::unordered_map<std::type_index, std::shared_ptr<void>> storages;
+	std::unordered_map<std::type_index, std::shared_ptr<IComponentStorage>> storages;
 
 	template<typename T>
 	ComponentStorage<T>& getStorage()
@@ -53,7 +67,7 @@ private:
 			storages[index] = std::make_shared<ComponentStorage<T>>();
 		}
 
-		return *std::static_pointer_cast<ComponentStorage<T>>(storages[index]);
+		return *static_cast<ComponentStorage<T>*>(storages[index].get());
 	}
 
 };

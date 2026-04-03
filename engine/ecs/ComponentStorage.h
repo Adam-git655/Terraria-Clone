@@ -3,13 +3,25 @@
 #include <unordered_map>
 #include <vector>
 
+class IComponentStorage
+{
+public:
+	virtual ~IComponentStorage() = default;
+	virtual void remove(Entt e) = 0;
+};
+
 template<typename T>
-class ComponentStorage
+class ComponentStorage : public IComponentStorage
 {
 public:
 	void add(Entt e, const T& component)
 	{
 		components[e] = component;
+	}
+
+	void remove(Entt e) override
+	{
+		components.erase(e);
 	}
 
 	bool has(Entt e)
@@ -22,7 +34,7 @@ public:
 		return components[e];
 	}
 
-	std::unordered_map<Entt, T> getAll()
+	std::unordered_map<Entt, T>& getAll()
 	{
 		return components;
 	}
