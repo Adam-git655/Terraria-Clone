@@ -30,9 +30,14 @@ struct AnimationComponent
 	{
 		if (currentAnim == name)
 			return;
+
+		auto it = animations.find(name);
+		if (it == animations.end())
+			return;
+
 		currentAnim = name;
 
-		auto& anim = animations[name];
+		auto& anim = it->second;
 		rectSourceSprite = { anim.rectLeftFirst, anim.rectTop, anim.width, anim.height };
 		animClock.restart();
 	}

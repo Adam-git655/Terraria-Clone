@@ -4,9 +4,9 @@
 struct WeaponComponent
 {
 	std::string weaponName = "ShortSword";
-	float damage;
+	float damage = 10.0f;
 	sf::Clock attackClock;
-	float attackCooldown;
-	float attackRange;
+	float attackCooldown = 2.0f;
+	float attackRange= 50.0f;
 	bool attackRequested = false;
 };

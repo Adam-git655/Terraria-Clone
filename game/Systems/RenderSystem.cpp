@@ -46,9 +46,9 @@ void RenderSystem::update(EntityManager& mgr)
 		//Update sprites look direction
 		//To check: original facing direction of sprite resource
 		if (render.facingRight)
-			render.sprite.setScale(std::abs(render.scale.x), render.scale.y);
-		else
 			render.sprite.setScale(-std::abs(render.scale.x), render.scale.y);
+		else
+			render.sprite.setScale(std::abs(render.scale.x), render.scale.y);
 
 
 		if (!transformStorage.has(e))

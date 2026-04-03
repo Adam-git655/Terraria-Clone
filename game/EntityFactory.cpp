@@ -1,0 +1,47 @@
+#include "EntityFactory.h"
+
+Entt EntityFactory::createPlayer(Vec2& spawnPos, sf::Texture& playerTex)
+{
+	Entt e = mgr.create();
+	mgr.addComponent<TransformComponent>(e, { spawnPos, spawnPos });
+	mgr.addComponent<PhysicsComponent>(e, {});
+	mgr.addComponent<MovementComponent>(e, { 300.0f, 700.0f, 600.0f, false });
+	mgr.addComponent<InputComponent>(e, {});
+	mgr.addComponent<CollisionComponent>(e, { {0.0f, 0.0f, 20.0f, 26.0f } });
+	mgr.addComponent<HealthComponent>(e, { 100.0f, 100.0f });
+	mgr.addComponent<RenderComponent>(e, { false, {}, {2.0f, 2.0f}, playerTex, true });
+	mgr.addComponent<FactionComponent>(e, { Faction::Player });
+
+	//To add:- weapon component adding/removing functionality through hotbar
+
+	AnimationComponent anim;
+	anim.addAnimation("idle", {0, 0, 0, 0, 20, 26, 0.035f, false});
+	anim.addAnimation("walk", { 120, 360, 20, 0, 20, 26, 0.035f, false });
+	anim.addAnimation("jump", { 100, 100, 0, 0, 20, 26, 0.035f, false });
+	anim.play("idle");
+	mgr.addComponent<AnimationComponent>(e, anim);
+
+	return e;
+}
+
+Entt EntityFactory::createZombie(Vec2& spawnPos, sf::Texture& zombieTex)
+{
+	Entt e = mgr.create();
+	mgr.addComponent<TransformComponent>(e, { spawnPos, spawnPos });
+	mgr.addComponent<PhysicsComponent>(e, {});
+	mgr.addComponent<MovementComponent>(e, { 200.0f, 600.0f, 600.0f, false });
+	mgr.addComponent<AIComponent>(e, {});
+	mgr.addComponent<CollisionComponent>(e, { {0.0f, 0.0f, 157.0f, 213.0f} });
+	mgr.addComponent<HealthComponent>(e, { 30.0f, 30.0f });
+	mgr.addComponent<RenderComponent>(e, { false, {}, {0.25f, 0.25f}, zombieTex, true });
+	mgr.addComponent<FactionComponent>(e, { Faction::Enemy });
+	mgr.addComponent<WeaponComponent>(e, { "fist", 5.0f, {}, 2.0f, 50.0f, false });
+
+	AnimationComponent anim;
+	anim.addAnimation("idle", { 0, 0, 0, 0, 157, 213, 0.06f, false });
+	anim.addAnimation("walk", {0, 314, 157, 0, 157, 213, 0.06f, true});
+	anim.play("idle");
+	mgr.addComponent<AnimationComponent>(e, anim);
+
+	return e;
+}

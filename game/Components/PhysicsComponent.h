@@ -7,5 +7,5 @@ struct PhysicsComponent
 	float gravity = 1400.0f;
 	float terminalVelocity = 2000.0f;
 	bool IsOnGround = false;
-	bool IsFalling = false;
+	bool IsFalling = true;
 };
