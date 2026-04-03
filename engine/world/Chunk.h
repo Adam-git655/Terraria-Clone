@@ -32,7 +32,7 @@ public:
 	std::vector<std::vector<Tile>>& getChunkTiles();
 	std::vector<int>& getSurfaceHeights();
 
-	void collisionsWithTerrain(EntityManager& mgr, Entt e);
+	void collisionsWithTerrain(CollisionComponent& collision, TransformComponent& transform, PhysicsComponent& physics, Entt e);
 
 private:
 	int chunkX;

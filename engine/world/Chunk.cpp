@@ -163,11 +163,13 @@ void Chunk::randomZombieSpawn()
             int spawnWorldX = chunkX * CHUNK_WIDTH + spawnXInChunk;
             int spawnY = surfaceHeights[spawnXInChunk] - 1;
             
-            float sfmlX = (spawnWorldX + 0.5f) * Chunk::TILESIZE;
-            float sfmlY = (spawnY + 0.5f) * Chunk::TILESIZE;
+            float worldPosX = (spawnWorldX + 0.5f) * Chunk::TILESIZE;
+            float worldPosY = (spawnY + 0.5f) * Chunk::TILESIZE;
+
+            //TODO:- REPLACE WITH ENTITY FACTORY.CREATE ZOMBIE
             if (chunksManager)
             {         
-                chunksManager->spawnZombie(sfmlX, sfmlY);
+                chunksManager->QueueZombieSpawn(worldPosX, worldPosY);
             }
         }
     }
@@ -231,12 +233,8 @@ int Chunk::getLengthOfStonePatch() const
     return lengthOfStonePatch;
 }
 
-void Chunk::collisionsWithTerrain(EntityManager& mgr, Entt e)
+void Chunk::collisionsWithTerrain(CollisionComponent& collision, TransformComponent& transform, PhysicsComponent& physics, Entt e)
 {
-    auto& collision = mgr.getComponentStorage<CollisionComponent>().get(e);
-    auto& transform = mgr.getComponentStorage<TransformComponent>().get(e);
-    auto& physics = mgr.getComponentStorage<PhysicsComponent>().get(e);
-
     //get bounds of entity in global x positions
     sf::FloatRect entityBounds = collision.bounds;
     Vec2 entityPrevPos = transform.prevPos;

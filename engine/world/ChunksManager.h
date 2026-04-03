@@ -18,15 +18,12 @@ public:
 
 	const sf::Texture& getTexture(const std::string& textureName) const;
 
-	const std::vector<std::unique_ptr<Zombie>>& getAllZombies() const;
-	std::vector<std::unique_ptr<Zombie>>& ChunksManager::getAllZombies();
-
-	void UpdateAndRenderChunks(float dt, Player& player, sf::RenderWindow& window); //Render chunks according to player position
-	void collisionsWithTerrain(EntityManager& mgr);
+	void UpdateAndRenderChunks(float dt, Vec2& playerPos, sf::RenderWindow& window); //Render chunks according to player position
+	void collisionsWithTerrain(ComponentStorage<CollisionComponent>& collisionStorage,
+							   ComponentStorage<TransformComponent>& transformStorage,
+		                       ComponentStorage<PhysicsComponent>& physicsStorage);
 
 	void generateCaveEntrances(int startX, int startY);
-
-	void spawnZombie(float spawnX, float spawnY);
 
 	void DisableLighting();
 	void EnableLighting();
@@ -35,11 +32,15 @@ public:
 
 	void QueueTreePosForGeneration(int x, int y);
 
+	void QueueZombieSpawn(float worldX, float worldY);
+	std::vector<Vec2>& getZombieSpawnPositions();
+
 private:
 	std::unordered_map<int, std::unique_ptr<Chunk>> chunks;
 	std::unordered_map<int, Chunk*> renderedChunks;
-	std::vector<std::unique_ptr<Zombie>> zombies;
 	std::vector<IVec2> treePositions;
+	std::vector<Vec2> zombieSpawnPositions;
+
 	LightingSystem lighting;
 	int seed;
 	int renderDistance = 3;

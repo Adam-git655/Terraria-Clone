@@ -138,19 +138,9 @@ const sf::Texture& ChunksManager::getTexture(const std::string& textureName) con
 	}
 }
 
-const std::vector<std::unique_ptr<Zombie>>& ChunksManager::getAllZombies() const
+void ChunksManager::UpdateAndRenderChunks(float dt, Vec2& playerPos, sf::RenderWindow& window)
 {
-	return zombies;
-}
-
-std::vector<std::unique_ptr<Zombie>>& ChunksManager::getAllZombies()
-{
-	return zombies;
-}
-
-void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWindow& window)
-{
-	int playerChunkX = getChunkXFromWorldX(player.getSprite().getPosition().x);
+	int playerChunkX = getChunkXFromWorldX(playerPos.x);
 
 	//determine visible chunks based on their chunkX's (around the player)
 	std::unordered_set<int> visibleChunkXs;
@@ -246,20 +236,6 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Player& player, sf::RenderWi
 	}
 
 	processTreeQueue();
-
-	for (const auto& zombie : zombies)
-	{
-		if (zombie)
-		{
-			zombie->update(dt, player, *this, window);
-			window.draw(zombie->getSprite());
-		}
-	}
-
-	zombies.erase(std::remove_if(zombies.begin(), zombies.end(),
-		[](const std::unique_ptr<Zombie>& zombie)
-		{ return !zombie->isAlive(); }),  
-		zombies.end());
 }
 
 void ChunksManager::generateCaveEntrances(int startX, int startY)
@@ -395,11 +371,6 @@ bool ChunksManager::generateTree(const IVec2 pos)
 	return true;
 }
 
-void ChunksManager::spawnZombie(float spawnX, float spawnY)
-{
-	zombies.push_back(std::make_unique<Zombie>(Vec2(spawnX, spawnY)));
-}
-
 void ChunksManager::DisableLighting()
 {
 	isLighting = false;
@@ -433,41 +404,42 @@ void ChunksManager::UpdateLightingForRegion(int worldX, int worldY)
 		lighting.UpdateLightingRegion(renderedChunks, worldX, worldY);
 }
 
-void ChunksManager::collisionsWithTerrain(EntityManager& mgr)
+void ChunksManager::QueueZombieSpawn(float worldX, float worldy)
 {
-	auto& collisionStorage = mgr.getComponentStorage<CollisionComponent>();
-	auto& transformStorage = mgr.getComponentStorage<TransformComponent>();
-	auto& physicsStorage = mgr.getComponentStorage<PhysicsComponent>();
+	zombieSpawnPositions.push_back(Vec2(worldX, worldy));
+}
 
+std::vector<Vec2>& ChunksManager::getZombieSpawnPositions()
+{
+	return zombieSpawnPositions;
+}
+
+void ChunksManager::collisionsWithTerrain(ComponentStorage<CollisionComponent>& collisionStorage,
+										  ComponentStorage<TransformComponent>& transformStorage,
+										  ComponentStorage<PhysicsComponent>& physicsStorage)
+{
 	for (auto& [e, collision] : collisionStorage.getAll())
 	{
 		auto& transform = transformStorage.get(e);
 		auto& physics = physicsStorage.get(e);
 
-		for (auto& pair : chunks)
-		{
-			Chunk& chunk = *(pair.second);
+		int chunkX = getChunkXFromWorldX(transform.position.x);
+		Chunk& chunk = getChunk(chunkX);
 
-			//Set isGrounded flag of entity
-			auto floorDiv = [](int a, int b) { return (a >= 0) ? a / b : ((a + 1) / b) - 1; };
 
-			int tileX = static_cast<int>(std::floor(transform.position.x / Chunk::TILESIZE));
-			int tileBelow = static_cast<int>(std::floor(transform.position.y / Chunk::TILESIZE)) + 1;
+		//Set isGrounded flag of entity
+		int tileX = static_cast<int>(std::floor(transform.position.x / Chunk::TILESIZE));
+		int tileBelow = static_cast<int>(std::floor(transform.position.y / Chunk::TILESIZE)) + 1;
+		int localX = tileX - chunkX * Chunk::CHUNK_WIDTH;		
 
-			int chunkX = floorDiv(tileX, Chunk::CHUNK_WIDTH);
-			int localX = tileX - chunkX * Chunk::CHUNK_WIDTH;
+		Tile& tile = chunk.getTile(localX, tileBelow);
 
-			if (chunk.getChunkX() == chunkX)
-			{
-				Tile& tile = chunk.getTile(localX, tileBelow);
+		if (tile.isSolid())
+			physics.IsOnGround = true;
+		else
+			physics.IsOnGround = false;
+		
 
-				if (tile.isSolid())
-					physics.IsOnGround = true;
-				else
-					physics.IsOnGround = false;
-			}
-
-			chunk.collisionsWithTerrain(mgr, e);
-		}
+		chunk.collisionsWithTerrain(collision, transform, physics, e);
 	}
 }
