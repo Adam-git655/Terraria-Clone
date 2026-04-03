@@ -5,6 +5,7 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 	auto& aiStorage = mgr.getComponentStorage<AIComponent>();
 	auto& transformStorage = mgr.getComponentStorage<TransformComponent>();
 	auto& physicsStorage = mgr.getComponentStorage<PhysicsComponent>();
+	auto& weaponStorage = mgr.getComponentStorage<WeaponComponent>();
 
 	auto& playerTransform = transformStorage.get(playerE);
 	
@@ -15,6 +16,7 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 
 		float squaredDistanceToPlayer = transform.position.distSquared(playerTransform.position);
 		ai.canSeePlayer =  squaredDistanceToPlayer <= (ai.visionRange * ai.visionRange);
+		ai.canAttackPlayer = squaredDistanceToPlayer <= (ai.attackRange * ai.attackRange);
 
 		if (ai.canSeePlayer)
 		{
@@ -57,7 +59,12 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 		{
 			physics.velocity.x = 0.0f;
 		}
-		
+
+		if (ai.canAttackPlayer && weaponStorage.has(e))
+		{
+			auto& weapon = weaponStorage.get(e);
+			weapon.attackRequested = true;
+		}
 	}	
 }
 

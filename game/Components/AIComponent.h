@@ -12,4 +12,5 @@ struct AIComponent
 	float visionRange = 1200.0f;
 	float attackRange = 50.0f;
 	bool canSeePlayer = false;
+	bool canAttackPlayer = false;
 };

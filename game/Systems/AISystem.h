@@ -2,7 +2,8 @@
 #include "engine/core/Vec2.h"
 #include "engine/world/Pathfinding.h"
 #include "engine/world/ChunksManager.h"
-#include "Components/AIComponent.h"
+#include "game/Components/AIComponent.h"
+#include "game/Components/WeaponComponent.h"
 
 class AISystem
 {
