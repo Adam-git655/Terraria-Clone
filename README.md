@@ -1,5 +1,5 @@
 ## Overview
-A simple Terraria clone made using C++ and the SFML graphics library
+An ECS based Terraria clone made using C++ and the SFML graphics library
 
 <img width="1908" height="967" alt="image" src="https://github.com/user-attachments/assets/b68d63c2-904e-405a-9cb3-37bdb80ca014" />
 <img width="1914" height="986" alt="Screenshot 2025-11-01 234522" src="https://github.com/user-attachments/assets/c90130ef-771c-4013-9d3c-7a58d943de78" />
