@@ -20,23 +20,31 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 
 		if (ai.canSeePlayer)
 		{
-			int zombieGlobalTileX = static_cast<int>(std::floor(transform.position.x / Chunk::TILESIZE));
-			int zombieGlobalTileY = static_cast<int>(std::floor(transform.position.y / Chunk::TILESIZE));
-			int playerGlobalTileX = static_cast<int>(std::floor(playerTransform.position.x / Chunk::TILESIZE));
-			int playerGlobalTileY = static_cast<int>(std::floor(playerTransform.position.y / Chunk::TILESIZE));
+			ai.pathRefreshTimer += dt;
 
-			ai.path = Pathfinding::solveAStar(zombieGlobalTileX, zombieGlobalTileY, playerGlobalTileX, playerGlobalTileY, ai.maxJumpHeight, chunksManager);
-			ai.currentPathIndex = 1;
-
-			ai.lines.setPrimitiveType(sf::LineStrip);
-			ai.lines.resize(ai.path.size());
-
-			for (size_t i = 0; i < ai.path.size(); ++i)
+			//Only recalculate path after some interval
+			if (ai.pathRefreshTimer >= ai.pathRefreshInterval)
 			{
-				ai.lines[i].position = sf::Vector2f(ai.path[i].x * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f, ai.path[i].y * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f);
-				ai.lines[i].color = sf::Color::Yellow;
-			}
+				ai.pathRefreshTimer = 0.0f;
 
+				int zombieGlobalTileX = static_cast<int>(std::floor(transform.position.x / Chunk::TILESIZE));
+				int zombieGlobalTileY = static_cast<int>(std::floor(transform.position.y / Chunk::TILESIZE));
+				int playerGlobalTileX = static_cast<int>(std::floor(playerTransform.position.x / Chunk::TILESIZE));
+				int playerGlobalTileY = static_cast<int>(std::floor(playerTransform.position.y / Chunk::TILESIZE));
+
+				ai.path = Pathfinding::solveAStar(zombieGlobalTileX, zombieGlobalTileY, playerGlobalTileX, playerGlobalTileY, ai.maxJumpHeight, chunksManager);
+				ai.currentPathIndex = 1;
+
+				ai.lines.setPrimitiveType(sf::LineStrip);
+				ai.lines.resize(ai.path.size());
+
+				for (size_t i = 0; i < ai.path.size(); ++i)
+				{
+					ai.lines[i].position = sf::Vector2f(ai.path[i].x * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f, ai.path[i].y * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f);
+					ai.lines[i].color = sf::Color::Yellow;
+				}
+			}
+			
 			if (!ai.path.empty() && ai.currentPathIndex < ai.path.size())
 			{
 				ai.currentTile = ai.path[ai.currentPathIndex - 1];

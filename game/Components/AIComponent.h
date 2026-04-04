@@ -14,6 +14,8 @@ struct AIComponent
 	int maxJumpHeight = 5;
 	float visionRange = 1200.0f;
 	float attackRange = 50.0f;
+	float pathRefreshTimer = 0.0f;
+	float pathRefreshInterval = 0.05f;
 	bool canSeePlayer = false;
 	bool canAttackPlayer = false;
 };
