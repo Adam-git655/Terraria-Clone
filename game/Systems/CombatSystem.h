@@ -5,6 +5,7 @@
 #include "game/Components/TransformComponent.h"
 #include "game/Components/FactionComponent.h"
 #include "game/Components/AnimationComponent.h"
+#include "game/Components/RenderComponent.h"
 
 class CombatSystem
 {

@@ -6,6 +6,8 @@ void CombatSystem::update(EntityManager& mgr)
 	auto& weaponStorage = mgr.getComponentStorage<WeaponComponent>();
 	auto& transformStorage = mgr.getComponentStorage<TransformComponent>();
 	auto& factionStorage = mgr.getComponentStorage<FactionComponent>();
+	auto& animationStorage = mgr.getComponentStorage<AnimationComponent>();
+	auto& renderStorage = mgr.getComponentStorage<RenderComponent>();
 
 	for (auto& [attackerE, weapon] : weaponStorage.getAll())
 	{
@@ -21,7 +23,7 @@ void CombatSystem::update(EntityManager& mgr)
 		auto& attackerFaction = factionStorage.get(attackerE);
 
 		if (attackerFaction.faction == Faction::Player)
-			mgr.getComponent<AnimationComponent>(attackerE).play("swing", true);
+			animationStorage.get(attackerE).play("swing", true);
 
 		for (auto& [targetE, health] : healthStorage.getAll())
 		{
@@ -39,6 +41,12 @@ void CombatSystem::update(EntityManager& mgr)
 			//apply damage to target entities within attack range
 
 			auto& targetTransform = transformStorage.get(targetE);
+
+			if (renderStorage.get(attackerE).facingRight && targetTransform.position.x < attackerTransform.position.x)
+				continue;
+			if (!renderStorage.get(attackerE).facingRight && targetTransform.position.x > attackerTransform.position.x)
+				continue;
+
 			float squaredDist = attackerTransform.position.distSquared(targetTransform.position);
 
 			if (squaredDist <= weapon.attackRange * weapon.attackRange)
