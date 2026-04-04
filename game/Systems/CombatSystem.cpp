@@ -20,6 +20,9 @@ void CombatSystem::update(EntityManager& mgr)
 		auto& attackerTransform = transformStorage.get(attackerE);
 		auto& attackerFaction = factionStorage.get(attackerE);
 
+		if (attackerFaction.faction == Faction::Player)
+			mgr.getComponent<AnimationComponent>(attackerE).play("swing", true);
+
 		for (auto& [targetE, health] : healthStorage.getAll())
 		{
 			if (targetE == attackerE)

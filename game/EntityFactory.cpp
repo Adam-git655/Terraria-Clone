@@ -15,9 +15,10 @@ Entt EntityFactory::createPlayer(Vec2& spawnPos, sf::Texture& playerTex)
 	//To add:- weapon component adding/removing functionality through hotbar
 
 	AnimationComponent anim;
-	anim.addAnimation("idle", {0, 0, 0, 0, 20, 26, 0.035f, false});
-	anim.addAnimation("walk", { 120, 360, 20, 0, 20, 26, 0.035f, false });
-	anim.addAnimation("jump", { 100, 100, 0, 0, 20, 26, 0.035f, false });
+	anim.addAnimation("idle", {0, 0, 0, 10, 20, 26, 0.035f, false});
+	anim.addAnimation("walk", { 252, 492, 20, 10, 20, 26, 0.035f, false });
+	anim.addAnimation("jump", { 232, 232, 0, 10, 20, 26, 0.035f, false });
+	anim.addAnimation("swing", {20, 179, 53, 0, 53, 36, 0.045f, false});
 	anim.play("idle");
 	mgr.addComponent<AnimationComponent>(e, anim);
 

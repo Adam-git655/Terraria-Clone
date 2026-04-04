@@ -111,7 +111,18 @@ void RenderSystem::advanceAnimation(AnimationComponent& animation)
 	{
 		animation.rectSourceSprite.left += anim.rectLeftMove;
 		if (animation.rectSourceSprite.left >= anim.rectLeftLast)
+		{
+			if (animation.locked)
+			{
+				//One shot animation finished
+				//Unlock animation system, and 'return' to avoid playing that anim again.
+
+				animation.locked = false;
+				animation.rectSourceSprite.left = anim.rectLeftFirst;
+				return;
+			}
 			animation.rectSourceSprite.left = anim.rectLeftFirst;
+		}
 	}
 	else
 	{

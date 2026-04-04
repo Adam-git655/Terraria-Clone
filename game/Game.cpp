@@ -21,7 +21,7 @@ void Game::Init()
 	ImGui::SFML::Init(window);
 
 	//intialize textures
-	if (!playerTex.loadFromFile(RESOURCES_PATH "playerSheet.png"))
+	if (!playerTex.loadFromFile(RESOURCES_PATH "playerSheet2.png"))
 	{
 		std::cout << "ERROR LOADING PLAYER TEX\n";
 	}
@@ -242,7 +242,7 @@ void Game::RenderHotbar()
 	else if (selectedItem->getItemType() == Item::ItemType::Weapon)
 	{
 		if (selectedItem->getItemName() == "ShortSword" && !weaponsStorage.has(playerEntity))
-			entityManager.addComponent<WeaponComponent>(playerEntity, { "ShortSword", 10.0f, {}, 0.7f, 100.0f, false });
+			entityManager.addComponent<WeaponComponent>(playerEntity, { "ShortSword", 10.0f, {}, 0.7f, 120.0f, false });
 	}
 }
 

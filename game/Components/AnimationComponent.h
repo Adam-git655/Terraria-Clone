@@ -1,5 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+#include "iostream"
 
 struct Animation
 {
@@ -20,15 +21,21 @@ struct AnimationComponent
 	sf::IntRect rectSourceSprite;
 	sf::Clock animClock;
 	bool goingRight = true;
+	bool locked = false;
 
 	void addAnimation(const std::string& name, Animation anim)
 	{
 		animations[name] = anim;
 	}
 
-	void play(const std::string& name)
+	void play(const std::string& name, bool oneShot = false)
 	{
-		if (currentAnim == name)
+		//if a one shot anim is playing, then dont let any other anim override that. 
+		//However another call to that one shot anim can play it again.
+		if (locked && currentAnim != name)
+			return;
+
+		if (currentAnim == name && !oneShot)
 			return;
 
 		auto it = animations.find(name);
@@ -36,6 +43,7 @@ struct AnimationComponent
 			return;
 
 		currentAnim = name;
+		locked = oneShot;
 
 		auto& anim = it->second;
 		rectSourceSprite = { anim.rectLeftFirst, anim.rectTop, anim.width, anim.height };
