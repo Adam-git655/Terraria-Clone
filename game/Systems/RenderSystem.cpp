@@ -138,4 +138,13 @@ void RenderSystem::draw(EntityManager& mgr, sf::RenderWindow& window)
 	{
 		window.draw(render.sprite);
 	}
+
+	if (showAIDebugLines)
+	{
+		auto& aiStorage = mgr.getComponentStorage<AIComponent>();
+		for (auto& [e, ai] : aiStorage.getAll())
+		{
+			window.draw(ai.lines);
+		}
+	}
 }

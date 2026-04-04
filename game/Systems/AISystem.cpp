@@ -28,15 +28,14 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 			ai.path = Pathfinding::solveAStar(zombieGlobalTileX, zombieGlobalTileY, playerGlobalTileX, playerGlobalTileY, ai.maxJumpHeight, chunksManager);
 			ai.currentPathIndex = 1;
 
-			//sf::VertexArray lines(sf::LineStrip, path.size());
+			ai.lines.setPrimitiveType(sf::LineStrip);
+			ai.lines.resize(ai.path.size());
 
-			//for (size_t i = 0; i < path.size(); ++i)
-			//{
-			//	lines[i].position = sf::Vector2f(path[i].x * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f, path[i].y * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f);
-			//	lines[i].color = sf::Color::Yellow;
-			//}
-
-			//window.draw(lines);
+			for (size_t i = 0; i < ai.path.size(); ++i)
+			{
+				ai.lines[i].position = sf::Vector2f(ai.path[i].x * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f, ai.path[i].y * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f);
+				ai.lines[i].color = sf::Color::Yellow;
+			}
 
 			if (!ai.path.empty() && ai.currentPathIndex < ai.path.size())
 			{

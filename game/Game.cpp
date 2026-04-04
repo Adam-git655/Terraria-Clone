@@ -268,6 +268,11 @@ void Game::RenderSettings()
 			chunksManager.DisableLighting();
 	}
 
+	if (ImGui::Checkbox("Show Pathfinding lines", &showAIDebugLines))
+	{
+		renderSystem.showAIDebugLines = showAIDebugLines;
+	}
+
 	ImGui::End();
 }
 

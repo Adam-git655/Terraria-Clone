@@ -41,6 +41,7 @@ private:
 	sf::Clock deltaClock;
 
 	bool isLighting = true;
+	bool showAIDebugLines = false;
 
 	Vec2 playerSpawnPos = { 0.0f, 0.0f };
 
