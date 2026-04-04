@@ -27,7 +27,7 @@ void RenderSystem::init(EntityManager& mgr, Entt e, RenderComponent& render)
 	render.initialized = true;
 }
 
-void RenderSystem::update(EntityManager& mgr)
+void RenderSystem::update(EntityManager& mgr, float dt)
 {
 	auto& renderStorage = mgr.getComponentStorage<RenderComponent>();
 	auto& transformStorage = mgr.getComponentStorage<TransformComponent>();
@@ -59,6 +59,18 @@ void RenderSystem::update(EntityManager& mgr)
 		//Update position
 		render.sprite.setPosition(transform.position.x, transform.position.y);
 
+		//Handle flashing
+		if (render.isFlashing)
+		{
+			render.sprite.setColor(render.flashColor);
+			render.flashTimer += dt;
+
+			if (render.flashTimer >= render.flashDuration)
+			{
+				render.isFlashing = false;
+				render.sprite.setColor(sf::Color::White);
+			}
+		}
 
 		if (!animationStorage.has(e))
 			continue;

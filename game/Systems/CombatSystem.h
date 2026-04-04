@@ -11,4 +11,7 @@ class CombatSystem
 {
 public:
 	void update(EntityManager& mgr);
+
+private:
+	void damageFlash(RenderComponent& render, sf::Color color, float flashtime);
 };

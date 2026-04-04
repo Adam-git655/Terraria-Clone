@@ -10,7 +10,7 @@
 class RenderSystem
 {
 public:
-	void update(EntityManager& mgr);
+	void update(EntityManager& mgr, float dt);
 	void draw(EntityManager& mgr, sf::RenderWindow& window);
 	bool showAIDebugLines = false;
 

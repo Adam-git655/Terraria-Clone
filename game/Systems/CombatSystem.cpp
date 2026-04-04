@@ -52,9 +52,21 @@ void CombatSystem::update(EntityManager& mgr)
 			if (squaredDist <= weapon.attackRange * weapon.attackRange)
 			{
 				health.health -= weapon.damage;
+
+				//Damage flash feedback on getting hit
+				auto& render = renderStorage.get(targetE);
+				damageFlash(render, sf::Color::Red, 0.2f);
 			}
 		}
 
 		weapon.attackClock.restart();
 	}
+}
+
+void CombatSystem::damageFlash(RenderComponent& render, sf::Color color, float flashTime)
+{
+	render.isFlashing = true;
+	render.flashTimer = 0.0f;
+	render.flashDuration = flashTime;
+	render.flashColor = color;
 }

@@ -175,7 +175,7 @@ void Game::Update()
 
 	combatSystem.update(entityManager);
 	healthSystem.update(entityManager);
-	renderSystem.update(entityManager);
+	renderSystem.update(entityManager, deltaTime);
 
 	auto& playerTransform = entityManager.getComponentStorage<TransformComponent>().get(playerEntity);
 	camera.setCenter(sf::Vector2f(playerTransform.position.x, playerTransform.position.y));
