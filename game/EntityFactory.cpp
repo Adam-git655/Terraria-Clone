@@ -7,7 +7,7 @@ Entt EntityFactory::createPlayer(Vec2& spawnPos, sf::Texture& playerTex)
 	mgr.addComponent<PhysicsComponent>(e, {});
 	mgr.addComponent<MovementComponent>(e, { 300.0f, 700.0f, 600.0f, false });
 	mgr.addComponent<InputComponent>(e, {});
-	mgr.addComponent<CollisionComponent>(e, { {0.0f, 0.0f, 20.0f, 26.0f } });
+	mgr.addComponent<CollisionComponent>(e, { {0.0f, 0.0f, 40.0f, 52.0f } });
 	mgr.addComponent<HealthComponent>(e, { 100.0f, 100.0f });
 	mgr.addComponent<RenderComponent>(e, { false, {}, {2.0f, 2.0f}, playerTex, true });
 	mgr.addComponent<FactionComponent>(e, { Faction::Player });
@@ -31,7 +31,7 @@ Entt EntityFactory::createZombie(Vec2& spawnPos, sf::Texture& zombieTex)
 	mgr.addComponent<PhysicsComponent>(e, {});
 	mgr.addComponent<MovementComponent>(e, { 200.0f, 600.0f, 600.0f, false });
 	mgr.addComponent<AIComponent>(e, {});
-	mgr.addComponent<CollisionComponent>(e, { {0.0f, 0.0f, 157.0f, 213.0f} });
+	mgr.addComponent<CollisionComponent>(e, { {0.0f, 0.0f, 39.25f, 53.25f} });
 	mgr.addComponent<HealthComponent>(e, { 30.0f, 30.0f });
 	mgr.addComponent<RenderComponent>(e, { false, {}, {0.25f, 0.25f}, zombieTex, true });
 	mgr.addComponent<FactionComponent>(e, { Faction::Enemy });

@@ -1,5 +1,5 @@
 #pragma once
-
+#include "iostream"
 #include "engine/ecs/EntityManager.h"
 #include "game/Components/TransformComponent.h"
 #include "game/Components/MovementComponent.h"

@@ -25,7 +25,7 @@ void Game::Init()
 	{
 		std::cout << "ERROR LOADING PLAYER TEX\n";
 	}
-	if (!zombieTex.loadFromFile(RESOURCES_PATH "playerSheet.png"))
+	if (!zombieTex.loadFromFile(RESOURCES_PATH "zombieSheet.png"))
 	{
 		std::cout << "ERROR LOADING ZOMBIE TEX\n";
 	}
@@ -35,7 +35,7 @@ void Game::Init()
 	}
 
 	//Create player
-	playerEntity = entityFactory.createPlayer({ 0.0f, 0.0f }, playerTex);
+	playerEntity = entityFactory.createPlayer(playerSpawnPos, playerTex);
 
 	//Initialize hotbar
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Grass, true));

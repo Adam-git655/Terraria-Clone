@@ -185,6 +185,16 @@ std::vector<IVec2> Pathfinding::getNeighbours(int x, int y, int maxJumpHeight, C
 	return neighboursPos;
 }
 
+float Pathfinding::distance(int startX, int startY, int endX, int endY)
+{
+	return std::abs(startX - endX) + std::abs(startY - endY);
+}
+
+float Pathfinding::heuristic(int startX, int startY, int endX, int endY)
+{
+	return std::abs(startX - endX) + std::abs(startY - endY);
+}
+
 bool Pathfinding::isFree(int x, int y, ChunksManager& chunksManager)
 {
 	auto floorDiv = [](int a, int b) { return (a >= 0) ? a / b : ((a + 1) / b) - 1; };

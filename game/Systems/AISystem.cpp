@@ -68,7 +68,7 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 	}	
 }
 
-bool AISystem::isAtTileCenter(const Vec2& position, const IVec2& tilePos, const float tolerance = 1.0f)
+bool AISystem::isAtTileCenter(const Vec2& position, const IVec2& tilePos, const float tolerance)
 {
 	float tileCenterX = static_cast<float>(tilePos.x * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f);
 	float tileCenterY = static_cast<float>(tilePos.y * Chunk::TILESIZE + Chunk::TILESIZE / 2.0f);

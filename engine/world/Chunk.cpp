@@ -1,5 +1,5 @@
-#include "zombie.h"
-
+#include "Chunk.h"
+#include "ChunksManager.h"
 
 Chunk::Chunk(int chunkX, int seed, ChunksManager* mgr)
 	:chunkX(chunkX), seed(seed), chunksManager(mgr)
@@ -239,6 +239,8 @@ void Chunk::collisionsWithTerrain(CollisionComponent& collision, TransformCompon
     sf::FloatRect entityBounds = collision.bounds;
     Vec2 entityPrevPos = transform.prevPos;
 
+    //std::cout << entityBounds.left << " " << entityBounds.top << " " << entityBounds.width << " " << entityBounds.height << "\n";
+    
     // Make the collision bounds smaller of the entity
     int offsetX = 10;
     entityBounds.left += offsetX;

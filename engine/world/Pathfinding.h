@@ -19,15 +19,9 @@ namespace Pathfinding
 	
 	std::vector<IVec2> getNeighbours(int x, int y, int maxJumpHeight, ChunksManager& chunksManager);
 
-	float distance(int startX, int startY, int endX, int endY)
-	{
-		return std::abs(startX - endX) + std::abs(startY - endY);
-	}
+	float distance(int startX, int startY, int endX, int endY);
 
-	float heuristic(int startX, int startY, int endX, int endY)
-	{
-		return std::abs(startX - endX) + std::abs(startY - endY);
-	}
+	float heuristic(int startX, int startY, int endX, int endY);
 
 	bool isFree(int x, int y, ChunksManager& chunksManager);
 	bool isTileBelowGround(int x, int y, ChunksManager& chunksManager);

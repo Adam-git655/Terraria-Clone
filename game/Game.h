@@ -42,6 +42,8 @@ private:
 
 	bool isLighting = true;
 
+	Vec2 playerSpawnPos = { 0.0f, 0.0f };
+
 	ChunksManager chunksManager;
 
 	//Textures

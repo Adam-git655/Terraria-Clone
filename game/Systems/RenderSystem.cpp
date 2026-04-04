@@ -21,6 +21,7 @@ void RenderSystem::init(EntityManager& mgr, Entt e, RenderComponent& render)
 		auto& animation = animationStorage.get(e);
 
 		render.sprite.setTextureRect(animation.rectSourceSprite);
+		render.sprite.setOrigin(animation.rectSourceSprite.width / 2.f, animation.rectSourceSprite.height / 2.f);
 	}
 
 	render.initialized = true;
@@ -88,6 +89,7 @@ void RenderSystem::update(EntityManager& mgr)
 
 		advanceAnimation(animation);
 		render.sprite.setTextureRect(animation.rectSourceSprite);
+		render.sprite.setOrigin(animation.rectSourceSprite.width / 2.f, animation.rectSourceSprite.height / 2.f);
 	}
 }
 

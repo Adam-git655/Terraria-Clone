@@ -9,7 +9,6 @@
 #include "game/Components/TransformComponent.h"
 #include "game/Components/PhysicsComponent.h"
 
-class Zombie;
 class ChunksManager;
 
 class Chunk

@@ -423,14 +423,16 @@ void ChunksManager::collisionsWithTerrain(ComponentStorage<CollisionComponent>& 
 		auto& transform = transformStorage.get(e);
 		auto& physics = physicsStorage.get(e);
 
+		collision.bounds.left = transform.position.x - collision.bounds.width / 2.0f;
+		collision.bounds.top = transform.position.y - collision.bounds.height / 2.0f;
+
 		int chunkX = getChunkXFromWorldX(transform.position.x);
 		Chunk& chunk = getChunk(chunkX);
-
 
 		//Set isGrounded flag of entity
 		int tileX = static_cast<int>(std::floor(transform.position.x / Chunk::TILESIZE));
 		int tileBelow = static_cast<int>(std::floor(transform.position.y / Chunk::TILESIZE)) + 1;
-		int localX = tileX - chunkX * Chunk::CHUNK_WIDTH;		
+		int localX = tileX - chunkX * Chunk::CHUNK_WIDTH;
 
 		Tile& tile = chunk.getTile(localX, tileBelow);
 
@@ -438,8 +440,8 @@ void ChunksManager::collisionsWithTerrain(ComponentStorage<CollisionComponent>& 
 			physics.IsOnGround = true;
 		else
 			physics.IsOnGround = false;
-		
+			
 
-		chunk.collisionsWithTerrain(collision, transform, physics, e);
+		chunk.collisionsWithTerrain(collision, transform, physics, e);	
 	}
 }
