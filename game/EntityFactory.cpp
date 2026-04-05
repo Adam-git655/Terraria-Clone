@@ -36,7 +36,7 @@ Entt EntityFactory::createZombie(Vec2& spawnPos, sf::Texture& zombieTex)
 	mgr.addComponent<HealthComponent>(e, { 30.0f, 30.0f });
 	mgr.addComponent<RenderComponent>(e, { false, {}, {0.25f, 0.25f}, zombieTex, true });
 	mgr.addComponent<FactionComponent>(e, { Faction::Enemy });
-	mgr.addComponent<WeaponComponent>(e, { "fist", 5.0f, {}, 2.0f, 50.0f, false });
+	mgr.addComponent<WeaponComponent>(e, { "fist", 5.0f, {}, 1.75f, 50.0f, false });
 
 	AnimationComponent anim;
 	anim.addAnimation("idle", { 0, 0, 0, 0, 157, 213, 0.06f, false });

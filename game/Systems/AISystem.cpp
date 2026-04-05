@@ -18,6 +18,12 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 		ai.canSeePlayer =  squaredDistanceToPlayer <= (ai.visionRange * ai.visionRange);
 		ai.canAttackPlayer = squaredDistanceToPlayer <= (ai.attackRange * ai.attackRange);
 
+		if (ai.canAttackPlayer && weaponStorage.has(e))
+		{
+			auto& weapon = weaponStorage.get(e);
+			weapon.attackRequested = true;
+		}
+
 		if (ai.canSeePlayer)
 		{
 			ai.pathRefreshTimer += dt;
@@ -65,12 +71,6 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 		else
 		{
 			physics.velocity.x = 0.0f;
-		}
-
-		if (ai.canAttackPlayer && weaponStorage.has(e))
-		{
-			auto& weapon = weaponStorage.get(e);
-			weapon.attackRequested = true;
 		}
 	}	
 }

@@ -42,10 +42,14 @@ void CombatSystem::update(EntityManager& mgr)
 
 			auto& targetTransform = transformStorage.get(targetE);
 
-			if (renderStorage.get(attackerE).facingRight && targetTransform.position.x < attackerTransform.position.x)
-				continue;
-			if (!renderStorage.get(attackerE).facingRight && targetTransform.position.x > attackerTransform.position.x)
-				continue;
+			//Only damage enemies in front of player
+			if (attackerFaction.faction == Faction::Player)
+			{
+				if (renderStorage.get(attackerE).facingRight && targetTransform.position.x < attackerTransform.position.x)
+					continue;
+				if (!renderStorage.get(attackerE).facingRight && targetTransform.position.x > attackerTransform.position.x)
+					continue;
+			}
 
 			float squaredDist = attackerTransform.position.distSquared(targetTransform.position);
 
