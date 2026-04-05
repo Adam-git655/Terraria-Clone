@@ -159,7 +159,6 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 void Game::Update()
 {
 	ImGui::SFML::Update(window, deltaClock.restart());
-	//player.update(static_cast<float>(deltaTime), chunksManager);
 
 	//Update systems
 
@@ -242,7 +241,7 @@ void Game::RenderHotbar()
 	else if (selectedItem->getItemType() == Item::ItemType::Weapon)
 	{
 		if (selectedItem->getItemName() == "ShortSword" && !weaponsStorage.has(playerEntity))
-			entityManager.addComponent<WeaponComponent>(playerEntity, { "ShortSword", 10.0f, {}, 0.7f, 120.0f, false });
+			entityManager.addComponent<WeaponComponent>(playerEntity, { "ShortSword", 10.0f, {}, 0.7f, 105.0f, false });
 	}
 }
 

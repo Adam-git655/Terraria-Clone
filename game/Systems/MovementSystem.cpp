@@ -12,13 +12,15 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 	//Add Gravity to all entities which have a physics component
 	for (auto& [e, physics] : physicsStorage.getAll())
 	{
+		auto& transform = transformStorage.get(e);
+
 		if (!physics.IsOnGround)
 			physics.velocity.y += physics.gravity * dt;
 			
 		if (physics.velocity.y > physics.terminalVelocity)
 			physics.velocity.y = physics.terminalVelocity;
 
-		if (physics.velocity.y > 0.5f)
+		if (std::abs(transform.position.y - transform.prevPos.y) > 1.0f)
 			physics.IsFalling = true;
 		else
 			physics.IsFalling = false;
