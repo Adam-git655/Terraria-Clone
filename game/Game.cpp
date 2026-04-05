@@ -173,7 +173,7 @@ void Game::Update()
 	chunksManager.getZombieSpawnPositions().clear();
 
 	combatSystem.update(entityManager);
-	healthSystem.update(entityManager);
+	healthSystem.update(entityManager, playerSpawnPos);
 	renderSystem.update(entityManager, deltaTime);
 
 	auto& playerTransform = entityManager.getComponentStorage<TransformComponent>().get(playerEntity);

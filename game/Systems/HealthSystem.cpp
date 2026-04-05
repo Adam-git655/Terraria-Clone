@@ -1,20 +1,26 @@
 #pragma once
 #include "HealthSystem.h"
 
-void HealthSystem::update(EntityManager& mgr)
+void HealthSystem::update(EntityManager& mgr, Vec2& playerSpawnPos)
 {
 	std::vector<Entt> dead;
 	auto& healthStorage = mgr.getComponentStorage<HealthComponent>();
-	auto& inputStorage = mgr.getComponentStorage<InputComponent>();
+	auto& factionStorage = mgr.getComponentStorage<FactionComponent>();
+	auto& transformStorage = mgr.getComponentStorage<TransformComponent>();
 
 	for (auto& [e, health] : healthStorage.getAll())
 	{
 		if (health.health <= 0)
 		{
-			//if player
-			if (inputStorage.has(e))
+			auto& faction = factionStorage.get(e);
+
+			//If Player dead, then reset it back to spawn position
+			if (faction.faction == Faction::Player)
 			{
-				//reset player transform position
+				health.health = health.maxHealth;
+
+				auto& transform = transformStorage.get(e);
+				transform.position = playerSpawnPos;
 			}
 			//mark entity as dead if not player
 			else
