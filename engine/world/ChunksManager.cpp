@@ -31,13 +31,23 @@ ChunksManager::ChunksManager(int seed)
 	{
 		std::cout << "ERROR LOADING TORCH TEXTURE";
 	}
+	if (!sandTex.loadFromFile(RESOURCES_PATH "sand.png"))
+	{
+		std::cout << "ERROR LOADING SAND TEXTURE";
+	}
+	if (!sandStoneTex.loadFromFile(RESOURCES_PATH "sandstone.png"))
+	{
+		std::cout << "ERROR LOADING SANDSTONE TEXTURE";
+	}
 }
 
 Chunk& ChunksManager::getChunk(int chunkX)
 {
 	if (chunks.find(chunkX) == chunks.end())
 	{
-		chunks[chunkX] = std::make_unique<Chunk>(chunkX, seed, this);
+		BiomeType chunkbiomeType =  biomeManager.getBiomeAt(chunkX);
+		const BiomeData& biomeData = biomeManager.getBiomeData(chunkbiomeType);
+		chunks[chunkX] = std::make_unique<Chunk>(chunkX, seed, this, chunkbiomeType, biomeData);
 	}
 	return *chunks[chunkX];
 }
@@ -131,6 +141,10 @@ const sf::Texture& ChunksManager::getTexture(const std::string& textureName) con
 		return leafTex;
 	else if (textureName == "Torch")
 		return torchTex;
+	else if (textureName == "Sand")
+		return sandTex;
+	else if (textureName == "SandStone")
+		return sandStoneTex;
 	else
 	{
 		std::cerr << "ERROR: Unkown texture name provided in getTexture: " << textureName << "\n";
@@ -218,6 +232,14 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Vec2& playerPos, sf::RenderW
 
 				case Tile::TileType::Torch:
 					tileSprite.setTexture(torchTex);
+					break;
+
+				case Tile::TileType::Sand:
+					tileSprite.setTexture(sandTex);
+					break;
+
+				case Tile::TileType::SandStone:
+					tileSprite.setTexture(sandStoneTex);
 					break;
 
 				default:

@@ -1,8 +1,8 @@
 #include "Chunk.h"
 #include "ChunksManager.h"
 
-Chunk::Chunk(int chunkX, int seed, ChunksManager* mgr)
-	:chunkX(chunkX), seed(seed), chunksManager(mgr)
+Chunk::Chunk(int chunkX, int seed, ChunksManager* mgr, BiomeType biome, const BiomeData& biomeData)
+	:chunkX(chunkX), seed(seed), chunksManager(mgr), biome(biome), biomeData(biomeData)
 {
 	chunkTiles.resize(CHUNK_WIDTH, std::vector<Tile>(CHUNK_HEIGHT, { Tile::TileType::Air, false }));
     surfaceHeights.resize(CHUNK_WIDTH);
@@ -13,8 +13,8 @@ void Chunk::generateTerrain()
 {
     Perlin p(seed);
 
-    float frequency = 0.0035f;
-    float amplitude = 0.7f;
+    float frequency = biomeData.biomeFrequency;
+    float amplitude = biomeData.biomeAmplitude;
 
     for (int x = 0; x < CHUNK_WIDTH; x++)
     {
@@ -69,29 +69,29 @@ void Chunk::generateTerrain()
             {
                 setTile(x, y, Tile::TileType::Air, false);
             }
-            else if (y == intTerrainHeight)
+            else if (y < intTerrainHeight + biomeData.surfaceTilePatchLength)
             {
-                setTile(x, y, Tile::TileType::Grass, true);
+                setTile(x, y, biomeData.surfaceTile, true);
             }
-            else if (y < intTerrainHeight + lengthOfDirtPatch)
+            else if (y < intTerrainHeight + biomeData.secondarySurfaceTilePatchLength)
             {
-                setTile(x, y, Tile::TileType::Dirt, true);
+                setTile(x, y, biomeData.secondarySurfaceTile, true);
             }
-            else if (y >= intTerrainHeight + lengthOfDirtPatch && y < intTerrainHeight + lengthOfStonePatch)
+            else if (y >= intTerrainHeight + biomeData.secondarySurfaceTilePatchLength && y < intTerrainHeight + biomeData.stoneTilePatchLength)
             {
                 setTile(x, y, Tile::TileType::Stone, true);
             }
             //Caves
-            else if (y >= intTerrainHeight + lengthOfStonePatch && y < intTerrainHeight + 50)
+            else if (y >= intTerrainHeight + biomeData.stoneTilePatchLength && y < intTerrainHeight + 50)
             {
-                if (val > 0.4f && val < 0.5f)
+                if (val > biomeData.caveThresholdMin && val < biomeData.caveThresholdMax)
                     setTile(x, y, Tile::TileType::CaveAir, false);
                 else
                     setTile(x, y, Tile::TileType::Stone, true);
             }
             else if (y >= intTerrainHeight + 50)
             {
-                if (val > 0.3f && val < 0.7f)
+                if (val > biomeData.deepCaveThresholdMin && val < biomeData.deepCaveThresholdMax)
                     setTile(x, y, Tile::TileType::CaveAir, false);
                 else
                     setTile(x, y, Tile::TileType::Stone, true);
@@ -99,8 +99,12 @@ void Chunk::generateTerrain()
         }
     }
 
-    generateCaveEntrance();
-    generateTrees();
+    if (biomeData.generateCaveEntrances)
+        generateCaveEntrance();
+
+    if (biomeData.generateTrees)
+        generateTrees();
+
     randomZombieSpawn();
 }
 

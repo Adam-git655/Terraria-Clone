@@ -1,6 +1,7 @@
 #pragma once
 #include "Chunk.h"
 #include "engine/rendering/LightingSystem.h"
+#include "BiomeManager.h"
 #include <unordered_map>
 #include <unordered_set>
 
@@ -39,6 +40,8 @@ private:
 	std::vector<IVec2> treePositions;
 	std::vector<Vec2> zombieSpawnPositions;
 
+	BiomeManager biomeManager;
+
 	LightingSystem lighting;
 	int seed;
 	int renderDistance = 3;
@@ -51,6 +54,8 @@ private:
 	sf::Texture woodTex;
 	sf::Texture leafTex;
 	sf::Texture torchTex;
+	sf::Texture sandTex;
+	sf::Texture sandStoneTex;
 
 	Chunk& getChunk(int chunkX);
 	int getChunkXFromWorldX(float worldX);

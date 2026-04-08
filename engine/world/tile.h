@@ -15,7 +15,9 @@ public:
 		Stone,
 		Wood,
 		Leaf,
-		Torch
+		Torch,
+		Sand,
+		SandStone
 	};
 
 

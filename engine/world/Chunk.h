@@ -2,6 +2,7 @@
 #include "tile.h"
 #include "PerlinNoise.h"
 #include "random"
+#include "BiomeManager.h"
 #include <vector>
 
 #include "engine/ecs/EntityManager.h"
@@ -18,7 +19,7 @@ public:
 	static const int CHUNK_WIDTH = 16;
 	static const int CHUNK_HEIGHT = 512;
 
-	Chunk(int chunkX, int seed, ChunksManager* mgr);
+	Chunk(int chunkX, int seed, ChunksManager* mgr, BiomeType biome, const BiomeData& biomeData);
 
 	void generateTerrain();
 	void setTile(int localX, int localY, Tile::TileType type, bool solid);
@@ -38,6 +39,9 @@ private:
 	std::vector<std::vector<Tile>> chunkTiles;
 	std::vector<int> surfaceHeights;
 	int seed;
+
+	BiomeType biome;
+	const BiomeData& biomeData;
 
 	int lengthOfDirtPatch = 5;
 	int lengthOfStonePatch = 40;
