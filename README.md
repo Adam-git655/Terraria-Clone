@@ -1,5 +1,5 @@
 ## Overview
-An ECS based Terraria clone made using C++ and the SFML graphics library
+An **ECS** based Terraria clone made using C++ and the SFML graphics library
 
 <img width="1908" height="967" alt="image" src="https://github.com/user-attachments/assets/b68d63c2-904e-405a-9cb3-37bdb80ca014" />
 <img width="1914" height="986" alt="Screenshot 2025-11-01 234522" src="https://github.com/user-attachments/assets/c90130ef-771c-4013-9d3c-7a58d943de78" />
@@ -19,12 +19,14 @@ cmake ../
 ## Features
 ### Current Features
 
+- Entity component system architecture for robust entity management.
 - Sprite rendering and player movement
 - Player and zombie animations
 - Infinite world generation using a chunk system
 - Terrain generation using 1D perlin noise
 - Cave generation using 2D perlin noise and drunkard's walk
 - Tree generation with randomized shapes and sizes
+- Biome generation (Forest, Desert)
 - Player collisions with the tiled environment
 - Smart Zombie AI using A* pathfinding
 - Basic Combat System
@@ -35,9 +37,8 @@ cmake ../
   
 ### Features to add
 
-- Multithreading
-- Different block types and minerals
-- Multiple biomes
+- More block types and minerals
+- More Biomes
 - Audio system
   
 ## Controls
