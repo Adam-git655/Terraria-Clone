@@ -40,12 +40,12 @@ private:
 	std::vector<IVec2> treePositions;
 	std::vector<Vec2> zombieSpawnPositions;
 
-	BiomeManager biomeManager;
-
 	LightingSystem lighting;
 	int seed;
 	int renderDistance = 3;
 	bool isLighting = true;
+
+	BiomeManager biomeManager{ seed };
 
 	sf::Texture grassTex;
 	sf::Texture dirtTex;

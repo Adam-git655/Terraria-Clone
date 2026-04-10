@@ -19,9 +19,8 @@ public:
 	static const int CHUNK_WIDTH = 16;
 	static const int CHUNK_HEIGHT = 512;
 
-	Chunk(int chunkX, int seed, ChunksManager* mgr, BiomeType biome, const BiomeData& biomeData);
+	Chunk(int chunkX, int seed, ChunksManager* mgr, BiomeManager& biomeManager);
 
-	void generateTerrain();
 	void setTile(int localX, int localY, Tile::TileType type, bool solid);
 	const Tile& getTile(int localX, int localY) const;
 	Tile& getTile(int localX, int localY);
@@ -41,10 +40,14 @@ private:
 	int seed;
 
 	BiomeType biome;
-	const BiomeData& biomeData;
+	const BiomeData* biomeData;
+	BiomeManager& biomeManager;
+
 
 	int lengthOfDirtPatch = 5;
 	int lengthOfStonePatch = 40;
+
+	void generateTerrain();
 
 	void randomZombieSpawn();
 	void generateCaveEntrance();

@@ -45,9 +45,7 @@ Chunk& ChunksManager::getChunk(int chunkX)
 {
 	if (chunks.find(chunkX) == chunks.end())
 	{
-		BiomeType chunkbiomeType =  biomeManager.getBiomeAt(chunkX);
-		const BiomeData& biomeData = biomeManager.getBiomeData(chunkbiomeType);
-		chunks[chunkX] = std::make_unique<Chunk>(chunkX, seed, this, chunkbiomeType, biomeData);
+		chunks[chunkX] = std::make_unique<Chunk>(chunkX, seed, this, biomeManager);
 	}
 	return *chunks[chunkX];
 }

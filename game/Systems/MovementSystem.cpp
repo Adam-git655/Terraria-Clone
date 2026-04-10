@@ -65,6 +65,7 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 			physics.velocity.x = -movement.max_speed;
 
 		transform.position += physics.velocity * dt;
+		//std::cout << std::floor(transform.position.x / 32) << "\n";
 
 		playerPos = transform.position;
 	}
