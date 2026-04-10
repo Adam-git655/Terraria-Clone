@@ -68,7 +68,7 @@ void Chunk::generateTerrain()
             }
             else if (y >= intTerrainHeight + biomeData->secondarySurfaceTilePatchLength && y < intTerrainHeight + biomeData->stoneTilePatchLength)
             {
-                setTile(x, y, Tile::TileType::Stone, true);
+                setTile(x, y, biomeData->stoneTile, true);
             }
 
             //Caves
@@ -77,14 +77,14 @@ void Chunk::generateTerrain()
                 if (val > biomeData->caveThresholdMin && val < biomeData->caveThresholdMax)
                     setTile(x, y, Tile::TileType::CaveAir, false);
                 else
-                    setTile(x, y, Tile::TileType::Stone, true);
+                    setTile(x, y, biomeData->stoneTile, true);
             }
             else if (y >= intTerrainHeight + 50)
             {
                 if (val > biomeData->deepCaveThresholdMin && val < biomeData->deepCaveThresholdMax)
                     setTile(x, y, Tile::TileType::CaveAir, false);
                 else
-                    setTile(x, y, Tile::TileType::Stone, true);
+                    setTile(x, y, biomeData->stoneTile, true);
             }
         }
     }

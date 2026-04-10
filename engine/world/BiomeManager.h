@@ -16,6 +16,7 @@ struct BiomeData
 
 	Tile::TileType surfaceTile = Tile::TileType::Grass;
 	Tile::TileType secondarySurfaceTile = Tile::TileType::Dirt;
+	Tile::TileType stoneTile = Tile::TileType::Stone;
 
 	int surfaceTilePatchLength = 1;
 	int secondarySurfaceTilePatchLength = 5;
