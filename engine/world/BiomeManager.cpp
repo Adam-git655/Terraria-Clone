@@ -56,7 +56,7 @@ void BiomeManager::createBiomeZone(int chunkX)
 		}
 
 		newZoneEndX = nearestZoneStartX - 1;
-		newZoneStartX = newZoneEndX - 4;
+		newZoneStartX = newZoneEndX - biomeSize(gen);
 
 		//Tile right of boundary. i.e last tile of old biome
 		biomeBoundaryWorldX = (newZoneEndX + 1) * Chunk::CHUNK_WIDTH;
@@ -72,7 +72,7 @@ void BiomeManager::createBiomeZone(int chunkX)
 		}
 
 		newZoneStartX = nearestZoneEndX + 1;
-		newZoneEndX = newZoneStartX + 4;
+		newZoneEndX = newZoneStartX + biomeSize(gen);
 
 		//Tile left of boundary. i.e last tile of old biome
 		biomeBoundaryWorldX = newZoneStartX * Chunk::CHUNK_WIDTH;
