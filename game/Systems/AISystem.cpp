@@ -53,6 +53,7 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 			
 			if (!ai.path.empty() && ai.currentPathIndex < ai.path.size())
 			{
+				ai.hasActivePath = true;
 				ai.currentTile = ai.path[ai.currentPathIndex - 1];
 				ai.nextTile = ai.path[ai.currentPathIndex];
 
@@ -66,6 +67,11 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 					}
 					ai.nextTile = ai.path[ai.currentPathIndex];
 				}
+			}
+			else
+			{
+				ai.hasActivePath = false;
+				physics.velocity.x = 0.0f;
 			}
 		}
 		else

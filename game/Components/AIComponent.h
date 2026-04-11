@@ -7,6 +7,7 @@ struct AIComponent
 	std::vector<IVec2> path;
 	int currentPathIndex = 1;
 	sf::VertexArray lines;
+	bool hasActivePath = false;
 
 	IVec2 currentTile;
 	IVec2 nextTile;

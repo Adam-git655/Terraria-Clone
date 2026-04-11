@@ -82,7 +82,10 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 
 		if (ai.canSeePlayer)
 		{
-			zombieFollowPath(physics, movement, render, ai.currentTile, ai.nextTile);
+			if (ai.hasActivePath)
+				zombieFollowPath(physics, movement, render, ai.currentTile, ai.nextTile);
+			else
+				physics.velocity.x = 0.0f;
 
 			if (physics.velocity.x > movement.max_speed)
 				physics.velocity.x = movement.max_speed;
