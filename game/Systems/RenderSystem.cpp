@@ -85,7 +85,7 @@ void RenderSystem::update(EntityManager& mgr, float dt)
 
 		if (!physics.IsFalling && !movement.IsJumping)
 		{
-			if (std::abs(physics.velocity.x) > 0.1f)
+			if (std::abs(physics.velocity.x) > 0.05f)
 			{
 				animation.play("walk");
 			}

@@ -83,9 +83,9 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 		if (ai.canSeePlayer)
 		{
 			if (ai.hasActivePath)
-				zombieFollowPath(physics, movement, render, ai.currentTile, ai.nextTile);
+				zombieFollowPathAI(physics, movement, render, ai.currentTile, ai.nextTile);
 			else
-				physics.velocity.x = 0.0f;
+				zombieFollowPathDumb(playerPos, transform, physics, movement, render, ai, dt);
 
 			if (physics.velocity.x > movement.max_speed)
 				physics.velocity.x = movement.max_speed;
@@ -97,7 +97,7 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 	}
 }
 
-void MovementSystem::zombieFollowPath(PhysicsComponent& physics, MovementComponent& movement, RenderComponent& render, const IVec2& currentTile, const IVec2& nextTile)
+void MovementSystem::zombieFollowPathAI(PhysicsComponent& physics, MovementComponent& movement, RenderComponent& render, const IVec2& currentTile, const IVec2& nextTile)
 {
 	IVec2 delta = nextTile - currentTile;
 
@@ -148,6 +148,36 @@ void MovementSystem::zombieFollowPath(PhysicsComponent& physics, MovementCompone
 
 		if (physics.IsOnGround)
 			movement.IsJumping = false;
+	}
+}
+
+void MovementSystem::zombieFollowPathDumb(Vec2 playerPos, TransformComponent& transform, PhysicsComponent& physics, MovementComponent& movement, RenderComponent& render, AIComponent& ai, float dt)
+{
+	if (playerPos.x > transform.position.x)
+	{
+		physics.velocity.x += movement.speed;
+		render.facingRight = true;
+	}
+	if (playerPos.x < transform.position.x)
+	{
+		physics.velocity.x -= movement.speed;
+		render.facingRight = false;
+	}
+
+	if (transform.position == transform.prevPos && physics.IsOnGround)
+	{
+		ai.stuckTimer += dt;
+		if (ai.stuckTimer >= ai.stuckThreshold)
+		{
+			movement.IsJumping = true;
+			physics.velocity.y = -movement.jumpStrength;
+			physics.IsOnGround = false;
+			ai.stuckTimer = 0.0f;
+		}
+	}
+	else
+	{
+		ai.stuckTimer = 0.0f;
 	}
 }
 

@@ -19,4 +19,8 @@ struct AIComponent
 	float pathRefreshInterval = 0.05f;
 	bool canSeePlayer = false;
 	bool canAttackPlayer = false;
+
+	//for dumb position follow of zombie
+	float stuckTimer = 0.0f;
+	float stuckThreshold = 0.35f;
 };

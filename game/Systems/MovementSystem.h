@@ -14,5 +14,6 @@ public:
 	void update(EntityManager& mgr, float dt);
 
 private:
-	void zombieFollowPath(PhysicsComponent& physics, MovementComponent& movement, RenderComponent& render, const IVec2& currentTile, const IVec2& nextTile);
+	void zombieFollowPathAI(PhysicsComponent& physics, MovementComponent& movement, RenderComponent& render, const IVec2& currentTile, const IVec2& nextTile);
+	void zombieFollowPathDumb(Vec2 playerPos, TransformComponent& transform, PhysicsComponent& physics, MovementComponent& movement, RenderComponent& render, AIComponent& ai, float dt);
 };
