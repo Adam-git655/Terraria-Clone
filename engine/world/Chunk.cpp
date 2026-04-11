@@ -173,7 +173,7 @@ void Chunk::updateSand()
 {
     for (int x = 0; x < CHUNK_WIDTH; ++x)
     {
-        for (int y = 0; y < CHUNK_HEIGHT; ++y)
+        for (int y = CHUNK_HEIGHT - 2; y >= 0; --y) //Bottom to top to make sand fall every frame instead of all at once.
         {
             if (getTile(x, y).getType() == Tile::TileType::Sand)
             {
@@ -185,12 +185,13 @@ void Chunk::updateSand()
 
 void Chunk::sandFall(int x, int y)
 {
+    if (y + 1 >= CHUNK_HEIGHT)
+        return;
     if (getTile(x, y + 1).isSolid())
         return;
 
     setTile(x, y, Tile::TileType::Air, false);
     setTile(x, y + 1, Tile::TileType::Sand, true);
-    sandFall(x, y + 1);
 }
 
 Tile& Chunk::getTile(int x, int y)
