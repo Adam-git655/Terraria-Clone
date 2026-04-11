@@ -169,6 +169,30 @@ void Chunk::randomZombieSpawn()
     }
 }
 
+void Chunk::updateSand()
+{
+    for (int x = 0; x < CHUNK_WIDTH; ++x)
+    {
+        for (int y = 0; y < CHUNK_HEIGHT; ++y)
+        {
+            if (getTile(x, y).getType() == Tile::TileType::Sand)
+            {
+                sandFall(x, y);
+            }
+        }
+    }
+}
+
+void Chunk::sandFall(int x, int y)
+{
+    if (getTile(x, y + 1).isSolid())
+        return;
+
+    setTile(x, y, Tile::TileType::Air, false);
+    setTile(x, y + 1, Tile::TileType::Sand, true);
+    sandFall(x, y + 1);
+}
+
 Tile& Chunk::getTile(int x, int y)
 {
     if (x >= 0 && x < CHUNK_WIDTH && y >= 0 && y < CHUNK_HEIGHT)

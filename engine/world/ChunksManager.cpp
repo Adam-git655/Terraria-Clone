@@ -188,6 +188,9 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Vec2& playerPos, sf::RenderW
 		if (it == renderedChunks.end()) continue;
 
 		Chunk& chunk = *it->second;
+
+		//Update sand tiles in visible chunks
+		chunk.updateSand();
 		
 		//Rendering the tiles
 		for (int x = 0; x < Chunk::CHUNK_WIDTH; ++x)

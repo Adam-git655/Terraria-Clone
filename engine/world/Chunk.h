@@ -32,7 +32,7 @@ public:
 	std::vector<int>& getSurfaceHeights();
 
 	void collisionsWithTerrain(CollisionComponent& collision, TransformComponent& transform, PhysicsComponent& physics, Entt e);
-
+	void updateSand();
 private:
 	int chunkX;
 	std::vector<std::vector<Tile>> chunkTiles;
@@ -52,6 +52,7 @@ private:
 	void randomZombieSpawn();
 	void generateCaveEntrance();
 	void generateTrees();
+	void sandFall(int x, int y);
 
 	ChunksManager* chunksManager = nullptr;
 };
