@@ -38,11 +38,13 @@ void Game::Init()
 	playerEntity = entityFactory.createPlayer(playerSpawnPos, playerTex);
 
 	//Initialize hotbar
+	hotbar.push_back(std::make_unique<WeaponItem>("ShortSword"));
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Grass, true));
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Dirt, true));
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Stone, true));
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Torch, false));
-	hotbar.push_back(std::make_unique<WeaponItem>("ShortSword"));
+	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Sand, true));
+	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::SandStone, true));
 
 	lastTime = gameClock.getElapsedTime().asSeconds();
 }
@@ -89,6 +91,10 @@ void Game::ProcessEvents()
 				selectedIndex = 3;
 			if (event.key.code == sf::Keyboard::Num5)
 				selectedIndex = 4;
+			if (event.key.code == sf::Keyboard::Num6)
+				selectedIndex = 5;
+			if (event.key.code == sf::Keyboard::Num7)
+				selectedIndex = 6;
 		}
 
 		if (event.type == sf::Event::KeyReleased)
