@@ -93,6 +93,7 @@ void Chunk::generateTerrain()
         generateCaveEntrance();
 
     if (biomeData->generateTrees)
+
         generateTrees();
 
     randomZombieSpawn();

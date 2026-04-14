@@ -7,6 +7,7 @@ BiomeManager::BiomeManager(int seed)
 	//Initialize biome data
 	biomeDataMap[BiomeType::Forest] = { 0.0035f, 0.7f, Tile::TileType::Grass, Tile::TileType::Dirt, Tile::TileType::Stone, 1, 5, 40, 0.4f, 0.5f, 0.3f, 0.7f, true, true };
 	biomeDataMap[BiomeType::Desert] = { 0.0025f, 0.4f, Tile::TileType::Sand, Tile::TileType::SandStone, Tile::TileType::SandStone, 6, 25, 30, 0.35f, 0.55f, 0.2f, 0.8f, false, true };
+	biomeDataMap[BiomeType::Tundra] = { 0.004f, 0.8f, Tile::TileType::Snow, Tile::TileType::Ice, Tile::TileType::Ice, 1, 30, 45, 0.4f, 0.5f, 0.35f, 0.65f, true, true };
 
 	//Add inital starting biome to always be forest
 	std::random_device rd;
@@ -39,7 +40,7 @@ void BiomeManager::createBiomeZone(int chunkX)
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> biomeSize(minBiomeSize, maxBiomeSize);
-	std::uniform_int_distribution<int> biome(0, 1);
+	std::uniform_int_distribution<int> biome(0, 2);
 
 	int newZoneStartX;
 	int newZoneEndX;
@@ -80,19 +81,15 @@ void BiomeManager::createBiomeZone(int chunkX)
 	}
 
 
-	//Biome type selection (ensure alternating of biomes, since only two are there right now)
-	BiomeType biomeToSpawn;
+	//Biome type selection
+	BiomeType biomeToSpawn = static_cast<BiomeType>(biome(gen));
 
-	if (lastSpawnedBiome == BiomeType::Desert)
+	while (biomeToSpawn == lastSpawnedBiome)
 	{
-		biomeToSpawn = BiomeType::Forest;
-		lastSpawnedBiome = BiomeType::Forest;
+		biomeToSpawn = static_cast<BiomeType>(biome(gen));
 	}
-	else
-	{
-		biomeToSpawn = BiomeType::Desert;
-		lastSpawnedBiome = BiomeType::Desert;
-	}
+
+	lastSpawnedBiome = biomeToSpawn;
 
 	//Compute height offset between two biomes
 	BiomeZone newZone = { newZoneStartX, newZoneEndX, biomeToSpawn , 0.0f };

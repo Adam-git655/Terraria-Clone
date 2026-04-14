@@ -56,6 +56,8 @@ private:
 	sf::Texture torchTex;
 	sf::Texture sandTex;
 	sf::Texture sandStoneTex;
+	sf::Texture snowTex;
+	sf::Texture iceTex;
 
 	Chunk& getChunk(int chunkX);
 	int getChunkXFromWorldX(float worldX);

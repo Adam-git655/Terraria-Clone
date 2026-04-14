@@ -84,6 +84,10 @@ std::string Tile::tileTypeToString(Tile::TileType type)
 		return "Sand";
 	case Tile::TileType::SandStone:
 		return "SandStone";
+	case Tile::TileType::Snow:
+		return "Snow";
+	case Tile::TileType::Ice:
+		return "Ice";
 	default:
 		break;
 	}

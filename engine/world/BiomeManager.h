@@ -6,7 +6,8 @@
 enum class BiomeType
 {
 	Forest = 0,
-	Desert
+	Desert = 1,
+	Tundra = 2
 };
 
 struct BiomeData

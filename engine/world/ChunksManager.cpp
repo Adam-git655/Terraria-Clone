@@ -39,6 +39,14 @@ ChunksManager::ChunksManager(int seed)
 	{
 		std::cout << "ERROR LOADING SANDSTONE TEXTURE";
 	}
+	if (!snowTex.loadFromFile(RESOURCES_PATH "snow.png"))
+	{
+		std::cout << "ERROR LOADING SNOW TEXTURE";
+	}
+	if (!iceTex.loadFromFile(RESOURCES_PATH "ice.png"))
+	{
+		std::cout << "ERROR LOADING ICE TEXTURE";
+	}
 }
 
 Chunk& ChunksManager::getChunk(int chunkX)
@@ -143,6 +151,10 @@ const sf::Texture& ChunksManager::getTexture(const std::string& textureName) con
 		return sandTex;
 	else if (textureName == "SandStone")
 		return sandStoneTex;
+	else if (textureName == "Snow")
+		return snowTex;
+	else if (textureName == "Ice")
+		return iceTex;
 	else
 	{
 		std::cerr << "ERROR: Unkown texture name provided in getTexture: " << textureName << "\n";
@@ -241,6 +253,14 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Vec2& playerPos, sf::RenderW
 
 				case Tile::TileType::SandStone:
 					tileSprite.setTexture(sandStoneTex);
+					break;
+
+				case Tile::TileType::Snow:
+					tileSprite.setTexture(snowTex);
+					break;
+
+				case Tile::TileType::Ice:
+					tileSprite.setTexture(iceTex);
 					break;
 
 				default:
@@ -355,8 +375,8 @@ bool ChunksManager::generateTree(const IVec2 pos)
 	Chunk* chunk = getChunkIfExists(chunkX);
 	if (!chunk) return false;
 
-	//Check if tile below is grass or not
-	if (chunk->getTile(localX, pos.y + 1).getType() != Tile::TileType::Grass) return true;
+	//Ensure that tree is not spawning in air
+	if (chunk->getTile(localX, pos.y + 1).getType() == Tile::TileType::Air) return true;
 
 	//Generate the trunk
 	for (int i = 0; i < height; i++)

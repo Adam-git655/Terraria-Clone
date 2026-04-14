@@ -17,7 +17,9 @@ public:
 		Leaf,
 		Torch,
 		Sand,
-		SandStone
+		SandStone,
+		Snow,
+		Ice
 	};
 
 
