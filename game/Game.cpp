@@ -39,12 +39,14 @@ void Game::Init()
 
 	//Initialize hotbar
 	hotbar.push_back(std::make_unique<WeaponItem>("ShortSword"));
+	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Torch, false));
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Grass, true));
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Dirt, true));
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Stone, true));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Torch, false));
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Sand, true));
 	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::SandStone, true));
+	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Snow, true));
+	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Ice, true));
 
 	lastTime = gameClock.getElapsedTime().asSeconds();
 }
@@ -95,6 +97,10 @@ void Game::ProcessEvents()
 				selectedIndex = 5;
 			if (event.key.code == sf::Keyboard::Num7)
 				selectedIndex = 6;
+			if (event.key.code == sf::Keyboard::Num8)
+				selectedIndex = 7;
+			if (event.key.code == sf::Keyboard::Num9)
+				selectedIndex = 8;
 		}
 
 		if (event.type == sf::Event::KeyReleased)

@@ -5,7 +5,7 @@ BiomeManager::BiomeManager(int seed)
 	:seed(seed)
 {
 	//Initialize biome data
-	biomeDataMap[BiomeType::Forest] = { 0.0035f, 0.7f, Tile::TileType::Grass, Tile::TileType::Dirt, Tile::TileType::Stone, 1, 5, 40, 0.4f, 0.5f, 0.3f, 0.7f, true, true };
+	biomeDataMap[BiomeType::Forest] = { 0.0035f, 0.6f, Tile::TileType::Grass, Tile::TileType::Dirt, Tile::TileType::Stone, 1, 5, 40, 0.4f, 0.5f, 0.3f, 0.7f, true, true };
 	biomeDataMap[BiomeType::Desert] = { 0.0025f, 0.4f, Tile::TileType::Sand, Tile::TileType::SandStone, Tile::TileType::SandStone, 6, 25, 30, 0.35f, 0.55f, 0.2f, 0.8f, false, true };
 	biomeDataMap[BiomeType::Tundra] = { 0.004f, 0.8f, Tile::TileType::Snow, Tile::TileType::Ice, Tile::TileType::Ice, 1, 30, 45, 0.4f, 0.5f, 0.35f, 0.65f, true, true };
 
