@@ -47,6 +47,10 @@ ChunksManager::ChunksManager(int seed)
 	{
 		std::cout << "ERROR LOADING ICE TEXTURE";
 	}
+	if (!snowLeafTex.loadFromFile(RESOURCES_PATH "snowLeaf.png"))
+	{
+		std::cout << "ERROR LOADING SNOWY LEAF TEXTURE";
+	}
 }
 
 Chunk& ChunksManager::getChunk(int chunkX)
@@ -155,6 +159,8 @@ const sf::Texture& ChunksManager::getTexture(const std::string& textureName) con
 		return snowTex;
 	else if (textureName == "Ice")
 		return iceTex;
+	else if (textureName == "SnowLeaf")
+		return snowLeafTex;
 	else
 	{
 		std::cerr << "ERROR: Unkown texture name provided in getTexture: " << textureName << "\n";
@@ -263,6 +269,10 @@ void ChunksManager::UpdateAndRenderChunks(float dt, Vec2& playerPos, sf::RenderW
 					tileSprite.setTexture(iceTex);
 					break;
 
+				case Tile::TileType::SnowLeaf:
+					tileSprite.setTexture(snowLeafTex);
+					break;
+
 				default:
 					continue;
 				}
@@ -355,6 +365,8 @@ void ChunksManager::processTreeQueue()
 			++it;
 		}
 	}
+
+	updateSnowLeaves();
 }
 
 bool ChunksManager::generateTree(const IVec2 pos)
@@ -412,6 +424,33 @@ bool ChunksManager::generateTree(const IVec2 pos)
 	}
 
 	return true;
+}
+
+void ChunksManager::updateSnowLeaves()
+{
+	for (auto& [chunkX, chunk] : renderedChunks)
+	{
+		//Set topmost leaves to snow if tundra biome
+		if (chunk->getBiome() != BiomeType::Tundra)
+			continue;
+
+		for (int x = 0; x < Chunk::CHUNK_WIDTH; x++)
+		{
+			for (int y = 0; y < Chunk::CHUNK_HEIGHT; y++)
+			{
+				//if already found snow leaf in that column, then break to next column
+				if (chunk->getTile(x, y).getType() == Tile::TileType::SnowLeaf)
+					break;
+
+				if (chunk->getTile(x, y).getType() == Tile::TileType::Leaf)
+				{
+					//set first leaf from top to snow leaf in every column of chunk, and then break to the next column
+					chunk->setTile(x, y, Tile::TileType::SnowLeaf, false);
+					break;
+				}
+			}
+		}
+	}
 }
 
 void ChunksManager::DisableLighting()

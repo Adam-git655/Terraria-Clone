@@ -58,11 +58,13 @@ private:
 	sf::Texture sandStoneTex;
 	sf::Texture snowTex;
 	sf::Texture iceTex;
+	sf::Texture snowLeafTex;
 
 	Chunk& getChunk(int chunkX);
 	int getChunkXFromWorldX(float worldX);
 
 	void processTreeQueue();
 	bool generateTree(const IVec2 pos);
+	void updateSnowLeaves();
 };
 

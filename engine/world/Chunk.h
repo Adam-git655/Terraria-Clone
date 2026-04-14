@@ -25,8 +25,7 @@ public:
 	const Tile& getTile(int localX, int localY) const;
 	Tile& getTile(int localX, int localY);
 	int getChunkX() const;
-	int getLengthOfDirtPatch() const;
-	int getLengthOfStonePatch() const;
+	BiomeType getBiome() const;
 
 	std::vector<std::vector<Tile>>& getChunkTiles();
 	std::vector<int>& getSurfaceHeights();
@@ -42,10 +41,6 @@ private:
 	BiomeType biome;
 	const BiomeData* biomeData;
 	BiomeManager& biomeManager;
-
-
-	int lengthOfDirtPatch = 5;
-	int lengthOfStonePatch = 40;
 
 	void generateTerrain();
 

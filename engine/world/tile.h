@@ -19,7 +19,8 @@ public:
 		Sand,
 		SandStone,
 		Snow,
-		Ice
+		Ice,
+		SnowLeaf
 	};
 
 

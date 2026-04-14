@@ -243,14 +243,9 @@ int Chunk::getChunkX() const
     return chunkX;
 }
 
-int Chunk::getLengthOfDirtPatch() const
+BiomeType Chunk::getBiome() const
 {
-    return lengthOfDirtPatch;
-}
-
-int Chunk::getLengthOfStonePatch() const
-{
-    return lengthOfStonePatch;
+    return biome;
 }
 
 void Chunk::collisionsWithTerrain(CollisionComponent& collision, TransformComponent& transform, PhysicsComponent& physics, Entt e)
