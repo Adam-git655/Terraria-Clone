@@ -36,6 +36,10 @@ void Game::Init()
 
 	//Create player
 	playerEntity = entityFactory.createPlayer(playerSpawnPos, playerTex);
+	
+	//Initialize hotbar
+	inventorySystem.addItem(entityManager, playerEntity, "ShortSword", 1, itemRegistry);
+	inventorySystem.addItem(entityManager, playerEntity, "Torch", 64, itemRegistry);
 
 	lastTime = gameClock.getElapsedTime().asSeconds();
 }
