@@ -6,8 +6,6 @@
 #include "engine/world/ChunksManager.h"
 #include "engine/world/PerlinNoise.h"
 #include "Item.h"
-#include "TileItem.h"
-#include "WeaponItem.h"
 
 #include "EntityFactory.h"
 
@@ -16,6 +14,7 @@
 #include "Systems/HealthSystem.h"
 #include "Systems/MovementSystem.h"
 #include "Systems/RenderSystem.h"
+#include "Systems/InventorySystem.h"
 
 #include <vector>
 
@@ -63,11 +62,34 @@ private:
 	HealthSystem healthSystem;
 	MovementSystem movementSystem;
 	RenderSystem renderSystem;
+	InventorySystem inventorySystem;
 
-	//Hotbar
-	std::vector<std::unique_ptr<Item>> hotbar;
-	Tile::TileType blockTypeInHand = Tile::TileType::Grass;
-	int selectedIndex = 0;
+	//Inventory
+	std::unordered_map<std::string, ItemDef> itemRegistry =
+	{
+		{"ShortSword", {1, false}},
+		{"Torch", {64, true}},
+		{"Grass", {64, true}},
+		{"Dirt", {64, true}},
+		{"Stone", {64, true}},
+		{"Sand", {64, true}},
+		{"SandStone", {64, true}},
+		{"Snow", {64, true}},
+		{"Ice", {64, true}},
+	};	
+	
+	std::unordered_map<std::string, TileDef> tileRegistry =
+	{
+		{"Torch", {Tile::TileType::Torch, false}},
+		{"Grass", {Tile::TileType::Grass, true}},
+		{"Dirt", {Tile::TileType::Dirt, true}},
+		{"Stone", {Tile::TileType::Stone, true}},
+		{"Sand", {Tile::TileType::Sand, true}},
+		{"SandStone", {Tile::TileType::SandStone, true}},
+		{"Snow", {Tile::TileType::Snow, true}},
+		{"Ice", {Tile::TileType::Ice, true}},
+	};
+
 	bool isMining = false;
 	bool isPlacing = false;
 

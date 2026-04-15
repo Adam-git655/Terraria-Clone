@@ -7,6 +7,7 @@
 #include "game/Components/FactionComponent.h"
 #include "game/Components/HealthComponent.h"
 #include "game/Components/InputComponent.h"
+#include "game/Components/InventoryComponent.h"
 #include "game/Components/MovementComponent.h"
 #include "game/Components/PhysicsComponent.h"
 #include "game/Components/RenderComponent.h"

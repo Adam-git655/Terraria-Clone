@@ -42,7 +42,7 @@ public:
 	void setPosition(Vec2 p);
 
 	sf::FloatRect getBounds() const;
-	static std::string tileTypeToString(Tile::TileType type);
+	static std::string tileTypeToItemId(Tile::TileType type);
 
 private:
 	sf::Sprite tileSprite;
@@ -52,4 +52,10 @@ private:
 	bool Solid;
 
 	sf::Color lightColor;
+};
+
+struct TileDef
+{
+	Tile::TileType type = Tile::TileType::Air;
+	bool isSolid = true;
 };

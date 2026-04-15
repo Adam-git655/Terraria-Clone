@@ -83,7 +83,7 @@ int ChunksManager::getChunkXFromWorldX(float worldX)
 	return chunkX;
 }
 
-void ChunksManager::DestroyTile(sf::Vector2f pos)
+Tile::TileType ChunksManager::DestroyTile(sf::Vector2f pos)
 {
 
 	int tileX = static_cast<int>(std::floor(pos.x / Chunk::TILESIZE));
@@ -108,9 +108,11 @@ void ChunksManager::DestroyTile(sf::Vector2f pos)
 		lighting.RemoveLightSource(tileX, tileY);
 
 	UpdateLightingForRegion(tileX, tileY);
+
+	return typeOfTileRemoved;
 }
 
-void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType, bool solid)
+bool ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType, bool solid)
 {
 	int tileX = static_cast<int>(std::floor(pos.x / Chunk::TILESIZE));
 	int tileY = static_cast<int>(std::floor(pos.y / Chunk::TILESIZE));
@@ -122,17 +124,23 @@ void ChunksManager::PlaceTile(sf::Vector2f pos, Tile::TileType blockType, bool s
 	Chunk& chunk = getChunk(chunkX);
 	Tile& tile = chunk.getTile(localX, tileY);
 
-	//cannot place another tile on top of torch tile
-	if (tile.getType() != Tile::TileType::Torch)
+	//cannot place another tile on top of torch tile or on top of same tile
+	if (tile.getType() == Tile::TileType::Torch || tile.getType() == blockType)
 	{
-		tile.setType(blockType);
-		tile.setSolid(solid);
+		//placement failed
+		return false;
 	}
+
+	tile.setType(blockType);
+	tile.setSolid(solid);
 
 	if (blockType == Tile::TileType::Torch)
 		lighting.AddLightSource(tileX, tileY, 15, sf::Color(255, 200, 150));
 
 	UpdateLightingForRegion(tileX, tileY);
+
+	//placement succesful
+	return true;
 }
 
 const sf::Texture& ChunksManager::getTexture(const std::string& textureName) const

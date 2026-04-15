@@ -37,17 +37,6 @@ void Game::Init()
 	//Create player
 	playerEntity = entityFactory.createPlayer(playerSpawnPos, playerTex);
 
-	//Initialize hotbar
-	hotbar.push_back(std::make_unique<WeaponItem>("ShortSword"));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Torch, false));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Grass, true));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Dirt, true));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Stone, true));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Sand, true));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::SandStone, true));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Snow, true));
-	hotbar.push_back(std::make_unique<TileItem>(Tile::TileType::Ice, true));
-
 	lastTime = gameClock.getElapsedTime().asSeconds();
 }
 
@@ -78,29 +67,30 @@ void Game::ProcessEvents()
 			window.close();
 
 		auto& input = entityManager.getComponentStorage<InputComponent>().get(playerEntity);
+		auto& inv = entityManager.getComponentStorage<InventoryComponent>().get(playerEntity);
 
 		if (event.type == sf::Event::KeyPressed)
 		{
 			input.movement_keys[event.key.code] = true;
 
 			if (event.key.code == sf::Keyboard::Num1)
-				selectedIndex = 0;
+				inv.activeHotbarSlot = 0;
 			if (event.key.code == sf::Keyboard::Num2)
-				selectedIndex = 1;
+				inv.activeHotbarSlot = 1;
 			if (event.key.code == sf::Keyboard::Num3)
-				selectedIndex = 2;
+				inv.activeHotbarSlot = 2;
 			if (event.key.code == sf::Keyboard::Num4)
-				selectedIndex = 3;
+				inv.activeHotbarSlot = 3;
 			if (event.key.code == sf::Keyboard::Num5)
-				selectedIndex = 4;
+				inv.activeHotbarSlot = 4;
 			if (event.key.code == sf::Keyboard::Num6)
-				selectedIndex = 5;
+				inv.activeHotbarSlot = 5;
 			if (event.key.code == sf::Keyboard::Num7)
-				selectedIndex = 6;
+				inv.activeHotbarSlot = 6;
 			if (event.key.code == sf::Keyboard::Num8)
-				selectedIndex = 7;
+				inv.activeHotbarSlot = 7;
 			if (event.key.code == sf::Keyboard::Num9)
-				selectedIndex = 8;
+				inv.activeHotbarSlot = 8;
 		}
 
 		if (event.type == sf::Event::KeyReleased)
@@ -115,8 +105,7 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 	if (io.WantCaptureMouse)
 		return;
 
-	Item* currentItem = hotbar[selectedIndex].get();
-	auto* tileItem = dynamic_cast<TileItem*>(currentItem);
+	auto& inv = entityManager.getComponentStorage<InventoryComponent>().get(playerEntity);
 
 	if (event.type == sf::Event::MouseButtonPressed)
 	{
@@ -125,25 +114,46 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
-			if (currentItem->getItemType() == Item::ItemType::Weapon)
+			ItemStack& item = inv.hotbar[inv.activeHotbarSlot];
+
+			//Attack
+			if (!itemRegistry[item.itemId].isBlock)
 			{
 				auto& weaponsStorage = entityManager.getComponentStorage<WeaponComponent>();
 
 				if (weaponsStorage.has(playerEntity))
 					weaponsStorage.get(playerEntity).attackRequested = true;
 			}
+			//Mine
 			else
 			{
 				isMining = true;
-				chunksManager.DestroyTile(pointWorldCoords);
+				Tile::TileType tileRemoved = chunksManager.DestroyTile(pointWorldCoords);
+				std::string itemId = Tile::tileTypeToItemId(tileRemoved);
+				if (!itemId.empty())
+					inventorySystem.addItem(entityManager, playerEntity, itemId, 1, itemRegistry);
 			}
 		}
 
-		else if (event.mouseButton.button == sf::Mouse::Right
-			&& currentItem->getItemType() == Item::ItemType::Tile)
+		//Place
+		else if (event.mouseButton.button == sf::Mouse::Right)
 		{
-			isPlacing = true;
-			chunksManager.PlaceTile(pointWorldCoords, blockTypeInHand, tileItem->getSolid());
+			ItemStack& item = inv.hotbar[inv.activeHotbarSlot];
+			//Ensure item exists in current equipped slot
+			if (itemRegistry.count(item.itemId) == 0)
+				return;
+
+			//Ensure item is block
+			if (!itemRegistry[inv.hotbar[inv.activeHotbarSlot].itemId].isBlock)
+				return;
+
+			if (item.count > 0)
+			{
+				isPlacing = true;
+				bool placed = chunksManager.PlaceTile(pointWorldCoords, tileRegistry[item.itemId].type, tileRegistry[item.itemId].isSolid);
+				if (placed)
+					inventorySystem.removeItem(entityManager, playerEntity, item.itemId, 1);
+			}
 		}
 	}
 
@@ -162,9 +172,22 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 		({ event.mouseMove.x, event.mouseMove.y }, camera);
 
 		if (isMining)
-			chunksManager.DestroyTile(pointWorldCoords);
+		{
+			Tile::TileType tileRemoved = chunksManager.DestroyTile(pointWorldCoords);
+			std::string itemId = Tile::tileTypeToItemId(tileRemoved);
+			if (!itemId.empty())
+				inventorySystem.addItem(entityManager, playerEntity, itemId, 1, itemRegistry);
+		}
 		if (isPlacing)
-			chunksManager.PlaceTile(pointWorldCoords, blockTypeInHand, tileItem->getSolid());
+		{
+			ItemStack& item = inv.hotbar[inv.activeHotbarSlot];
+			if (item.count > 0 && itemRegistry.count(item.itemId) && itemRegistry[item.itemId].isBlock)
+			{
+				bool placed = chunksManager.PlaceTile(pointWorldCoords, tileRegistry[item.itemId].type, tileRegistry[item.itemId].isSolid);
+				if (placed)
+					inventorySystem.removeItem(entityManager, playerEntity, item.itemId, 1);
+			}
+		}
 	}
 }
 
@@ -194,28 +217,40 @@ void Game::Update()
 
 void Game::RenderHotbar()
 {
+	auto& inv = entityManager.getComponentStorage<InventoryComponent>().get(playerEntity);
+
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	ImVec2 window_pos = ImVec2(viewport->WorkPos.x + 10, viewport->WorkPos.y + 10);
 	ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
 
 	ImGui::Begin("Hotbar", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
-	for (int i = 0; i < hotbar.size(); i++)
+	for (int i = 0; i < inv.HOTBAR_SIZE; i++)
 	{
-		if (i == selectedIndex)
+		if (i == inv.activeHotbarSlot)
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
 		else
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
 
-		Item* item = hotbar[i].get();
-		if (!item)
+		ItemStack& item = inv.hotbar[i];
+		if (item.count == 0)
+		{
+			std::string buttonId = "##btn" + std::to_string(i);
+			if (ImGui::Button(buttonId.c_str(), ImVec2(50, 50)))
+				inv.activeHotbarSlot = i;
+
+			ImGui::PopStyleColor();
+
+			if (i < inv.HOTBAR_SIZE - 1)
+				ImGui::SameLine();
 			continue;
+		}
 
 		const sf::Texture* tex = nullptr;
 
-		if (item->getItemType() == Item::ItemType::Tile)
-			tex = &chunksManager.getTexture(item->getItemName());
-		else if (item->getItemType() == Item::ItemType::Weapon)
+		if (itemRegistry[item.itemId].isBlock)
+			tex = &chunksManager.getTexture(item.itemId);
+		else
 			tex = &shortSwordTex;
 
 		if (tex)
@@ -223,36 +258,40 @@ void Game::RenderHotbar()
 			std::string buttonId = "##btn" + std::to_string(i);
 			if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(50, 50), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0.3f, 0.6f, 1.0f, 1.0f)))
 			{
-				selectedIndex = i;
+				inv.activeHotbarSlot = i;
 			}
 		}
 
 		ImGui::PopStyleColor();
 
-		if (i < hotbar.size() - 1)
+		if (i < inv.HOTBAR_SIZE - 1)
 			ImGui::SameLine();
 
 	}
 
 	ImGui::End();
 
-	//EQUIP / UNEQUIP TILES/WEAPONS LOGIC
-	Item* selectedItem = hotbar[selectedIndex].get();
-
+	//EQUIP / UNEQUIP WEAPONS LOGIC
+	ItemStack& item = inv.hotbar[inv.activeHotbarSlot];
 	auto& weaponsStorage = entityManager.getComponentStorage<WeaponComponent>();
 
-	if (selectedItem->getItemType() == Item::ItemType::Tile)
+	if (itemRegistry.count(item.itemId) == 0)
 	{
-		auto* tileItem = dynamic_cast<TileItem*>(selectedItem);
-		if (tileItem)
-			blockTypeInHand = tileItem->getTileType();
+		//empty slot, uneqip weapon
+		if (weaponsStorage.has(playerEntity))
+			entityManager.removeComponent<WeaponComponent>(playerEntity);
 
+	}
+	else if (itemRegistry[item.itemId].isBlock)
+	{
+		//uneqip weapon
 		if (weaponsStorage.has(playerEntity))
 			entityManager.removeComponent<WeaponComponent>(playerEntity);
 	}
-	else if (selectedItem->getItemType() == Item::ItemType::Weapon)
+	else
 	{
-		if (selectedItem->getItemName() == "ShortSword" && !weaponsStorage.has(playerEntity))
+		//equips weapon because sword
+		if (item.itemId == "ShortSword" && !weaponsStorage.has(playerEntity))
 			entityManager.addComponent<WeaponComponent>(playerEntity, { "ShortSword", 10.0f, {}, 0.7f, 105.0f, false });
 	}
 }

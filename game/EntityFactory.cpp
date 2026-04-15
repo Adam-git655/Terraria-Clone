@@ -9,6 +9,7 @@ Entt EntityFactory::createPlayer(Vec2& spawnPos, sf::Texture& playerTex)
 	mgr.addComponent<InputComponent>(e, {});
 	mgr.addComponent<CollisionComponent>(e, { {0.0f, 0.0f, 40.0f, 52.0f } });
 	mgr.addComponent<HealthComponent>(e, { 100.0f, 100.0f });
+	mgr.addComponent<InventoryComponent>(e, {});
 	mgr.addComponent<RenderComponent>(e, { false, {}, {2.0f, 2.0f}, playerTex, true });
 	mgr.addComponent<FactionComponent>(e, { Faction::Player });
 

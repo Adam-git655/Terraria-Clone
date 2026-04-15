@@ -60,26 +60,18 @@ sf::FloatRect Tile::getBounds() const
 	return sf::FloatRect(tileSprite.getPosition().x, tileSprite.getPosition().y, tileSize, tileSize);
 }
 
-std::string Tile::tileTypeToString(Tile::TileType type)
+std::string Tile::tileTypeToItemId(Tile::TileType type)
 {
 	switch (type)
 	{
-	case Tile::TileType::Air:
-		return "Air";
+	case Tile::TileType::Torch:
+		return "Torch";
 	case Tile::TileType::Grass:
 		return "Grass";
 	case Tile::TileType::Dirt:
 		return "Dirt";
-	case Tile::TileType::CaveAir:
-		return "CaveAir";
 	case Tile::TileType::Stone:
 		return "Stone";
-	case Tile::TileType::Wood:
-		return "Wood";
-	case Tile::TileType::Leaf:
-		return "Leaf";
-	case Tile::TileType::Torch:
-		return "Torch";
 	case Tile::TileType::Sand:
 		return "Sand";
 	case Tile::TileType::SandStone:
@@ -88,9 +80,7 @@ std::string Tile::tileTypeToString(Tile::TileType type)
 		return "Snow";
 	case Tile::TileType::Ice:
 		return "Ice";
-	case Tile::TileType::SnowLeaf:
-		return "SnowLeaf";
 	default:
-		break;
+		return "";
 	}
 }
