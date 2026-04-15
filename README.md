@@ -26,7 +26,7 @@ cmake ../
 - Terrain generation using 1D perlin noise
 - Cave generation using 2D perlin noise and drunkard's walk
 - Tree generation with randomized shapes and sizes
-- Biome generation (Forest, Desert)
+- Biome generation (Forest, Desert, Tundra)
 - Player collisions with the tiled environment
 - Smart Zombie AI using A* pathfinding
 - Basic Combat System
@@ -38,7 +38,7 @@ cmake ../
 ### Features to add
 
 - More block types and minerals
-- More Biomes
+- More enemies
 - Audio system
   
 ## Controls
