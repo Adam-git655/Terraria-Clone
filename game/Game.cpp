@@ -264,6 +264,21 @@ void Game::RenderHotbar()
 			{
 				inv.activeHotbarSlot = i;
 			}
+
+			if (item.count > 1)
+			{
+				ImVec2 rectMax = ImGui::GetItemRectMax();
+				std::string countStr = std::to_string(item.count);
+				ImVec2 textSize = ImGui::CalcTextSize(countStr.c_str());
+
+				ImDrawList* drawList = ImGui::GetWindowDrawList();
+				ImVec2 textPos = ImVec2(rectMax.x - textSize.x - 5, rectMax.y - textSize.y - 3);
+
+				//Shadow
+				drawList->AddText(ImVec2(textPos.x + 1, textPos.y + 1), IM_COL32(0, 0, 0, 255), countStr.c_str());
+				//White text on top
+				drawList->AddText(ImVec2(textPos), IM_COL32(255, 255, 255, 255), countStr.c_str());
+			}
 		}
 
 		ImGui::PopStyleColor();
