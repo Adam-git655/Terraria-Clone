@@ -11,6 +11,7 @@ struct ItemStack
 struct InventoryComponent
 {
 	static const int HOTBAR_SIZE = 9;
+	static const int INVENTORY_SIZE = 40;
 	int activeHotbarSlot = 0;
-	std::array<ItemStack, HOTBAR_SIZE> hotbar;
+	std::array<ItemStack, HOTBAR_SIZE + INVENTORY_SIZE> slots; //First 9 slots for hotbar
 };

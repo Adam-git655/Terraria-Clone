@@ -65,6 +65,8 @@ private:
 	InventorySystem inventorySystem;
 
 	//Inventory
+	bool renderInventory = false;
+
 	std::unordered_map<std::string, ItemDef> itemRegistry =
 	{
 		{"ShortSword", {1, false}},
@@ -101,5 +103,6 @@ private:
 
 	void HandleMouseInput(const sf::Event event, ImGuiIO& io);
 	void RenderHotbar();
+	void RenderInventory();
 	void RenderSettings();
 };

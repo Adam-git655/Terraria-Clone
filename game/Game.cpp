@@ -95,6 +95,9 @@ void Game::ProcessEvents()
 				inv.activeHotbarSlot = 7;
 			if (event.key.code == sf::Keyboard::Num9)
 				inv.activeHotbarSlot = 8;
+
+			if (event.key.code == sf::Keyboard::E)
+				renderInventory = !renderInventory;
 		}
 
 		if (event.type == sf::Event::KeyReleased)
@@ -109,6 +112,9 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 	if (io.WantCaptureMouse)
 		return;
 
+	if (renderInventory)
+		return;
+
 	auto& inv = entityManager.getComponentStorage<InventoryComponent>().get(playerEntity);
 
 	if (event.type == sf::Event::MouseButtonPressed)
@@ -118,7 +124,7 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
-			ItemStack& item = inv.hotbar[inv.activeHotbarSlot];
+			ItemStack& item = inv.slots[inv.activeHotbarSlot];
 
 			//Attack
 			if (!itemRegistry[item.itemId].isBlock)
@@ -142,13 +148,13 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 		//Place
 		else if (event.mouseButton.button == sf::Mouse::Right)
 		{
-			ItemStack& item = inv.hotbar[inv.activeHotbarSlot];
+			ItemStack& item = inv.slots[inv.activeHotbarSlot];
 			//Ensure item exists in current equipped slot
 			if (itemRegistry.count(item.itemId) == 0)
 				return;
 
 			//Ensure item is block
-			if (!itemRegistry[inv.hotbar[inv.activeHotbarSlot].itemId].isBlock)
+			if (!itemRegistry[inv.slots[inv.activeHotbarSlot].itemId].isBlock)
 				return;
 
 			if (item.count > 0)
@@ -184,7 +190,7 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 		}
 		if (isPlacing)
 		{
-			ItemStack& item = inv.hotbar[inv.activeHotbarSlot];
+			ItemStack& item = inv.slots[inv.activeHotbarSlot];
 			if (item.count > 0 && itemRegistry.count(item.itemId) && itemRegistry[item.itemId].isBlock)
 			{
 				bool placed = chunksManager.PlaceTile(pointWorldCoords, tileRegistry[item.itemId].type, tileRegistry[item.itemId].isSolid);
@@ -225,31 +231,46 @@ void Game::RenderHotbar()
 
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
+	//set position to top left
 	ImVec2 window_pos = ImVec2(viewport->WorkPos.x + 10, viewport->WorkPos.y + 10);
 	ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
+
+	const float SLOT_SIZE = 50.0f;
 
 	ImGui::Begin("Hotbar", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 	for (int i = 0; i < inv.HOTBAR_SIZE; i++)
 	{
-		if (i == inv.activeHotbarSlot)
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
-		else
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-		ItemStack& item = inv.hotbar[i];
+		ItemStack& item = inv.slots[i];
+
+		//draw empty slots
 		if (item.count == 0)
 		{
 			std::string buttonId = "##btn" + std::to_string(i);
-			if (ImGui::Button(buttonId.c_str(), ImVec2(50, 50)))
+			if (ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE))) //normal button
 				inv.activeHotbarSlot = i;
 
-			ImGui::PopStyleColor();
+			ImGui::PopStyleVar();
 
+			//add boundary rect when hovered
+			ImVec2 rectMin = ImGui::GetItemRectMin();
+			ImVec2 rectMax = ImGui::GetItemRectMax();
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+			if (i == inv.activeHotbarSlot)
+				drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
+			else if (ImGui::IsItemHovered())
+				drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
+
+			//ensure same line
 			if (i < inv.HOTBAR_SIZE - 1)
 				ImGui::SameLine();
+
 			continue;
 		}
 
+		//if not empty, get texture of item in slot
 		const sf::Texture* tex = nullptr;
 
 		if (itemRegistry[item.itemId].isBlock)
@@ -257,41 +278,54 @@ void Game::RenderHotbar()
 		else
 			tex = &shortSwordTex;
 
+		std::string buttonId = "##btn" + std::to_string(i);
 		if (tex)
 		{
-			std::string buttonId = "##btn" + std::to_string(i);
-			if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(50, 50), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0.3f, 0.6f, 1.0f, 1.0f)))
-			{
+			//draw texture through image button
+			if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(SLOT_SIZE, SLOT_SIZE), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0)))
 				inv.activeHotbarSlot = i;
-			}
-
-			if (item.count > 1)
-			{
-				ImVec2 rectMax = ImGui::GetItemRectMax();
-				std::string countStr = std::to_string(item.count);
-				ImVec2 textSize = ImGui::CalcTextSize(countStr.c_str());
-
-				ImDrawList* drawList = ImGui::GetWindowDrawList();
-				ImVec2 textPos = ImVec2(rectMax.x - textSize.x - 5, rectMax.y - textSize.y - 3);
-
-				//Shadow
-				drawList->AddText(ImVec2(textPos.x + 1, textPos.y + 1), IM_COL32(0, 0, 0, 255), countStr.c_str());
-				//White text on top
-				drawList->AddText(ImVec2(textPos), IM_COL32(255, 255, 255, 255), countStr.c_str());
-			}
+		}
+		else
+		{
+			//fallback, wont happen likely
+			if (ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE)))
+				inv.activeHotbarSlot = i;
 		}
 
-		ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
 
+		//add boundary rect when hovered
+		ImVec2 rectMin = ImGui::GetItemRectMin();
+		ImVec2 rectMax = ImGui::GetItemRectMax();
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+		if (i == inv.activeHotbarSlot)
+			drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
+		else if (ImGui::IsItemHovered())
+			drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
+
+		//add item count on bottom right
+		if (item.count > 1)
+		{
+			std::string countStr = std::to_string(item.count);
+			ImVec2 textSize = ImGui::CalcTextSize(countStr.c_str());
+			ImVec2 textPos = ImVec2(rectMax.x - textSize.x - 5, rectMax.y - textSize.y - 3);
+
+			//Shadow
+			drawList->AddText(ImVec2(textPos.x + 1, textPos.y + 1), IM_COL32(0, 0, 0, 255), countStr.c_str());
+			//White text on top
+			drawList->AddText(ImVec2(textPos), IM_COL32(255, 255, 255, 255), countStr.c_str());
+		}
+
+		//ensure same line
 		if (i < inv.HOTBAR_SIZE - 1)
 			ImGui::SameLine();
-
 	}
 
 	ImGui::End();
 
 	//EQUIP / UNEQUIP WEAPONS LOGIC
-	ItemStack& item = inv.hotbar[inv.activeHotbarSlot];
+	ItemStack& item = inv.slots[inv.activeHotbarSlot];
 	auto& weaponsStorage = entityManager.getComponentStorage<WeaponComponent>();
 
 	if (itemRegistry.count(item.itemId) == 0)
@@ -313,6 +347,88 @@ void Game::RenderHotbar()
 		if (item.itemId == "ShortSword" && !weaponsStorage.has(playerEntity))
 			entityManager.addComponent<WeaponComponent>(playerEntity, { "ShortSword", 10.0f, {}, 0.7f, 105.0f, false });
 	}
+}
+
+void Game::RenderInventory()
+{
+	if (!renderInventory)
+		return;
+
+	auto& inv = entityManager.getComponentStorage<InventoryComponent>().get(playerEntity);
+
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	//set position to middle of screen
+	ImVec2 window_pos = ImVec2(
+		viewport->WorkPos.x + viewport->WorkSize.x * 0.5f,
+		viewport->WorkPos.y + viewport->WorkSize.y * 0.5f
+	);
+	ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+	ImGui::Begin("Inventory", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+
+	const int COLS = 10;
+	const float SLOT_SIZE = 50.0f;
+
+	for (int i = 0; i < inv.INVENTORY_SIZE; ++i)
+	{
+		ItemStack& item = inv.slots[inv.HOTBAR_SIZE + i];
+
+		int col = i % COLS;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+
+		if (item.count == 0)
+		{
+			std::string buttonId = "##btn" + std::to_string(i);
+			ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE));
+		}
+		else
+		{
+			const sf::Texture* tex = nullptr;
+
+			if (itemRegistry[item.itemId].isBlock)
+				tex = &chunksManager.getTexture(item.itemId);
+			else
+				tex = &shortSwordTex;
+
+			std::string buttonId = "##btn" + std::to_string(i);
+			if (tex)
+			{
+				ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(SLOT_SIZE, SLOT_SIZE), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0));
+			}
+			else
+			{
+				ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE));
+			}
+		}
+
+		ImGui::PopStyleVar();
+
+		ImVec2 rectMin = ImGui::GetItemRectMin();
+		ImVec2 rectMax = ImGui::GetItemRectMax();
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+		if (ImGui::IsItemHovered())
+			drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
+
+		if (item.count > 1)
+		{
+			std::string countStr = std::to_string(item.count);
+			ImVec2 textSize = ImGui::CalcTextSize(countStr.c_str());
+			ImVec2 textPos = ImVec2(rectMax.x - textSize.x - 5, rectMax.y - textSize.y - 3);
+
+			//Shadow
+			drawList->AddText(ImVec2(textPos.x + 1, textPos.y + 1), IM_COL32(0, 0, 0, 255), countStr.c_str());
+			//White text on top
+			drawList->AddText(ImVec2(textPos), IM_COL32(255, 255, 255, 255), countStr.c_str());
+		}
+
+		if (col < COLS - 1)
+			ImGui::SameLine();
+	}
+
+	ImGui::End();
 }
 
 void Game::RenderSettings()
@@ -356,6 +472,7 @@ void Game::Render()
 	renderSystem.draw(entityManager, window);
 
 	RenderHotbar();
+	RenderInventory();
 	RenderSettings();
 
 	ImGui::SFML::Render(window);

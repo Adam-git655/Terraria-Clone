@@ -5,10 +5,10 @@ void InventorySystem::addItem(EntityManager& mgr, Entt e, const std::string& ite
 	auto& invStorage = mgr.getComponentStorage<InventoryComponent>();
 	auto& inv = invStorage.get(e);
 
-	//Add to existing item on hotbar
-	for (auto& slot : inv.hotbar)
+	//Add to existing item on hotbar first, then inventory
+	for (auto& slot : inv.slots)
 	{
-		if (slot.itemId == itemId && slot.count > 0)
+		if (slot.itemId == itemId && slot.count > 0 && slot.count < itemRegistry[itemId].maxStackSize)
 		{
 			slot.count = addAmount(slot.count, amount, itemRegistry[itemId].maxStackSize);
 			return;
@@ -16,7 +16,7 @@ void InventorySystem::addItem(EntityManager& mgr, Entt e, const std::string& ite
 	}
 
 	//If doesnt exist, add to first empty slot
-	for (auto& slot : inv.hotbar)
+	for (auto& slot : inv.slots)
 	{
 		if (slot.count == 0)
 		{
@@ -32,8 +32,8 @@ void InventorySystem::removeItem(EntityManager& mgr, Entt e, const std::string& 
 	auto& invStorage = mgr.getComponentStorage<InventoryComponent>();
 	auto& inv = invStorage.get(e);
 
-	//Remove from item if exists in hotbar
-	for (auto& slot : inv.hotbar)
+	//Remove from item if exists in hotbar/inventory
+	for (auto& slot : inv.slots)
 	{
 		if (slot.itemId == itemId)
 		{
