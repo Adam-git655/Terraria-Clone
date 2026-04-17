@@ -97,7 +97,10 @@ void Game::ProcessEvents()
 				inv.activeHotbarSlot = 8;
 
 			if (event.key.code == sf::Keyboard::E)
+			{
 				renderInventory = !renderInventory;
+				inv.selectedInventorySlot = -1;
+			}
 		}
 
 		if (event.type == sf::Event::KeyReleased)
@@ -282,8 +285,10 @@ void Game::RenderHotbar()
 		if (tex)
 		{
 			//draw texture through image button
+			ImGui::PushID(i);
 			if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(SLOT_SIZE, SLOT_SIZE), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0)))
 				inv.activeHotbarSlot = i;
+			ImGui::PopID();
 		}
 		else
 		{
@@ -372,7 +377,8 @@ void Game::RenderInventory()
 
 	for (int i = 0; i < inv.INVENTORY_SIZE; ++i)
 	{
-		ItemStack& item = inv.slots[inv.HOTBAR_SIZE + i];
+		int slotIndex = inv.HOTBAR_SIZE + i;
+		ItemStack& item = inv.slots[slotIndex];
 
 		int col = i % COLS;
 
@@ -380,8 +386,17 @@ void Game::RenderInventory()
 
 		if (item.count == 0)
 		{
-			std::string buttonId = "##btn" + std::to_string(i);
-			ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE));
+			std::string buttonId = "##btn" + std::to_string(slotIndex);
+
+			if (ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE)))
+			{
+				if (inv.selectedInventorySlot != -1)
+				{
+					//move item from old slot to empty slot
+					std::swap(inv.slots[inv.selectedInventorySlot], item);
+					inv.selectedInventorySlot = -1;
+				}
+			}
 		}
 		else
 		{
@@ -392,10 +407,26 @@ void Game::RenderInventory()
 			else
 				tex = &shortSwordTex;
 
-			std::string buttonId = "##btn" + std::to_string(i);
+			std::string buttonId = "##btn" + std::to_string(slotIndex);
 			if (tex)
 			{
-				ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(SLOT_SIZE, SLOT_SIZE), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0));
+				ImGui::PushID(slotIndex);
+				if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(SLOT_SIZE, SLOT_SIZE), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0)))
+				{
+					if (inv.selectedInventorySlot == -1)
+					{
+						//select slot first time
+						if (item.count > 0)
+							inv.selectedInventorySlot = slotIndex;
+					}
+					else
+					{
+						//swap item from old slot with new slot
+						std::swap(inv.slots[inv.selectedInventorySlot], item);
+						inv.selectedInventorySlot = -1;
+					}
+				}
+				ImGui::PopID();
 			}
 			else
 			{
@@ -409,6 +440,8 @@ void Game::RenderInventory()
 		ImVec2 rectMax = ImGui::GetItemRectMax();
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
+		if (slotIndex == inv.selectedInventorySlot)
+			drawList->AddRect(rectMin, rectMax, IM_COL32(0, 255, 0, 255), 0.0f, 0, 2.0f);;
 		if (ImGui::IsItemHovered())
 			drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
 
