@@ -255,48 +255,32 @@ void Game::RenderHotbar()
 			std::string buttonId = "##btn" + std::to_string(i);
 			if (ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE))) //normal button
 				inv.activeHotbarSlot = i;
-
-			ImGui::PopStyleVar();
-
-			//add boundary rect when hovered
-			ImVec2 rectMin = ImGui::GetItemRectMin();
-			ImVec2 rectMax = ImGui::GetItemRectMax();
-			ImDrawList* drawList = ImGui::GetWindowDrawList();
-
-			if (i == inv.activeHotbarSlot)
-				drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
-			else if (ImGui::IsItemHovered())
-				drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
-
-			//ensure same line
-			if (i < inv.HOTBAR_SIZE - 1)
-				ImGui::SameLine();
-
-			continue;
-		}
-
-		//if not empty, get texture of item in slot
-		const sf::Texture* tex = nullptr;
-
-		if (itemRegistry[item.itemId].isBlock)
-			tex = &chunksManager.getTexture(item.itemId);
-		else
-			tex = &shortSwordTex;
-
-		std::string buttonId = "##btn" + std::to_string(i);
-		if (tex)
-		{
-			//draw texture through image button
-			ImGui::PushID(i);
-			if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(SLOT_SIZE, SLOT_SIZE), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0)))
-				inv.activeHotbarSlot = i;
-			ImGui::PopID();
 		}
 		else
 		{
-			//fallback, wont happen likely
-			if (ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE)))
-				inv.activeHotbarSlot = i;
+			//if not empty, get texture of item in slot
+			const sf::Texture* tex = nullptr;
+
+			if (itemRegistry[item.itemId].isBlock)
+				tex = &chunksManager.getTexture(item.itemId);
+			else
+				tex = &shortSwordTex;
+
+			std::string buttonId = "##btn" + std::to_string(i);
+			if (tex)
+			{
+				//draw texture through image button
+				ImGui::PushID(i);
+				if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(SLOT_SIZE, SLOT_SIZE), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0)))
+					inv.activeHotbarSlot = i;
+				ImGui::PopID();
+			}
+			else
+			{
+				//fallback, wont happen likely
+				if (ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE)))
+					inv.activeHotbarSlot = i;
+			}
 		}
 
 		ImGui::PopStyleVar();
@@ -311,12 +295,23 @@ void Game::RenderHotbar()
 		else if (ImGui::IsItemHovered())
 			drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
 
+		//add slot number on top left
+		std::string numStr = std::to_string(i + 1);
+		if (numStr == "10")
+			numStr = "0";
+
+		ImVec2 textPos = ImVec2(rectMin.x + 3, rectMin.y + 3);
+		//Shadow
+		drawList->AddText(ImVec2(textPos.x + 1, textPos.y + 1), IM_COL32(0, 0, 0, 255), numStr.c_str());
+		//White text on top
+		drawList->AddText(ImVec2(textPos), IM_COL32(255, 255, 255, 255), numStr.c_str());
+
 		//add item count on bottom right
 		if (item.count > 1)
 		{
 			std::string countStr = std::to_string(item.count);
 			ImVec2 textSize = ImGui::CalcTextSize(countStr.c_str());
-			ImVec2 textPos = ImVec2(rectMax.x - textSize.x - 5, rectMax.y - textSize.y - 3);
+			textPos = ImVec2(rectMax.x - textSize.x - 5, rectMax.y - textSize.y - 3);
 
 			//Shadow
 			drawList->AddText(ImVec2(textPos.x + 1, textPos.y + 1), IM_COL32(0, 0, 0, 255), countStr.c_str());
@@ -539,16 +534,29 @@ void Game::RenderInventory()
 		if (ImGui::IsItemHovered())
 			drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
 
+		//add slot number on top left
+		std::string numStr = std::to_string(i + 1);
+		if (numStr == "10")
+			numStr = "0";
+
+		ImVec2 textPos = ImVec2(rectMin.x + 3, rectMin.y + 3);
+		//Shadow
+		drawList->AddText(ImVec2(textPos.x + 1, textPos.y + 1), IM_COL32(0, 0, 0, 255), numStr.c_str());
+		//White text on top
+		drawList->AddText(ImVec2(textPos), IM_COL32(255, 255, 255, 255), numStr.c_str());
+
+		//add item count on bottom right
 		if (item.count > 1)
 		{
 			std::string countStr = std::to_string(item.count);
 			ImVec2 textSize = ImGui::CalcTextSize(countStr.c_str());
-			ImVec2 textPos = ImVec2(rectMax.x - textSize.x - 5, rectMax.y - textSize.y - 3);
+			textPos = ImVec2(rectMax.x - textSize.x - 5, rectMax.y - textSize.y - 3);
 
 			drawList->AddText(ImVec2(textPos.x + 1, textPos.y + 1), IM_COL32(0, 0, 0, 255), countStr.c_str());
 			drawList->AddText(ImVec2(textPos), IM_COL32(255, 255, 255, 255), countStr.c_str());
 		}
 
+		//ensure same line
 		if (i < inv.HOTBAR_SIZE - 1)
 			ImGui::SameLine();
 	}
