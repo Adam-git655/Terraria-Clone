@@ -95,6 +95,8 @@ void Game::ProcessEvents()
 				inv.activeHotbarSlot = 7;
 			if (event.key.code == sf::Keyboard::Num9)
 				inv.activeHotbarSlot = 8;
+			if (event.key.code == sf::Keyboard::Num0)
+				inv.activeHotbarSlot = 9;
 
 			if (event.key.code == sf::Keyboard::E)
 			{
@@ -441,7 +443,7 @@ void Game::RenderInventory()
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
 		if (slotIndex == inv.selectedInventorySlot)
-			drawList->AddRect(rectMin, rectMax, IM_COL32(0, 255, 0, 255), 0.0f, 0, 2.0f);;
+			drawList->AddRect(rectMin, rectMax, IM_COL32(0, 255, 0, 255), 0.0f, 0, 2.0f);
 		if (ImGui::IsItemHovered())
 			drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
 
@@ -458,6 +460,96 @@ void Game::RenderInventory()
 		}
 
 		if (col < COLS - 1)
+			ImGui::SameLine();
+	}
+
+	ImGui::End();
+
+
+	//Draw another hotbar above inventory with some gap
+
+	ImVec2 hotbar_win_pos = ImVec2(
+		viewport->WorkPos.x + viewport->WorkSize.x * 0.5f,
+		(viewport->WorkPos.y + viewport->WorkSize.y * 0.5f) - (2 * 50.0f + 50.0f)
+	);
+	ImGui::SetNextWindowPos(hotbar_win_pos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+	ImGui::Begin("Hotbar-Inv", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+
+	for (int i = 0; i < inv.HOTBAR_SIZE; i++)
+	{
+		ItemStack& item = inv.slots[i];
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+
+		if (item.count == 0)
+		{
+			std::string buttonId = "##btn" + std::to_string(i);
+			if (ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE))) //normal button
+			{
+				if (inv.selectedInventorySlot != -1)
+				{
+					std::swap(inv.slots[inv.selectedInventorySlot], item);
+					inv.selectedInventorySlot = -1;
+				}
+			}
+		}
+		else
+		{
+			const sf::Texture* tex = nullptr;
+
+			if (itemRegistry[item.itemId].isBlock)
+				tex = &chunksManager.getTexture(item.itemId);
+			else
+				tex = &shortSwordTex;
+
+			std::string buttonId = "##btn" + std::to_string(i);
+			if (tex)
+			{
+				ImGui::PushID(i);
+				if (ImGui::ImageButton((void*)(intptr_t)tex->getNativeHandle(), ImVec2(SLOT_SIZE, SLOT_SIZE), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0, 0, 0, 0)))
+				{
+					if (inv.selectedInventorySlot == -1)
+					{
+						if (item.count > 0)
+							inv.selectedInventorySlot = i;
+					}
+					else
+					{
+						std::swap(inv.slots[inv.selectedInventorySlot], item);
+						inv.selectedInventorySlot = -1;
+					}
+				}
+				ImGui::PopID();
+			}
+			else
+			{
+				ImGui::Button(buttonId.c_str(), ImVec2(SLOT_SIZE, SLOT_SIZE));
+			}
+		}
+
+		ImGui::PopStyleVar();
+
+		ImVec2 rectMin = ImGui::GetItemRectMin();
+		ImVec2 rectMax = ImGui::GetItemRectMax();
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+		if (i == inv.selectedInventorySlot)
+			drawList->AddRect(rectMin, rectMax, IM_COL32(0, 255, 0, 255), 0.0f, 0, 2.0f);
+		if (ImGui::IsItemHovered())
+			drawList->AddRect(rectMin, rectMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
+
+		if (item.count > 1)
+		{
+			std::string countStr = std::to_string(item.count);
+			ImVec2 textSize = ImGui::CalcTextSize(countStr.c_str());
+			ImVec2 textPos = ImVec2(rectMax.x - textSize.x - 5, rectMax.y - textSize.y - 3);
+
+			drawList->AddText(ImVec2(textPos.x + 1, textPos.y + 1), IM_COL32(0, 0, 0, 255), countStr.c_str());
+			drawList->AddText(ImVec2(textPos), IM_COL32(255, 255, 255, 255), countStr.c_str());
+		}
+
+		if (i < inv.HOTBAR_SIZE - 1)
 			ImGui::SameLine();
 	}
 

@@ -10,7 +10,7 @@ struct ItemStack
 
 struct InventoryComponent
 {
-	static const int HOTBAR_SIZE = 9;
+	static const int HOTBAR_SIZE = 10;
 	static const int INVENTORY_SIZE = 40;
 	int activeHotbarSlot = 0;
 	int selectedInventorySlot = -1;
