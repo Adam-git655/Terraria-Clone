@@ -1,6 +1,6 @@
 #include "MovementSystem.h"
 
-void MovementSystem::update(EntityManager& mgr, float dt)
+void MovementSystem::update(EntityManager& mgr, SoundManager& soundMgr, float dt)
 {
 	auto& physicsStorage = mgr.getComponentStorage<PhysicsComponent>();
 	auto& inputStorage = mgr.getComponentStorage<InputComponent>();
@@ -44,6 +44,7 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 			physics.velocity.y = -movement.jumpStrength;
 			physics.IsOnGround = false;
 			movement.IsJumping = true;
+			soundMgr.play(Sounds::Jump);
 		}
 		if (input.movement_keys[sf::Keyboard::A])
 		{
@@ -63,6 +64,11 @@ void MovementSystem::update(EntityManager& mgr, float dt)
 			physics.velocity.x = movement.max_speed;
 		if (physics.velocity.x < -movement.max_speed)
 			physics.velocity.x = -movement.max_speed;
+
+		if (std::abs(physics.velocity.x) > 0.1f && physics.IsOnGround)
+			soundMgr.playLooping(Sounds::Footsteps);
+		else
+			soundMgr.stopLooping(Sounds::Footsteps);
 
 		transform.position += physics.velocity * dt;
 

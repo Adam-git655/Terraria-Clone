@@ -8,10 +8,12 @@
 #include "game/Components/RenderComponent.h"
 #include "game/Components/AIComponent.h"
 
+#include "SoundManager.h"
+
 class MovementSystem
 {
 public:
-	void update(EntityManager& mgr, float dt);
+	void update(EntityManager& mgr, SoundManager& soundMgr, float dt);
 
 private:
 	void zombieFollowPathAI(PhysicsComponent& physics, MovementComponent& movement, RenderComponent& render, const IVec2& currentTile, const IVec2& nextTile);

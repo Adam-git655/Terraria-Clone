@@ -225,7 +225,7 @@ void Game::Update()
 	//Update systems
 
 	aiSystem.update(entityManager, chunksManager, playerEntity, deltaTime);
-	movementSystem.update(entityManager, deltaTime);
+	movementSystem.update(entityManager, soundManager, deltaTime);
 	chunksManager.collisionsWithTerrain(entityManager.getComponentStorage<CollisionComponent>(), 
 										entityManager.getComponentStorage<TransformComponent>(),
 										entityManager.getComponentStorage<PhysicsComponent>());

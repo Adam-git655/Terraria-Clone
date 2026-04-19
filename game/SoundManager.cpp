@@ -7,6 +7,10 @@ SoundManager::SoundManager()
 
 void SoundManager::loadData()
 {
+	if (!soundsData[Sounds::Footsteps].loadFromFile(RESOURCES_PATH "footstep.wav"))
+	{
+		std::cout << "ERROR LOADING FOOTSTEP SOUND\n";
+	}
 	if (!soundsData[Sounds::Jump].loadFromFile(RESOURCES_PATH "jump.wav"))
 	{
 		std::cout << "ERROR LOADING JUMP SOUND\n";
