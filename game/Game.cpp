@@ -603,6 +603,11 @@ void Game::RenderSettings()
 		renderSystem.showAIDebugLines = showAIDebugLines;
 	}
 
+	if (ImGui::SliderFloat("Master Volume", &masterVolume, 0.0f, 100.0f))
+	{
+		soundManager.setMasterVolume(masterVolume);
+	}
+
 	ImGui::End();
 }
 

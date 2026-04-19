@@ -30,9 +30,9 @@ private:
 	std::unordered_map<Sounds, sf::SoundBuffer> soundsData;
 	std::unordered_map<Sounds, float> soundVolumes =
 	{
-		{Sounds::Footsteps, 10.0f},
-		{Sounds::Jump, 20.0f},
-		{Sounds::Swing, 40.0f},
+		{Sounds::Footsteps, 20.0f},
+		{Sounds::Jump, 95.0f},
+		{Sounds::Swing, 65.0f},
 		{Sounds::Break, 10.0f},
 		{Sounds::Place, 10.0f}
 	};

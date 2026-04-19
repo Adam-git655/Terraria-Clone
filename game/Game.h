@@ -40,13 +40,15 @@ private:
 	double deltaTime = 0.0;
 	sf::Clock deltaClock;
 
+	//Setttings
 	bool isLighting = true;
 	bool showAIDebugLines = false;
+	float masterVolume = 100.0f;
 
 	Vec2 playerSpawnPos = { 0.0f, 0.0f };
 
 	ChunksManager chunksManager;
-	SoundManager soundManager{ 100.0f };
+	SoundManager soundManager;
 
 	//Textures
 	sf::Texture playerTex;

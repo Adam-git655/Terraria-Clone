@@ -4,8 +4,6 @@ SoundManager::SoundManager(float masterVolume)
 {
 	setMasterVolume(masterVolume);
 	loadData();
-
-	BGMusic.setVolume(masterVolume);
 	BGMusic.play();
 }
 
@@ -86,6 +84,9 @@ void SoundManager::setMasterVolume(float volume)
 	{
 		sound.setVolume(getActualVolume(soundVolumes[name]));
 	}
+
+	//update BGMusic
+	BGMusic.setVolume(volume);
 }
 
 float SoundManager::getActualVolume(float soundVol) const
