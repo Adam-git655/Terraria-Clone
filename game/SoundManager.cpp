@@ -1,7 +1,8 @@
 #include "SoundManager.h"
 
-SoundManager::SoundManager()
+SoundManager::SoundManager(float masterVolume)
 {
+	setMasterVolume(masterVolume);
 	loadData();
 }
 
@@ -37,6 +38,7 @@ void SoundManager::play(Sounds soundName)
 		if (sound.getStatus() != sf::Sound::Playing)
 		{
 			sound.setBuffer(soundsData[soundName]);
+			sound.setVolume(masterVolume);
 			sound.play();
 			return;
 		}
@@ -45,6 +47,7 @@ void SoundManager::play(Sounds soundName)
 	//if all sound objects are playing, then add a new sound object
 	playingSounds.emplace_back(sf::Sound());
 	playingSounds.back().setBuffer(soundsData[soundName]);
+	playingSounds.back().setVolume(masterVolume);
 	playingSounds.back().play();
 }
 
@@ -55,6 +58,7 @@ void SoundManager::playLooping(Sounds soundName)
 		return;
 
 	loopingSounds[soundName].setBuffer(soundsData[soundName]);
+	loopingSounds[soundName].setVolume(masterVolume);
 	loopingSounds[soundName].setLoop(true);
 	loopingSounds[soundName].play();
 }
@@ -63,4 +67,15 @@ void SoundManager::stopLooping(Sounds soundName)
 {
 	if (loopingSounds.count(soundName))
 		loopingSounds[soundName].stop();
+}
+
+void SoundManager::setMasterVolume(float volume)
+{
+	masterVolume = std::clamp(volume, 0.0f, 100.0f);
+
+	//update already playing looping sounds
+	for (auto& [name, sound] : loopingSounds)
+	{
+		sound.setVolume(masterVolume);
+	}
 }
