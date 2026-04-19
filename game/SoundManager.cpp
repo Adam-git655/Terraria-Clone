@@ -4,6 +4,7 @@ SoundManager::SoundManager(float masterVolume)
 {
 	setMasterVolume(masterVolume);
 	loadData();
+	BGMusic.setLoop(true);
 	BGMusic.play();
 }
 
