@@ -31,9 +31,8 @@ cmake ../
 - Smart Zombie AI using A* pathfinding
 - Basic Combat System
 - Lighting System using BFS Blood-fill algorithm.
+- Inventory + Hotbar system for management of items. (50 item capacity)
 - Ability to place and destroy blocks
-- Can choose between 3 block types (Grass, dirt, and stone)
-- Inventory/Hotbar system to keep track of items
   
 ### Features to add
 
@@ -45,6 +44,7 @@ cmake ../
 
 - W to Jump, A and D to move left and right
 - Right-click to place blocks, left-click to destroy blocks/attack with sword
+- E to Open/Close Inventory
 - Number keys to choose items in the hotbar
 
 
