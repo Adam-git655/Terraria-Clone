@@ -9,7 +9,9 @@ enum class Sounds
 	Jump,
 	Swing,
 	Break,
-	Place
+	Place,
+	PlayerHit,
+	EnemyHit
 };
 
 class SoundManager
@@ -34,7 +36,9 @@ private:
 		{Sounds::Jump, 95.0f},
 		{Sounds::Swing, 65.0f},
 		{Sounds::Break, 10.0f},
-		{Sounds::Place, 10.0f}
+		{Sounds::Place, 10.0f},
+		{Sounds::PlayerHit, 70.0f},
+		{Sounds::EnemyHit, 30.0f}
 	};
 
 	std::unordered_map<Sounds, sf::Sound> loopingSounds; //sf::Sounds permanantly stay bound to their specific sound

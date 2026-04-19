@@ -29,6 +29,14 @@ void SoundManager::loadData()
 	{
 		std::cout << "ERROR LOADING PLACE SOUND\n";
 	}
+	if (!soundsData[Sounds::PlayerHit].loadFromFile(RESOURCES_PATH "playerHurt.wav"))
+	{
+		std::cout << "ERROR LOADING PLAYER HIT SOUND\n";
+	}
+	if (!soundsData[Sounds::EnemyHit].loadFromFile(RESOURCES_PATH "enemyHurt.wav"))
+	{
+		std::cout << "ERROR LOADING ENEMY HIT SOUND\n";
+	}
 
 	if (!BGMusic.openFromFile(RESOURCES_PATH "BGM.wav"))
 	{

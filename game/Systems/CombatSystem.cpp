@@ -33,13 +33,10 @@ void CombatSystem::update(EntityManager& mgr, SoundManager& soundMgr)
 			if (targetE == attackerE)
 				continue;
 
-			if (factionStorage.has(targetE))
-			{
-				auto& targetFaction = factionStorage.get(targetE);
+			auto& targetFaction = factionStorage.get(targetE);
 
-				if (targetFaction.faction == attackerFaction.faction)
-					continue;
-			}
+			if (targetFaction.faction == attackerFaction.faction)
+				continue;
 
 			//apply damage to target entities within attack range
 
@@ -63,6 +60,12 @@ void CombatSystem::update(EntityManager& mgr, SoundManager& soundMgr)
 				//Damage flash feedback on getting hit
 				auto& render = renderStorage.get(targetE);
 				damageFlash(render, sf::Color::Red, 0.2f);
+
+				//Hit sound feedback on getting hit
+				if (targetFaction.faction == Faction::Player)
+					soundMgr.play(Sounds::PlayerHit);
+				else if (targetFaction.faction == Faction::Enemy)
+					soundMgr.play(Sounds::EnemyHit);
 			}
 		}
 
