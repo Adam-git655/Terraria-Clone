@@ -135,7 +135,7 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 			if (!itemRegistry[item.itemId].isBlock)
 			{
 				auto& weaponsStorage = entityManager.getComponentStorage<WeaponComponent>();
-
+				
 				if (weaponsStorage.has(playerEntity))
 					weaponsStorage.get(playerEntity).attackRequested = true;
 			}
@@ -146,7 +146,10 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 				Tile::TileType tileRemoved = chunksManager.DestroyTile(pointWorldCoords);
 				std::string itemId = Tile::tileTypeToItemId(tileRemoved);
 				if (!itemId.empty())
+				{
+					soundManager.play(Sounds::Break);
 					inventorySystem.addItem(entityManager, playerEntity, itemId, 1, itemRegistry);
+				}
 			}
 		}
 
@@ -167,7 +170,10 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 				isPlacing = true;
 				bool placed = chunksManager.PlaceTile(pointWorldCoords, tileRegistry[item.itemId].type, tileRegistry[item.itemId].isSolid);
 				if (placed)
+				{
+					soundManager.play(Sounds::Place);
 					inventorySystem.removeItem(entityManager, playerEntity, item.itemId, 1);
+				}
 			}
 		}
 	}
@@ -191,7 +197,10 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 			Tile::TileType tileRemoved = chunksManager.DestroyTile(pointWorldCoords);
 			std::string itemId = Tile::tileTypeToItemId(tileRemoved);
 			if (!itemId.empty())
+			{
+				soundManager.play(Sounds::Break);
 				inventorySystem.addItem(entityManager, playerEntity, itemId, 1, itemRegistry);
+			}
 		}
 		if (isPlacing)
 		{
@@ -200,7 +209,10 @@ void Game::HandleMouseInput(const sf::Event event, ImGuiIO& io)
 			{
 				bool placed = chunksManager.PlaceTile(pointWorldCoords, tileRegistry[item.itemId].type, tileRegistry[item.itemId].isSolid);
 				if (placed)
+				{
+					soundManager.play(Sounds::Place);
 					inventorySystem.removeItem(entityManager, playerEntity, item.itemId, 1);
+				}
 			}
 		}
 	}
@@ -222,7 +234,7 @@ void Game::Update()
 		entityFactory.createZombie(pos, zombieTex);
 	chunksManager.getZombieSpawnPositions().clear();
 
-	combatSystem.update(entityManager);
+	combatSystem.update(entityManager, soundManager);
 	healthSystem.update(entityManager, playerSpawnPos);
 	renderSystem.update(entityManager, deltaTime);
 

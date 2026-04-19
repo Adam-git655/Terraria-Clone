@@ -1,6 +1,6 @@
 #include "CombatSystem.h"
 
-void CombatSystem::update(EntityManager& mgr)
+void CombatSystem::update(EntityManager& mgr, SoundManager& soundMgr)
 {
 	auto& healthStorage = mgr.getComponentStorage<HealthComponent>();
 	auto& weaponStorage = mgr.getComponentStorage<WeaponComponent>();
@@ -23,7 +23,10 @@ void CombatSystem::update(EntityManager& mgr)
 		auto& attackerFaction = factionStorage.get(attackerE);
 
 		if (attackerFaction.faction == Faction::Player)
+		{
 			animationStorage.get(attackerE).play("swing", true);
+			soundMgr.play(Sounds::Swing);
+		}
 
 		for (auto& [targetE, health] : healthStorage.getAll())
 		{

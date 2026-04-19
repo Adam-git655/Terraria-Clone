@@ -5,6 +5,7 @@
 
 #include "engine/world/ChunksManager.h"
 #include "engine/world/PerlinNoise.h"
+#include "SoundManager.h"
 #include "Item.h"
 
 #include "EntityFactory.h"
@@ -45,6 +46,7 @@ private:
 	Vec2 playerSpawnPos = { 0.0f, 0.0f };
 
 	ChunksManager chunksManager;
+	SoundManager soundManager;
 
 	//Textures
 	sf::Texture playerTex;

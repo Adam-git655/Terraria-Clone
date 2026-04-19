@@ -7,10 +7,12 @@
 #include "game/Components/AnimationComponent.h"
 #include "game/Components/RenderComponent.h"
 
+#include "game/SoundManager.h"
+
 class CombatSystem
 {
 public:
-	void update(EntityManager& mgr);
+	void update(EntityManager& mgr, SoundManager& soundMgr);
 
 private:
 	void damageFlash(RenderComponent& render, sf::Color color, float flashtime);

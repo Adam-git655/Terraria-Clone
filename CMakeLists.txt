@@ -25,8 +25,8 @@ if(MSVC)
     add_compile_options(/arch:AVX2)
 endif()
 
-# Disable unused SFML modules
-set(SFML_BUILD_AUDIO OFF CACHE BOOL "Disable SFML Audio" FORCE)
+#Force enable SFML modules
+set(SFML_BUILD_AUDIO ON CACHE BOOL "Enable SFML Audio" FORCE)
 set(SFML_BUILD_NETWORK ON CACHE BOOL "Enable SFML Network" FORCE)
 set(SFML_BUILD_GRAPHICS ON CACHE BOOL "Enable SFML Graphics" FORCE)
 set(SFML_BUILD_WINDOW ON CACHE BOOL "Enable SFML Window" FORCE)
@@ -133,6 +133,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     sfml-window
     sfml-system
     sfml-network
+    sfml-audio
     imgui
     ImGui-SFML::ImGui-SFML
     glad
