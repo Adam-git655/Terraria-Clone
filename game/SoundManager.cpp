@@ -4,6 +4,9 @@ SoundManager::SoundManager(float masterVolume)
 {
 	setMasterVolume(masterVolume);
 	loadData();
+
+	BGMusic.setVolume(masterVolume);
+	BGMusic.play();
 }
 
 void SoundManager::loadData()
@@ -28,6 +31,11 @@ void SoundManager::loadData()
 	{
 		std::cout << "ERROR LOADING PLACE SOUND\n";
 	}
+
+	if (!BGMusic.openFromFile(RESOURCES_PATH "BGM.wav"))
+	{
+		std::cout << "ERROR OPENING BACKGROUND MUSIC\n";
+	}
 }
 
 void SoundManager::play(Sounds soundName)
@@ -38,7 +46,7 @@ void SoundManager::play(Sounds soundName)
 		if (sound.getStatus() != sf::Sound::Playing)
 		{
 			sound.setBuffer(soundsData[soundName]);
-			sound.setVolume(masterVolume);
+			sound.setVolume(getActualVolume(soundVolumes[soundName]));
 			sound.play();
 			return;
 		}
@@ -47,7 +55,7 @@ void SoundManager::play(Sounds soundName)
 	//if all sound objects are playing, then add a new sound object
 	playingSounds.emplace_back(sf::Sound());
 	playingSounds.back().setBuffer(soundsData[soundName]);
-	playingSounds.back().setVolume(masterVolume);
+	playingSounds.back().setVolume(getActualVolume(soundVolumes[soundName]));
 	playingSounds.back().play();
 }
 
@@ -58,7 +66,7 @@ void SoundManager::playLooping(Sounds soundName)
 		return;
 
 	loopingSounds[soundName].setBuffer(soundsData[soundName]);
-	loopingSounds[soundName].setVolume(masterVolume);
+	loopingSounds[soundName].setVolume(getActualVolume(soundVolumes[soundName]));
 	loopingSounds[soundName].setLoop(true);
 	loopingSounds[soundName].play();
 }
@@ -76,6 +84,11 @@ void SoundManager::setMasterVolume(float volume)
 	//update already playing looping sounds
 	for (auto& [name, sound] : loopingSounds)
 	{
-		sound.setVolume(masterVolume);
+		sound.setVolume(getActualVolume(soundVolumes[name]));
 	}
+}
+
+float SoundManager::getActualVolume(float soundVol) const
+{
+	return (soundVol / 100.0f) * masterVolume;
 }

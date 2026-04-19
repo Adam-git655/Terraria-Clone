@@ -25,10 +25,23 @@ public:
 	void setMasterVolume(float volume);
 	
 private:
-	std::unordered_map<Sounds, sf::SoundBuffer> soundsData;
-	std::unordered_map<Sounds, sf::Sound> loopingSounds; //sf::Sounds permanantly stay bound to their specific sound
-	std::vector<sf::Sound> playingSounds; //For one shot sounds. Reassignment of sf::sounds.
 	float masterVolume = 100.0f;
 
+	std::unordered_map<Sounds, sf::SoundBuffer> soundsData;
+	std::unordered_map<Sounds, float> soundVolumes =
+	{
+		{Sounds::Footsteps, 10.0f},
+		{Sounds::Jump, 20.0f},
+		{Sounds::Swing, 40.0f},
+		{Sounds::Break, 10.0f},
+		{Sounds::Place, 10.0f}
+	};
+
+	std::unordered_map<Sounds, sf::Sound> loopingSounds; //sf::Sounds permanantly stay bound to their specific sound
+	std::vector<sf::Sound> playingSounds; //For one shot sounds. Reassignment of sf::sounds.
+
+	sf::Music BGMusic;
+
 	void loadData();
+	float getActualVolume(float soundVol) const;
 };

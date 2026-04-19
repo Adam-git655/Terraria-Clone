@@ -46,7 +46,7 @@ private:
 	Vec2 playerSpawnPos = { 0.0f, 0.0f };
 
 	ChunksManager chunksManager;
-	SoundManager soundManager{ 15.0f };
+	SoundManager soundManager{ 100.0f };
 
 	//Textures
 	sf::Texture playerTex;
