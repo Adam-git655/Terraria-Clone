@@ -32,13 +32,13 @@ cmake ../
 - Basic Combat System
 - Lighting System using BFS Blood-fill algorithm.
 - Inventory + Hotbar system for management of items. (50 item capacity)
+- Audio system with volume control
 - Ability to place and destroy blocks
   
 ### Features to add
 
 - More block types and minerals
 - More enemies
-- Audio system
   
 ## Controls
 
