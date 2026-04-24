@@ -14,6 +14,7 @@ An **ECS** based Terraria clone made using C++ and the SFML graphics library
 mkdir build
 cd build
 cmake ../
+cmake --build .
 ```
 
 ## Features
