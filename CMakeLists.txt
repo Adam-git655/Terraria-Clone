@@ -5,7 +5,7 @@ project(mygame)
 set(CMAKE_CXX_STANDARD 17)
 
 #! ! ! ! ! ! !
-option(PRODUCTION_BUILD "Make this a production build!" OFF)
+option(PRODUCTION_BUILD "Make this a production build!" ON)
 #! ! ! ! ! ! !
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")

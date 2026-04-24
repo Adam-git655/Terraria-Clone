@@ -200,7 +200,8 @@ Tile& Chunk::getTile(int x, int y)
     if (x >= 0 && x < CHUNK_WIDTH && y >= 0 && y < CHUNK_HEIGHT)
         return chunkTiles[x][y];
     std::cout << "ERROR: Attemting to get tile out of bounds\n";
-    return Tile();
+    static Tile tile;
+    return tile;
 }
 
 const Tile& Chunk::getTile(int x, int y) const
@@ -208,7 +209,8 @@ const Tile& Chunk::getTile(int x, int y) const
     if (x >= 0 && x < CHUNK_WIDTH && y >= 0 && y < CHUNK_HEIGHT)
         return chunkTiles[x][y];
     std::cout << "ERROR: Attemting to get tile out of bounds\n";
-    return Tile();
+    static Tile tile;
+    return tile;
 }
 
 void Chunk::setTile(int x, int y, Tile::TileType type, bool solid)

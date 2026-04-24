@@ -20,7 +20,7 @@ struct AIComponent
 	bool canSeePlayer = false;
 	bool canAttackPlayer = false;
 
-	//for dumb position follow of zombie
+	//for dumb position follow
 	float stuckTimer = 0.0f;
 	float stuckThreshold = 0.35f;
 };
