@@ -8,10 +8,14 @@ void MovementSystem::update(EntityManager& mgr, SoundManager& soundMgr, float dt
 	auto& movementStorage = mgr.getComponentStorage<MovementComponent>();
 	auto& renderStorage = mgr.getComponentStorage<RenderComponent>();
 	auto& aiStorage = mgr.getComponentStorage<AIComponent>();
+	auto& airAiStorage = mgr.getComponentStorage<AirAIComponent>();
 
 	//Add Gravity to all entities which have a physics component
 	for (auto& [e, physics] : physicsStorage.getAll())
 	{
+		if (!physics.affectedByGravity)
+			continue;
+
 		auto& transform = transformStorage.get(e);
 
 		if (!physics.IsOnGround)
@@ -97,6 +101,40 @@ void MovementSystem::update(EntityManager& mgr, SoundManager& soundMgr, float dt
 				physics.velocity.x = movement.max_speed;
 			if (physics.velocity.x < -movement.max_speed)
 				physics.velocity.x = -movement.max_speed;
+		}
+
+		transform.position += physics.velocity * dt;
+	}
+
+	//Move entities with air AI component (Blood bats)
+	for (auto& [e, airAI] : airAiStorage.getAll())
+	{
+		auto& physics = physicsStorage.get(e);
+		auto& transform = transformStorage.get(e);
+		auto& movement = movementStorage.get(e);
+		auto& render = renderStorage.get(e);
+
+		transform.prevPos = transform.position;
+		physics.velocity = { 0.0f, 0.0f };
+
+		if (airAI.canSeePlayer)
+		{
+			physics.velocity = airAI.dir * movement.speed;
+
+			if (physics.velocity.x >= 0)
+				render.facingRight = true;
+			else
+				render.facingRight = false;
+
+			if (physics.velocity.x > movement.max_speed)
+				physics.velocity.x = movement.max_speed;
+			if (physics.velocity.x < -movement.max_speed)
+				physics.velocity.x = -movement.max_speed;
+
+			if (physics.velocity.y > movement.max_speed)
+				physics.velocity.y = movement.max_speed;
+			if (physics.velocity.y < -movement.max_speed)
+				physics.velocity.y = -movement.max_speed;
 		}
 
 		transform.position += physics.velocity * dt;

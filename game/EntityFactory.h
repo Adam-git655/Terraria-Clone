@@ -2,6 +2,7 @@
 #include "engine/ecs/EntityManager.h"
 
 #include "game/Components/AIComponent.h"
+#include "game/Components/AirAIComponent.h"
 #include "game/Components/AnimationComponent.h"
 #include "game/Components/CollisionComponent.h"
 #include "game/Components/FactionComponent.h"
@@ -24,6 +25,7 @@ public:
 
 	Entt createPlayer(Vec2& spawnPos, sf::Texture& playerTex);
 	Entt createZombie(Vec2& spawnPos, sf::Texture& zombieTex);
+	Entt createBloodBat(Vec2& spawnPos, sf::Texture& bloodBatTex);
 
 private:
 	EntityManager& mgr;

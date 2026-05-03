@@ -7,6 +7,7 @@
 #include "game/Components/InputComponent.h"
 #include "game/Components/RenderComponent.h"
 #include "game/Components/AIComponent.h"
+#include "game/Components/AirAIComponent.h"
 
 #include "SoundManager.h"
 

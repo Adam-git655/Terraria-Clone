@@ -13,8 +13,6 @@ Entt EntityFactory::createPlayer(Vec2& spawnPos, sf::Texture& playerTex)
 	mgr.addComponent<RenderComponent>(e, { false, {}, {2.0f, 2.0f}, playerTex, true });
 	mgr.addComponent<FactionComponent>(e, { Faction::Player });
 
-	//To add:- weapon component adding/removing functionality through hotbar
-
 	AnimationComponent anim;
 	anim.addAnimation("idle", {0, 0, 0, 10, 20, 26, 0.035f, false});
 	anim.addAnimation("walk", { 252, 492, 20, 10, 20, 26, 0.035f, false });
@@ -44,6 +42,25 @@ Entt EntityFactory::createZombie(Vec2& spawnPos, sf::Texture& zombieTex)
 	anim.addAnimation("walk", {0, 314, 157, 0, 157, 213, 0.06f, true});
 	anim.play("idle");
 	mgr.addComponent<AnimationComponent>(e, anim);
+
+	return e;
+}
+
+Entt EntityFactory::createBloodBat(Vec2& spawnPos, sf::Texture& bloodBatTex)
+{
+	Entt e = mgr.create();
+	mgr.addComponent<TransformComponent>(e, { spawnPos, spawnPos });
+	mgr.addComponent<PhysicsComponent>(e, { false });
+	mgr.addComponent<MovementComponent>(e, { 400.0f, 800.0f });
+	mgr.addComponent<AirAIComponent>(e, {});
+	mgr.addComponent<HealthComponent>(e, { 20.0f, 20.0f });
+	mgr.addComponent<RenderComponent>(e, { false, {}, {1.0f, 1.0f}, bloodBatTex, true });
+	mgr.addComponent<FactionComponent>(e, { Faction::Enemy });
+	mgr.addComponent<WeaponComponent>(e, { "teeth", 3.0f, {}, 1.5f, 100.0f, false });
+
+	AnimationComponent anim;
+	//to add animations
+
 
 	return e;
 }

@@ -3,6 +3,7 @@
 #include "engine/world/Pathfinding.h"
 #include "engine/world/ChunksManager.h"
 #include "game/Components/AIComponent.h"
+#include "game/Components/AirAIComponent.h"
 #include "game/Components/WeaponComponent.h"
 
 class AISystem

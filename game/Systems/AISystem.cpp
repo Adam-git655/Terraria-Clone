@@ -3,12 +3,14 @@
 void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt playerE, float dt)
 {
 	auto& aiStorage = mgr.getComponentStorage<AIComponent>();
+	auto& airAiStorage = mgr.getComponentStorage<AirAIComponent>();
 	auto& transformStorage = mgr.getComponentStorage<TransformComponent>();
 	auto& physicsStorage = mgr.getComponentStorage<PhysicsComponent>();
 	auto& weaponStorage = mgr.getComponentStorage<WeaponComponent>();
 
 	auto& playerTransform = transformStorage.get(playerE);
 	
+	//for ground AI
 	for (auto& [e, ai] : aiStorage.getAll())
 	{
 		auto& transform = transformStorage.get(e);
@@ -79,6 +81,31 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 			physics.velocity.x = 0.0f;
 		}
 	}	
+
+	//for air AI
+	for (auto& [e, airAI] : airAiStorage.getAll())
+	{
+		auto& transform = transformStorage.get(e);
+		
+		float squaredDistanceToPlayer = transform.position.distSquared(playerTransform.position);
+		airAI.canSeePlayer = squaredDistanceToPlayer <= (airAI.visionRange * airAI.visionRange);
+		airAI.canAttackPlayer = squaredDistanceToPlayer <= (airAI.attackRange * airAI.attackRange);
+
+		if (airAI.canAttackPlayer && weaponStorage.has(e))
+		{
+			auto& weapon = weaponStorage.get(e);
+			weapon.attackRequested = true;
+		}
+
+		if (airAI.canSeePlayer)
+		{
+			airAI.dir = (playerTransform.position - transform.position).normalize();
+		}
+		else
+		{
+			airAI.dir = { 0.0f, 0.0f };
+		}
+	}
 }
 
 bool AISystem::isAtTileCenter(const Vec2& position, const IVec2& tilePos, const float tolerance)
