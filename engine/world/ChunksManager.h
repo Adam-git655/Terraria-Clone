@@ -32,13 +32,16 @@ public:
 	void QueueTreePosForGeneration(int x, int y);
 
 	void QueueZombieSpawn(float worldX, float worldY);
+	void QueueBloodBatSpawn(float worldX, float worldY);
 	std::vector<Vec2>& getZombieSpawnPositions();
+	std::vector<Vec2>& getBloodBatSpawnPositions();
 
 private:
 	std::unordered_map<int, std::unique_ptr<Chunk>> chunks;
 	std::unordered_map<int, Chunk*> renderedChunks;
 	std::vector<IVec2> treePositions;
 	std::vector<Vec2> zombieSpawnPositions;
+	std::vector<Vec2> bloodBatSpawnPositions;
 
 	LightingSystem lighting;
 	int seed;

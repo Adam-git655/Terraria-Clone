@@ -97,6 +97,7 @@ void Chunk::generateTerrain()
         generateTrees();
 
     randomZombieSpawn();
+    randomBloodBatSpawn();
 }
 
 void Chunk::generateCaveEntrance()
@@ -161,10 +162,38 @@ void Chunk::randomZombieSpawn()
             float worldPosX = (spawnWorldX + 0.5f) * Chunk::TILESIZE;
             float worldPosY = (spawnY + 0.5f) * Chunk::TILESIZE;
 
-            //TODO:- REPLACE WITH ENTITY FACTORY.CREATE ZOMBIE
             if (chunksManager)
             {         
                 chunksManager->QueueZombieSpawn(worldPosX, worldPosY);
+            }
+        }
+    }
+}
+
+void Chunk::randomBloodBatSpawn()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> chanceDist(0.0f, 1.0f);
+    std::uniform_int_distribution<int> xDist(0, CHUNK_WIDTH - 1);
+    std::uniform_int_distribution<int> yDist(1, 40);
+    std::uniform_int_distribution<int> nBats(1, 3);
+
+    float batSpawnChance = 0.1f;
+    for (int i = 0; i < nBats(gen); i++)
+    {
+        if (chanceDist(gen) < batSpawnChance)
+        {
+            int spawnXInChunk = xDist(gen);
+            int spawnWorldX = chunkX * CHUNK_WIDTH + spawnXInChunk;
+            int spawnY = surfaceHeights[spawnXInChunk] + yDist(gen);
+
+            float worldPosX = (spawnWorldX + 0.5f) * Chunk::TILESIZE;
+            float worldPosY = (spawnY + 0.5f) * Chunk::TILESIZE;
+
+            if (chunksManager)
+            {
+                chunksManager->QueueBloodBatSpawn(worldPosX, worldPosY);
             }
         }
     }

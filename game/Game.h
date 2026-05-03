@@ -53,6 +53,7 @@ private:
 	//Textures
 	sf::Texture playerTex;
 	sf::Texture zombieTex;
+	sf::Texture bloodBatTex;
 	sf::Texture shortSwordTex;
 
 	//ECS

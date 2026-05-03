@@ -494,14 +494,24 @@ void ChunksManager::UpdateLightingForRegion(int worldX, int worldY)
 		lighting.UpdateLightingRegion(renderedChunks, worldX, worldY);
 }
 
-void ChunksManager::QueueZombieSpawn(float worldX, float worldy)
+void ChunksManager::QueueZombieSpawn(float worldX, float worldY)
 {
-	zombieSpawnPositions.push_back(Vec2(worldX, worldy));
+	zombieSpawnPositions.push_back(Vec2(worldX, worldY));
+}
+
+void ChunksManager::QueueBloodBatSpawn(float worldX, float worldY)
+{
+	bloodBatSpawnPositions.push_back(Vec2(worldX, worldY));
 }
 
 std::vector<Vec2>& ChunksManager::getZombieSpawnPositions()
 {
 	return zombieSpawnPositions;
+}
+
+std::vector<Vec2>& ChunksManager::getBloodBatSpawnPositions()
+{
+	return bloodBatSpawnPositions;
 }
 
 void ChunksManager::collisionsWithTerrain(ComponentStorage<CollisionComponent>& collisionStorage,

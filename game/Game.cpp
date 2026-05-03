@@ -29,6 +29,10 @@ void Game::Init()
 	{
 		std::cout << "ERROR LOADING ZOMBIE TEX\n";
 	}
+	if (!bloodBatTex.loadFromFile(RESOURCES_PATH "BloodBatSpriteSheet.png"))
+	{
+		std::cout << "ERROR LOADING BLOOD BAT TEX\n";
+	}
 	if (!shortSwordTex.loadFromFile(RESOURCES_PATH "ShortSword.png"))
 	{
 		std::cout << "ERROR LOADING SHORT SWORD TEX\n";
@@ -233,6 +237,10 @@ void Game::Update()
 	for (auto& pos : chunksManager.getZombieSpawnPositions())
 		entityFactory.createZombie(pos, zombieTex);
 	chunksManager.getZombieSpawnPositions().clear();
+
+	for (auto& pos : chunksManager.getBloodBatSpawnPositions())
+		entityFactory.createBloodBat(pos, bloodBatTex);
+	chunksManager.getBloodBatSpawnPositions().clear();
 
 	combatSystem.update(entityManager, soundManager);
 	healthSystem.update(entityManager, playerSpawnPos);
