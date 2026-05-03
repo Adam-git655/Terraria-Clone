@@ -59,8 +59,12 @@ Entt EntityFactory::createBloodBat(Vec2& spawnPos, sf::Texture& bloodBatTex)
 	mgr.addComponent<WeaponComponent>(e, { "teeth", 3.0f, {}, 1.5f, 100.0f, false });
 
 	AnimationComponent anim;
-	//to add animations
-
+	anim.addAnimation("flight", { 0, 1050, 150, 0, 150, 150, 0.06f, false });
+	anim.addAnimation("attack", { 0, 1050, 150, 150, 150, 150, 0.06f, false });
+	anim.addAnimation("hit", { 0, 450, 150, 300, 150, 150, 0.06f, false });
+	anim.addAnimation("death", { 0, 450, 150, 450, 150, 150, 0.06f, false });
+	anim.play("flight");
+	mgr.addComponent<AnimationComponent>(e, anim);
 
 	return e;
 }
