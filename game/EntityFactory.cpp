@@ -51,10 +51,10 @@ Entt EntityFactory::createBloodBat(Vec2& spawnPos, sf::Texture& bloodBatTex)
 	Entt e = mgr.create();
 	mgr.addComponent<TransformComponent>(e, { spawnPos, spawnPos });
 	mgr.addComponent<PhysicsComponent>(e, { false });
-	mgr.addComponent<MovementComponent>(e, { 400.0f, 800.0f });
+	mgr.addComponent<MovementComponent>(e, { 200.0f, 350.0f });
 	mgr.addComponent<AirAIComponent>(e, {});
 	mgr.addComponent<HealthComponent>(e, { 20.0f, 20.0f });
-	mgr.addComponent<RenderComponent>(e, { false, {}, {1.0f, 1.0f}, bloodBatTex, true });
+	mgr.addComponent<RenderComponent>(e, { false, {}, {1.15f, 1.15f}, bloodBatTex, true });
 	mgr.addComponent<FactionComponent>(e, { Faction::Enemy });
 	mgr.addComponent<WeaponComponent>(e, { "teeth", 3.0f, {}, 1.5f, 100.0f, false });
 

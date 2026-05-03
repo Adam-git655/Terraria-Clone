@@ -63,7 +63,7 @@ void CombatSystem::update(EntityManager& mgr, SoundManager& soundMgr)
 				health.health -= weapon.damage;
 
 				//Damage flash feedback on getting hit
-				if (!animationStorage.get(targetE).play("hit", true))
+				if (animationStorage.get(targetE).play("hit", true) == 0)
 				{
 					//if no hit animation exists, then just flash sprite color
 					auto& render = renderStorage.get(targetE);

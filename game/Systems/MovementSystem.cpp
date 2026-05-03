@@ -121,10 +121,10 @@ void MovementSystem::update(EntityManager& mgr, SoundManager& soundMgr, float dt
 		{
 			physics.velocity = airAI.dir * movement.speed;
 
-			if (physics.velocity.x >= 0)
-				render.facingRight = true;
-			else
+			if (playerPos.x >= transform.position.x)
 				render.facingRight = false;
+			else
+				render.facingRight = true;
 
 			if (physics.velocity.x > movement.max_speed)
 				physics.velocity.x = movement.max_speed;

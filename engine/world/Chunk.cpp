@@ -93,7 +93,6 @@ void Chunk::generateTerrain()
         generateCaveEntrance();
 
     if (biomeData->generateTrees)
-
         generateTrees();
 
     randomZombieSpawn();
@@ -186,7 +185,7 @@ void Chunk::randomBloodBatSpawn()
         {
             int spawnXInChunk = xDist(gen);
             int spawnWorldX = chunkX * CHUNK_WIDTH + spawnXInChunk;
-            int spawnY = surfaceHeights[spawnXInChunk] + yDist(gen);
+            int spawnY = surfaceHeights[spawnXInChunk] - yDist(gen);
 
             float worldPosX = (spawnWorldX + 0.5f) * Chunk::TILESIZE;
             float worldPosY = (spawnY + 0.5f) * Chunk::TILESIZE;

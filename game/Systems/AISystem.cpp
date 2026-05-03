@@ -97,7 +97,7 @@ void AISystem::update(EntityManager& mgr, ChunksManager& chunksManager, Entt pla
 			weapon.attackRequested = true;
 		}
 
-		if (airAI.canSeePlayer)
+		if (airAI.canSeePlayer && !airAI.canAttackPlayer)
 		{
 			airAI.dir = (playerTransform.position - transform.position).normalize();
 		}
