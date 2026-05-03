@@ -28,6 +28,11 @@ void CombatSystem::update(EntityManager& mgr, SoundManager& soundMgr)
 			soundMgr.play(Sounds::Swing);
 		}
 
+		if (attackerFaction.faction == Faction::Enemy)
+		{
+			animationStorage.get(attackerE).play("attack", true);
+		}
+
 		for (auto& [targetE, health] : healthStorage.getAll())
 		{
 			if (targetE == attackerE)
@@ -58,8 +63,12 @@ void CombatSystem::update(EntityManager& mgr, SoundManager& soundMgr)
 				health.health -= weapon.damage;
 
 				//Damage flash feedback on getting hit
-				auto& render = renderStorage.get(targetE);
-				damageFlash(render, sf::Color::Red, 0.2f);
+				if (!animationStorage.get(targetE).play("hit", true))
+				{
+					//if no hit animation exists, then just flash sprite color
+					auto& render = renderStorage.get(targetE);
+					damageFlash(render, sf::Color::Red, 0.2f);
+				}
 
 				//Hit sound feedback on getting hit
 				if (targetFaction.faction == Faction::Player)

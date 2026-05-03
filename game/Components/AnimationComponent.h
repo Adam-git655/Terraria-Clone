@@ -28,19 +28,20 @@ struct AnimationComponent
 		animations[name] = anim;
 	}
 
-	void play(const std::string& name, bool oneShot = false)
+	//return 0 if couldn't play anim. return 1 if anim plays succesfully
+	int play(const std::string& name, bool oneShot = false)
 	{
 		//if a one shot anim is playing, then dont let any other anim override that. 
 		//However another call to that one shot anim can play it again.
 		if (locked && currentAnim != name)
-			return;
+			return 0;
 
 		if (currentAnim == name && !oneShot)
-			return;
+			return 0;
 
 		auto it = animations.find(name);
 		if (it == animations.end())
-			return;
+			return 0;
 
 		currentAnim = name;
 		locked = oneShot;
@@ -48,5 +49,6 @@ struct AnimationComponent
 		auto& anim = it->second;
 		rectSourceSprite = { anim.rectLeftFirst, anim.rectTop, anim.width, anim.height };
 		animClock.restart();
+		return 1;
 	}
 };

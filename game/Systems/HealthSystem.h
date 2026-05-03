@@ -4,6 +4,7 @@
 #include "game/Components/HealthComponent.h"
 #include "game/Components/FactionComponent.h"
 #include "game/Components/TransformComponent.h"
+#include "game/Components/AnimationComponent.h"
 
 class HealthSystem
 {

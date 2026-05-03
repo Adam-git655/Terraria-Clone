@@ -83,21 +83,29 @@ void RenderSystem::update(EntityManager& mgr, float dt)
 		auto& physics = physicsStorage.get(e);
 		auto& movement = movementStorage.get(e);
 
-		if (!physics.IsFalling && !movement.IsJumping)
+		if (physics.affectedByGravity)
 		{
-			if (std::abs(physics.velocity.x) > 0.05f)
+			if (!physics.IsFalling && !movement.IsJumping)
 			{
-				animation.play("walk");
+				if (std::abs(physics.velocity.x) > 0.05f)
+				{
+					animation.play("walk");
+				}
+				else
+				{
+					animation.play("idle");
+				}
 			}
 			else
 			{
-				animation.play("idle");
+				animation.play("jump");
 			}
 		}
 		else
 		{
-			animation.play("jump");
+			animation.play("flight");
 		}
+
 
 		advanceAnimation(animation);
 		render.sprite.setTextureRect(animation.rectSourceSprite);

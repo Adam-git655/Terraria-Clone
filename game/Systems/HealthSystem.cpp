@@ -7,12 +7,16 @@ void HealthSystem::update(EntityManager& mgr, Vec2& playerSpawnPos)
 	auto& healthStorage = mgr.getComponentStorage<HealthComponent>();
 	auto& factionStorage = mgr.getComponentStorage<FactionComponent>();
 	auto& transformStorage = mgr.getComponentStorage<TransformComponent>();
+	auto& animationStorage = mgr.getComponentStorage<AnimationComponent>();
 
 	for (auto& [e, health] : healthStorage.getAll())
 	{
 		if (health.health <= 0)
 		{
 			auto& faction = factionStorage.get(e);
+
+			//play death animation
+			animationStorage.get(e).play("death", true);
 
 			//If Player dead, then reset it back to spawn position
 			if (faction.faction == Faction::Player)
