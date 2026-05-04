@@ -16,6 +16,7 @@
 #include "Systems/MovementSystem.h"
 #include "Systems/RenderSystem.h"
 #include "Systems/InventorySystem.h"
+#include "Systems/EnemySpawnerSystem.h"
 
 #include <vector>
 
@@ -56,6 +57,12 @@ private:
 	sf::Texture bloodBatTex;
 	sf::Texture shortSwordTex;
 
+	const std::unordered_map<Enemies, sf::Texture*> enemyTextures
+	{
+		{Enemies::Zombie, &zombieTex},
+		{Enemies::BloodBat, &bloodBatTex}
+	};
+
 	//ECS
 	EntityManager entityManager;
 	EntityFactory entityFactory{ entityManager };
@@ -68,6 +75,7 @@ private:
 	MovementSystem movementSystem;
 	RenderSystem renderSystem;
 	InventorySystem inventorySystem;
+	EnemySpawnerSystem enemySpawnerSystem;
 
 	//Inventory
 	bool renderInventory = false;

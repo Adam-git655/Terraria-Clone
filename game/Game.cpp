@@ -234,13 +234,7 @@ void Game::Update()
 										entityManager.getComponentStorage<TransformComponent>(),
 										entityManager.getComponentStorage<PhysicsComponent>());
 
-	for (auto& pos : chunksManager.getZombieSpawnPositions())
-		entityFactory.createZombie(pos, zombieTex);
-	chunksManager.getZombieSpawnPositions().clear();
-
-	for (auto& pos : chunksManager.getBloodBatSpawnPositions())
-		entityFactory.createBloodBat(pos, bloodBatTex);
-	chunksManager.getBloodBatSpawnPositions().clear();
+	enemySpawnerSystem.update(entityManager, entityFactory, enemyTextures, chunksManager, playerEntity, deltaTime);
 
 	combatSystem.update(entityManager, soundManager);
 	healthSystem.update(entityManager, playerSpawnPos);

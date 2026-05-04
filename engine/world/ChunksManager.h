@@ -11,6 +11,7 @@ public:
 	ChunksManager(int seed);
 	
 	Chunk* getChunkIfExists(int chunkX);
+	int getChunkXFromWorldX(float worldX);
 
 	Tile::TileType DestroyTile(sf::Vector2f pos);
 	bool PlaceTile(sf::Vector2f pos, Tile::TileType blockType, bool solid);
@@ -30,18 +31,10 @@ public:
 	void UpdateLightingForRegion(int worldX, int worldY);
 
 	void QueueTreePosForGeneration(int x, int y);
-
-	void QueueZombieSpawn(float worldX, float worldY);
-	void QueueBloodBatSpawn(float worldX, float worldY);
-	std::vector<Vec2>& getZombieSpawnPositions();
-	std::vector<Vec2>& getBloodBatSpawnPositions();
-
 private:
 	std::unordered_map<int, std::unique_ptr<Chunk>> chunks;
 	std::unordered_map<int, Chunk*> renderedChunks;
 	std::vector<IVec2> treePositions;
-	std::vector<Vec2> zombieSpawnPositions;
-	std::vector<Vec2> bloodBatSpawnPositions;
 
 	LightingSystem lighting;
 	int seed;
@@ -64,7 +57,6 @@ private:
 	sf::Texture snowLeafTex;
 
 	Chunk& getChunk(int chunkX);
-	int getChunkXFromWorldX(float worldX);
 
 	void processTreeQueue();
 	bool generateTree(const IVec2 pos);

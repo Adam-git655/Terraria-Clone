@@ -1,6 +1,6 @@
 #include "EntityFactory.h"
 
-Entt EntityFactory::createPlayer(Vec2& spawnPos, sf::Texture& playerTex)
+Entt EntityFactory::createPlayer(Vec2& spawnPos, const sf::Texture& playerTex)
 {
 	Entt e = mgr.create();
 	mgr.addComponent<TransformComponent>(e, { spawnPos, spawnPos });
@@ -24,7 +24,7 @@ Entt EntityFactory::createPlayer(Vec2& spawnPos, sf::Texture& playerTex)
 	return e;
 }
 
-Entt EntityFactory::createZombie(Vec2& spawnPos, sf::Texture& zombieTex)
+Entt EntityFactory::createZombie(Vec2& spawnPos, const sf::Texture& zombieTex)
 {
 	Entt e = mgr.create();
 	mgr.addComponent<TransformComponent>(e, { spawnPos, spawnPos });
@@ -46,7 +46,7 @@ Entt EntityFactory::createZombie(Vec2& spawnPos, sf::Texture& zombieTex)
 	return e;
 }
 
-Entt EntityFactory::createBloodBat(Vec2& spawnPos, sf::Texture& bloodBatTex)
+Entt EntityFactory::createBloodBat(Vec2& spawnPos, const sf::Texture& bloodBatTex)
 {
 	Entt e = mgr.create();
 	mgr.addComponent<TransformComponent>(e, { spawnPos, spawnPos });

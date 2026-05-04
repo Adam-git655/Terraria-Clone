@@ -44,8 +44,6 @@ private:
 
 	void generateTerrain();
 
-	void randomZombieSpawn();
-	void randomBloodBatSpawn();
 	void generateCaveEntrance();
 	void generateTrees();
 	void sandFall(int x, int y);

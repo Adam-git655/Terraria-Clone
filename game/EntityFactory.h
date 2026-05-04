@@ -23,9 +23,9 @@ public:
 	{
 	}
 
-	Entt createPlayer(Vec2& spawnPos, sf::Texture& playerTex);
-	Entt createZombie(Vec2& spawnPos, sf::Texture& zombieTex);
-	Entt createBloodBat(Vec2& spawnPos, sf::Texture& bloodBatTex);
+	Entt createPlayer(Vec2& spawnPos, const sf::Texture& playerTex);
+	Entt createZombie(Vec2& spawnPos, const sf::Texture& zombieTex);
+	Entt createBloodBat(Vec2& spawnPos, const sf::Texture& bloodBatTex);
 
 private:
 	EntityManager& mgr;
