@@ -54,7 +54,7 @@
 - Cmake 3.16+
 - A C++ 17 compiler
 
-## Steps To Build
+### Steps To Build
 1. Run the following commands in PowerShell/terminal in the folder where CMakeLists.txt is located
 ```
 git clone https://github.com/Adam-git655/Rootworld.git
@@ -64,7 +64,7 @@ cmake ../
 cmake --build .
 ```
 
-## Libraries/Dependencies used
+### Libraries/Dependencies used
 Included in 'thirdparty\' folder
 - SFML for Graphics and Audio
 - ImGui for UI rendering
