@@ -1,22 +1,17 @@
 ## Overview
 **Rootworld** is a Terraria-like sandbox game built on top of a custom **ECS** implementation. Made using C++ and the SFML Graphics library
 
-Gameplay vid:- https://www.youtube.com/watch?v=8Y9J4IYPjFU
+
+**Gameplay vid**:- https://www.youtube.com/watch?v=8Y9J4IYPjFU
+
+**Technical Writeup**:- https://1drv.ms/w/c/6d14236dbbee8233/IQAdgmOCmBbvQrpoiURqGuleAcTz4pKQQEQj3UkqV9OW_BU?e=Hndy8r
 
 <img width="1919" height="986" alt="Screenshot 2026-05-10 174601" src="https://github.com/user-attachments/assets/7293e615-6e21-4b74-9c39-b52d3b37a51b" />
 <img width="1919" height="987" alt="Screenshot 2026-05-10 174713" src="https://github.com/user-attachments/assets/615882d1-f485-4f90-8f99-eb55893bb5d7" />
 <img width="1919" height="989" alt="Screenshot 2026-05-10 174901" src="https://github.com/user-attachments/assets/d0ee634d-71c4-4bbd-a38f-f4a55bced7cd" />
 <img width="1913" height="986" alt="Screenshot 2026-05-10 180122" src="https://github.com/user-attachments/assets/d5cde200-3f09-4c9d-802e-228820cb6cb8" />
 
-## Steps To Build
-1. Install CMake
-2. Run the following commands in PowerShell/terminal in the folder where CMakeLists.txt is located
-```
-mkdir build
-cd build
-cmake ../
-cmake --build .
-```
+---
 
 ## Features
 
@@ -42,12 +37,35 @@ cmake --build .
   
 ## Controls
 
-- W to Jump, A and D to move left and right
-- Right-click to place blocks, left-click to destroy blocks/attack with sword
-- E to Open/Close Inventory
-- Number keys to choose items in the hotbar
+| Input | Action |
+|-------|--------|
+|`A` / `D` | Move left and right |
+|`W` / `Space` | Jump |
+|Left-click | Destroy tile (tile equipped) |
+|Left-click | Attack (sword equipped) |
+|Right-click | Place tile |
+|`E` | Open/Close Inventory |
+|`1`/`2`/`3`...`9`| Choose item in hotbar |
 
-## Libraries used
+---
+## Building
+
+### Requirements
+- Cmake 3.16+
+- A C++ 17 compiler
+
+## Steps To Build
+1. Run the following commands in PowerShell/terminal in the folder where CMakeLists.txt is located
+```
+git clone https://github.com/Adam-git655/Rootworld.git
+mkdir build
+cd build
+cmake ../
+cmake --build .
+```
+
+## Libraries/Dependencies used
+Included in 'thirdparty\' folder
 - SFML for Graphics and Audio
 - ImGui for UI rendering
 
