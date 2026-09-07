@@ -4,7 +4,7 @@
 
 **Gameplay vid**:- https://www.youtube.com/watch?v=8Y9J4IYPjFU
 
-**Technical Writeup**:- https://1drv.ms/w/c/6d14236dbbee8233/IQAdgmOCmBbvQrpoiURqGuleAcTz4pKQQEQj3UkqV9OW_BU?e=Hndy8r
+**Technical Writeup**:- https://docs.google.com/document/d/1mqopTq_hTenwRCmmV2OkFu91GwAeQPKYY1fiOdNpm0U/edit?usp=sharing
 
 <img width="1919" height="986" alt="Screenshot 2026-05-10 174601" src="https://github.com/user-attachments/assets/7293e615-6e21-4b74-9c39-b52d3b37a51b" />
 <img width="1919" height="987" alt="Screenshot 2026-05-10 174713" src="https://github.com/user-attachments/assets/615882d1-f485-4f90-8f99-eb55893bb5d7" />
